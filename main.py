@@ -5,6 +5,5 @@
 import shapes
 
 rectangle_a = shapes.Rectangle()
-
-
+print(rectangle_a)
 
