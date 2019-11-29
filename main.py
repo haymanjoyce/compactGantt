@@ -2,4 +2,9 @@
 
 # ENV02
 
-print("Hello World")
+import shapes
+
+rectangle_a = shapes.Rectangle()
+
+
+
