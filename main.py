@@ -4,6 +4,9 @@
 
 import shapes
 
-rectangle_a = shapes.Rectangle()
+style_a = shapes.Style(fill="red")
+print(style_a)
+
+rectangle_a = shapes.Rectangle(height=10, width=20, style=style_a)
 print(rectangle_a)
 
