@@ -1,55 +1,64 @@
-# svg values need to be in double quotes
+from dataclasses import dataclass
 
+
+@dataclass
 class Style:
+    fill: str = None
+    stroke: int = None
+    stroke_width: int = None
+    opacity: int = None
 
-    def __init__(self, fill=None, stroke=None, stroke_width=None, opacity=None):
+    def __str__(self):
+        return f'{self.fill}'
 
-        self.fill = fill
-        self.stroke = stroke
-        self.stroke_width = stroke_width
-        self.opacity = opacity
-
-    def __repr__(self):
-        return f'fill:{self.fill};' \
-               f'stroke:{self.stroke};'
+    def __post_init__(self):
+        pass
 
 
+@dataclass
 class Rectangle:
+    x: int = 0
+    y: int = 0
+    rx: int = 0
+    ry: int = 0
+    width: int = 200
+    height: int = 100
+    style: str = None  # string created by Style class
 
-    def __init__(self, x=None, y=None, rx=None, ry=None, width=None, height=None, style=None):
+    def __str__(self):
+        return f'{self.height}'
 
-        self.x = x
-        self.y = y
-        self.rx = rx
-        self.ry = ry
-        self.width = width
-        self.height = height
-        self.style = style
-
-    def __repr__(self):
-        return f'<rect width={self.width} ' \
-               f'height={self.height} ' \
-               f'style="{self.style}"></rect>'
+    def __post_init__(self):
+        pass
 
 
+@dataclass
 class Frame:
+    """
+    Replicates CSS box model
+    """
 
-    def __init__(self, x=None, y=None, rx=None, ry=None, width=None, height=None,
-                 fill=None, padding=None, border_color=None, border_width=None, margin=None):
-
-        self.x = x
-        self.y = y
-        self.rx = rx
-        self.ry = ry
-        self.width = width
-        self.height = height
-
-    def __repr__(self):
-        # need border because inner and outer rounding
+    def __str__(self):
         return f'<g transform="translate(100, 100)">' \
-               f'<!--Margin--><rect x="0" y="0" width="200" height="200" fill="grey" fill-opacity="40"></rect>' \
-               f'<!--Border--><rect x="20" y="20" width="160" height="160" fill="black"></rect>' \
-               f'<!--Padding--><rect x="30" y="30" width="140" height="140" fill="green" fill-opacity="40""></rect>' \
-               f'<!--Content--><rect x="40" y="40" width="120" height="120" fill="red" fill-opacity="40""></rect>' \
+               f'<rect x="0" y="0" width="100" height="100" style="fill: green; stroke: black; stroke-width: 10px; stroke-dasharray: 20px, 20px;"></rect>' \
+               f'<rect x="0" y="0" width="100" height="100" style="fill: red;"></rect>' \
                f'</g>'
+
+    def __post_init__(self):
+        pass
+
+
+@dataclass
+class Circle:
+    pass
+
+
+@dataclass
+class Diamond:  # rotate square
+    pass
+
+
+@dataclass
+class Line:
+    pass
 
