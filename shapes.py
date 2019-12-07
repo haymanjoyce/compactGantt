@@ -33,19 +33,46 @@ class Rectangle:
 
 
 @dataclass
-class Frame:
+class Box:
     """
-    Replicates CSS box model
+    Somewhat like the CSS box model
     """
 
+    x: float = 100
+    y: float = 600
+
+    width: float = 200
+    height: float = 100
+
+    background_color: str = 'blue'
+
+    padding: float = 10
+
+    stroke_width: float = 10
+    stroke: str = 'black'
+    fill: str = 'red'
+    style: str = ''
+
+    rx: float = 10
+    ry: float = 10
+
+    inner_x: float = 0
+    inner_y: float = 0
+
+    inner_width: float = 0
+    inner_height: float = 0
+
     def __str__(self):
-        return f'<g transform="translate(100, 100)">' \
-               f'<rect x="0" y="0" width="100" height="100" style="fill: green; stroke: black; stroke-width: 10px; stroke-dasharray: 20px, 20px;"></rect>' \
-               f'<rect x="0" y="0" width="100" height="100" style="fill: red;"></rect>' \
+        return f'<g transform="translate({self.x}, {self.y})">' \
+               f'<rect x="0" y="0" width="{self.width}" height="{self.height}" fill="{self.background_color}"></rect>' \
+               f'<rect x="{self.inner_x}" y="{self.inner_y}" rx="{self.rx}" ry="{self.ry}" width="{self.inner_width}" height="{self.inner_height}" stroke="{self.stroke}" stroke-width="{self.stroke_width}" fill="{self.fill}" style="{self.style}"></rect>' \
                f'</g>'
 
     def __post_init__(self):
-        pass
+        self.inner_x = self.padding + (self.stroke_width / 2)
+        self.inner_y = self.padding + (self.stroke_width / 2)
+        self.inner_width = self.width - (self.padding * 2) - self.stroke_width
+        self.inner_height = self.height - (self.padding * 2) - self.stroke_width
 
 
 @dataclass
