@@ -2,37 +2,6 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Style:
-    fill: str = None
-    stroke: int = None
-    stroke_width: int = None
-    opacity: int = None
-
-    def __str__(self):
-        return f'{self.fill}'
-
-    def __post_init__(self):
-        pass
-
-
-@dataclass
-class Rectangle:
-    x: int = 0
-    y: int = 0
-    rx: int = 0
-    ry: int = 0
-    width: int = 200
-    height: int = 100
-    style: str = None  # string created by Style class
-
-    def __str__(self):
-        return f'{self.height}'
-
-    def __post_init__(self):
-        pass
-
-
-@dataclass
 class Box:
     """
     Somewhat like the CSS box model
@@ -76,16 +45,71 @@ class Box:
 
 
 @dataclass
-class Circle:
-    pass
+class Rectangle:
+    x: int = 0
+    y: int = 0
+    rx: int = 0
+    ry: int = 0
+    width: int = 200
+    height: int = 100
+    style: str = None  # string created by Style class
+
+    def __str__(self):
+        return f'<rect x="{self.x}" y="{self.y}" ' \
+               f'rx="{self.rx}" ry="{self.ry}" ' \
+               f'width="{self.width}" height="{self.height}" ' \
+               f'style="{self.style}"></rect>'
 
 
 @dataclass
-class Diamond:  # rotate square
-    pass
+class Diamond:
+    """
+    This class simply rotates a rectangle that has equal width and length
+    """
+
+    x: int = 200
+    y: int = 200
+    rx: int = 0
+    ry: int = 0
+    size: int = 10
+    fill: str = 'blue'  # option to pass fill as SVG attribute
+    style: str = ''  # string created by Style class
+
+    def __str__(self):
+        return f'<rect x="{self.x}" y="{self.y}" ' \
+               f'rx="{self.rx}" ry="{self.ry}" ' \
+               f'width="{self.size}" height="{self.size}" ' \
+               f'fill="{self.fill}" ' \
+               f'style="{self.style}" ' \
+               f'transform="rotate(45)" ' \
+               f'></rect>'
 
 
 @dataclass
 class Line:
     pass
+
+
+@dataclass
+class Circle:
+    pass
+
+
+@dataclass
+class Style:
+    """
+    You can pass this string to style attribute in an SVG shape
+    Pass it as string, not object, like this: str(my_style)
+    """
+
+    fill: str = None
+    stroke: int = None
+    stroke_width: int = None
+    opacity: int = None
+
+    def __str__(self):
+        return f'fill: {self.fill}; ' \
+               f'stroke: {self.stroke}; ' \
+               f'stroke-width: {self.stroke_width}' \
+               f'opacity: {self.opacity}'
 

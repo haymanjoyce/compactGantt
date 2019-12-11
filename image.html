@@ -5,16 +5,18 @@
     <title>Title</title>
 </head>
 <body>
-<svg width="1000" height="2000">
 
-<g transform="translate(100, 100)"><rect x="0" y="0" width="300" height="100" fill="blue"></rect><rect x="12.5" y="12.5" rx="10" ry="10" width="275" height="75" stroke="black" stroke-width="5" fill="red" style=""></rect></g> <g transform="translate(100, 200)"><rect x="0" y="0" width="300" height="100" fill="blue"></rect><rect x="15.0" y="15.0" rx="10" ry="10" width="270" height="70" stroke="black" stroke-width="10" fill="red" style=""></rect></g> <g transform="translate(100, 300)"><rect x="0" y="0" width="300" height="100" fill="blue"></rect><rect x="0.0" y="0.0" rx="10" ry="10" width="300" height="100" stroke="black" stroke-width="0" fill="red" style="fill: green;"></rect></g>
-
+<svg width="400" height="400">
+    <rect x="100" y="100" rx="0" ry="0" width="50" height="50" fill="red" style="" ></rect>
+    <rect x="100" y="100" rx="100" ry="0" width="50" height="50" fill="blue" style="" transform="rotate(45, 125, 125)" ></rect>
 </svg>
 
 <!--
+rotate 45 is fixed
+rotate x = x + (size/2)
+rotate y = y + (size/2)
 
-Is same rounding * size of inner box as proportion of outer
-If border then outer box minus half border width - or is it?
+where height and width = size (i.e. square)
 
 -->
 

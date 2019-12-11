@@ -1,19 +1,31 @@
 #!/usr/bin/env python3
 
 # ENV02
-
+# pip (default)
+# setuptools (default)
+# oauth2client
+# gspread
 
 import shapes
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
-style_a = shapes.Style(fill="green")
-print(style_a)
+# https://www.twilio.com/blog/2017/02/an-easy-way-to-read-and-write-to-a-google-spreadsheet-in-python.html
+# use creds to create a client to interact with the Google Drive API
+# scope = ['https://spreadsheets.google.com/feeds']
+scope = ['https://spreadsheets.google.com/feeds',
+         'https://www.googleapis.com/auth/drive']
+creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
+client = gspread.authorize(creds)
 
-rectangle_a = shapes.Rectangle(height=10, width=20, style=str(style_a))
-print(rectangle_a)
+# Find a workbook by name and open the first sheet
+# Make sure you use the right name here.
+sheet = client.open("data").sheet1
+print(client.list_spreadsheet_files())
+# Extract and print all of the values
+list_of_hashes = sheet.get_all_records()
+print(list_of_hashes)
 
-frame_a = shapes.Box(x=100, y=100, width=300, height=100, stroke_width=5)
-frame_b = shapes.Box(x=100, y=200, width=300, height=100, stroke_width=10)
-frame_c = shapes.Box(x=100, y=300, width=300, height=100, stroke_width=0, padding=0, style=str(style_a))
-print(frame_a, frame_b, frame_c)
 
-
+diamond = shapes.Diamond()
+print(diamond)
