@@ -46,8 +46,11 @@ class Box:
 
 @dataclass
 class Rectangle:
-    x: int = 0
-    y: int = 0
+    """
+    Standard SVG rectangle
+    """
+    x: int = 100
+    y: int = 100
     rx: int = 0
     ry: int = 0
     width: int = 200
@@ -64,7 +67,7 @@ class Rectangle:
 @dataclass
 class Diamond:
     """
-    This class simply rotates a rectangle that has equal width and length
+    This class simply rotates an SVG rectangle that has equal width and length
     """
 
     x: int = 200
@@ -87,19 +90,25 @@ class Diamond:
 
 @dataclass
 class Line:
+    """
+    Standard SVG line
+    """
     pass
 
 
 @dataclass
 class Circle:
+    """
+    Standard SVG circle
+    """
     pass
 
 
 @dataclass
 class Style:
     """
-    You can pass this string to style attribute in an SVG shape
-    Pass it as string, not object, like this: str(my_style)
+    Pumps out CSS attributes to put into the SVG style attribute
+    Tip: Surround object with str() if passing as argument
     """
 
     fill: str = None
