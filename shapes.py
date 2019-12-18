@@ -22,8 +22,8 @@ class Box:
     fill: str = 'red'
     style: str = ''
 
-    rx: float = 10
-    ry: float = 10
+    rx: int = 10
+    ry: int = 10
 
     inner_x: float = 0
     inner_y: float = 0
@@ -31,17 +31,17 @@ class Box:
     inner_width: float = 0
     inner_height: float = 0
 
-    def __str__(self):
-        return f'<g transform="translate({self.x}, {self.y})">' \
-               f'<rect x="0" y="0" width="{self.width}" height="{self.height}" fill="{self.background_color}"></rect>' \
-               f'<rect x="{self.inner_x}" y="{self.inner_y}" rx="{self.rx}" ry="{self.ry}" width="{self.inner_width}" height="{self.inner_height}" stroke="{self.stroke}" stroke-width="{self.stroke_width}" fill="{self.fill}" style="{self.style}"></rect>' \
-               f'</g>'
-
     def __post_init__(self):
         self.inner_x = self.padding + (self.stroke_width / 2)
         self.inner_y = self.padding + (self.stroke_width / 2)
         self.inner_width = self.width - (self.padding * 2) - self.stroke_width
         self.inner_height = self.height - (self.padding * 2) - self.stroke_width
+
+    def __str__(self):
+        return f'<g transform="translate({self.x}, {self.y})">' \
+               f'<rect x="0" y="0" width="{self.width}" height="{self.height}" fill="{self.background_color}"></rect>' \
+               f'<rect x="{self.inner_x}" y="{self.inner_y}" rx="{self.rx}" ry="{self.ry}" width="{self.inner_width}" height="{self.inner_height}" stroke="{self.stroke}" stroke-width="{self.stroke_width}" fill="{self.fill}" style="{self.style}"></rect>' \
+               f'</g>'
 
 
 @dataclass
@@ -49,12 +49,12 @@ class Rectangle:
     """
     Standard SVG rectangle
     """
-    x: int = 100
-    y: int = 100
+    x: float = 100
+    y: float = 100
     rx: int = 0
     ry: int = 0
-    width: int = 200
-    height: int = 100
+    width: float = 200
+    height: float = 100
     style: str = None  # string created by Style class
 
     def __str__(self):
@@ -70,13 +70,21 @@ class Diamond:
     This class simply rotates an SVG rectangle that has equal width and length
     """
 
-    x: int = 200
-    y: int = 200
+    x: float = 200
+    y: float = 200
+    x2: float = 0
+    y2: float = 0
     rx: int = 0
     ry: int = 0
-    size: int = 10
+    size: float = 10
+    half_size: float = 0
     fill: str = 'blue'  # option to pass fill as SVG attribute
     style: str = ''  # string created by Style class
+
+    def __post_init__(self):
+        self.half_size = self.size / 2
+        self.x2 = self.x + self.half_size
+        self.y2 = self.y + self.half_size
 
     def __str__(self):
         return f'<rect x="{self.x}" y="{self.y}" ' \
@@ -84,7 +92,7 @@ class Diamond:
                f'width="{self.size}" height="{self.size}" ' \
                f'fill="{self.fill}" ' \
                f'style="{self.style}" ' \
-               f'transform="rotate(45)" ' \
+               f'transform="rotate(45, {self.x2}, {self.y2})" ' \
                f'></rect>'
 
 
@@ -113,7 +121,7 @@ class Style:
 
     fill: str = None
     stroke: int = None
-    stroke_width: int = None
+    stroke_width: float = None
     opacity: int = None
 
     def __str__(self):
