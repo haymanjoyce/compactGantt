@@ -36,6 +36,3 @@ rect_a = shapes.Diamond(x=100, y=100, size=100, style=style_a)
 circle_a = shapes.Circle(x=100, y=100, size=100, style=style_b)
 
 print(rect_a, circle_a)
-
-
-
