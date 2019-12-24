@@ -29,10 +29,9 @@ creds = ServiceAccountCredentials.from_json_keyfile_name(client_secret, scope)
 # list_of_hashes = sheet.get_all_records()
 # print(list_of_hashes)
 
-style_a = str(shapes.Style(stroke_width=0))
-style_b = str(shapes.Style(fill='red', stroke_width=0))
+box_a = shapes.Box(x=100, y=100, height=200, width=200)
+diamond_a = shapes.Diamond(x=150, y=150, size=100)
+circle_a = shapes.Circle(x=150, y=150, size=100)
+box_b = shapes.Box(x=400, y=100, height=10, width=200, border_width=3, padding_width=0, border_color='rgba(0,0,0)', padding_color='blue', inner_box_color='green')
 
-rect_a = shapes.Diamond(x=100, y=100, size=100, style=style_a)
-circle_a = shapes.Circle(x=100, y=100, size=100, style=style_b)
-
-print(rect_a, circle_a)
+print(box_a, diamond_a, circle_a, box_b)
