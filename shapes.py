@@ -4,95 +4,85 @@ from dataclasses import dataclass, field
 @dataclass
 class Box:
     """
-    A custom box model
+    This is a custom box model
     The border line does not bleed over the outer edge, as defined by width and height
-    The border line does not bleed over the inner edge, as defined by inner_width and inner_height
-    The inner dimensions are reduced to accommodate padding and border line width
+    You can apply padding, and color to the padding
+    The object is returned as a tuple
+    The tuple exposes the SVG element and its position in the render order
     """
 
-    x: float = 100
-    y: float = 100
-
-    width: float = 200
-    height: float = 100
-
-    padding_width: float = 10
-    padding_width_doubled: float = field(init=False)
-    padding_color: str = 'blue'
-
-    border_width: float = 10
-    border_width_halved: float = field(init=False)
-    border_color: str = 'black'
-    border_rounding: float = 5
-    border_rx: float = field(init=False)
-    border_ry: float = field(init=False)
-    border_box_x: float = field(init=False)
-    border_box_y: float = field(init=False)
-    border_box_width: float = field(init=False)
-    border_box_height: float = field(init=False)
-
-    inner_box_x: float = field(init=False)
-    inner_box_y: float = field(init=False)
-    inner_box_width: float = field(init=False)
-    inner_box_height: float = field(init=False)
-    inner_box_color: str = 'red'
+    x: float = field(default=100, repr=False)
+    y: float = field(default=100, repr=False)
+    width: float = field(default=200, repr=False)
+    height: float = field(default=100, repr=False)
+    outer_color: str = field(default='red', repr=False)
+    inner_color: str = field(default='blue', repr=False)
+    border_color: str = field(default='green', repr=False)
+    padding: float = field(default=10, repr=False)
+    border: float = field(default=10, repr=False)
+    rounding: float = field(default=5, repr=False)
+    position: int = 100
+    element: str = field(init=False)
 
     def __post_init__(self):
-        self.padding_width_doubled = self.padding_width * 2
-        self.border_width_halved = self.border_width / 2
-        self.border_rx = self.border_rounding
-        self.border_ry = self.border_rounding
-        self.border_box_x = self.padding_width + self.border_width_halved
-        self.border_box_y = self.padding_width + self.border_width_halved
-        self.border_box_width = self.width - self.padding_width_doubled - self.border_width
-        self.border_box_height = self.height - self.padding_width_doubled - self.border_width
-        self.inner_box_x = self.border_box_x + self.border_width_halved
-        self.inner_box_y = self.border_box_y + self.border_width_halved
-        self.inner_box_width = self.border_box_width - self.border_width
-        self.inner_box_height = self.border_box_height - self.border_width
+        inner_origin = self.padding + (self.border / 2)
+        inner_size_reduction = (self.padding * 2) + self.border
+        self.element = f'<g ' \
+                       f'transform="translate({self.x}, {self.y})">' \
+                       f'<rect ' \
+                       f'x="0" y="0" ' \
+                       f'width="{self.width}" height="{self.height}" ' \
+                       f'fill="{self.outer_color}" ' \
+                       f'></rect>' \
+                       f'<rect ' \
+                       f'x="{inner_origin}" y="{inner_origin}" ' \
+                       f'rx="{self.rounding}" ry="{self.rounding}" ' \
+                       f'width="{self.width - inner_size_reduction}" height="{self.height - inner_size_reduction}" ' \
+                       f'stroke="{self.border_color}" stroke-width="{self.border}" ' \
+                       f'fill="{self.inner_color}" ' \
+                       f'></rect>' \
+                       f'</g>'
 
-    def __str__(self):
-        return f'<g transform="translate({self.x}, {self.y})">' \
-               f'<rect x="0" y="0" width="{self.width}" height="{self.height}" fill="{self.padding_color}"></rect>' \
-               f'<rect x="{self.border_box_x}" y="{self.border_box_y}" rx="{self.border_rx}" ry="{self.border_ry}" width="{self.border_box_width}" height="{self.border_box_height}" stroke="{self.border_color}" stroke-width="{self.border_width}" fill="{self.inner_box_color}"></rect>' \
-               f'<rect x="{self.inner_box_x}" y="{self.inner_box_y}" width="{self.inner_box_width}" height="{self.inner_box_height}" fill="yellow"></rect>' \
-               f'</g>'
+    def __iter__(self):
+        return self.position, self.element
 
 
 @dataclass
-class Diamond:
+class Diamond(Box):
     """
-    This class simply rotates a rectangle that has equal width and length
+    TBC
     """
 
-    x: float = 100
-    y: float = 100
-    rx: float = 0
-    ry: float = 0
     size: float = 50
-    fill: str = 'blue'  # option to pass fill as SVG attribute
-
-    stroke: str = 'rgb(0, 0, 0)'
-    stroke_width: float = 1
-
-    half_size: float = 0
+    orientation: int = field(init=False, default=45)
     tx: float = 0
     ty: float = 0
 
     def __post_init__(self):
-        self.half_size = self.size / 2
-        self.tx = self.x + self.half_size
-        self.ty = self.y + self.half_size
+        self.box_padding_doubled = self.padding * 2
+        self.box_border_halved = self.border / 2
+        self.box_inner_rx = self.rounding
+        self.box_inner_ry = self.rounding
+        self.box_inner_x = self.padding + self.box_border_halved
+        self.box_inner_y = self.padding + self.box_border_halved
+        self.box_inner_width = self.width - self.box_padding_doubled - self.border
+        self.box_inner_height = self.height - self.box_padding_doubled - self.border
+        self.box_inner_tx = self.width / 2
+        self.box_inner_ty = self.height / 2
+        self.box_inner_angle = 45
 
     def __str__(self):
-        return f'<rect x="{self.x}" y="{self.y}" ' \
-               f'rx="{self.rx}" ry="{self.ry}" ' \
-               f'width="{self.size}" height="{self.size}" ' \
-               f'fill="{self.fill}" ' \
-               f'stroke="{self.stroke}" ' \
-               f'stroke-width="{self.stroke_width}" ' \
-               f'transform="rotate(45, {self.tx}, {self.ty})" ' \
-               f'></rect>'
+        return f'<g transform="translate({self.x}, {self.y})">' \
+               f'<rect x="0" y="0" width="{self.width}" height="{self.height}" fill="{self.outer_color}" ' \
+               f'>' \
+               f'</rect>' \
+               f'<rect x="{self.box_inner_x}" y="{self.box_inner_y}" rx="{self.box_inner_rx}" ry="{self.box_inner_ry}" ' \
+               f'width="{self.box_inner_width}" height="{self.box_inner_height}" stroke="{self.border_color}" ' \
+               f'stroke-width="{self.border}" fill="{self.inner_color}" ' \
+               f'transform="rotate({self.orientation}, {self.tx}, {self.ty})" ' \
+               f'>' \
+               f'</rect>' \
+               f'</g>'
 
 
 @dataclass
@@ -134,4 +124,9 @@ class Circle:
 
     def __str__(self):
         return f'<circle cx="{self.cx}" cy="{self.cy}" r="{self.r}" style="{self.style}"/>'
+
+
+@dataclass
+class Text:
+    pass
 

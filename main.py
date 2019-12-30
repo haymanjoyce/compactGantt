@@ -3,18 +3,18 @@
 # ENV02
 # pip (default)
 # setuptools (default)
-# oauth2client
-# gspread
-# mako
-# selenium
+# oauth2client - access Google Cloud Platform
+# gspread - access Google Sheets
+# mako - templating engine
+# PySide2 - GUI under LGPL license
 
 import shapes
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import os
 from mako.template import Template
-from selenium import webdriver
-
+from operator import attrgetter
+from PySide2 import QtSvg
 
 # EXTRACT DATA FROM GOOGLE SHEETS
 # https://www.twilio.com/blog/2017/02/an-easy-way-to-read-and-write-to-a-google-spreadsheet-in-python.html
@@ -34,21 +34,24 @@ creds = ServiceAccountCredentials.from_json_keyfile_name(client_secret, scope)
 # print(list_of_hashes)
 
 # SHAPE OBJECTS
-box_a = shapes.Box(x=100, y=100, height=200, width=200)
-diamond_a = shapes.Diamond(x=150, y=300, size=100)
-circle_a = shapes.Circle(x=150, y=150, size=100)
-box_b = shapes.Box(x=400, y=100, height=10, width=200, border_width=3, padding_width=0, border_color='rgba(0,0,0)', padding_color='blue', inner_box_color='green')
+box_a = shapes.Box(position=1, y=100)
+box_b = shapes.Box(position=2, y=200)
+box_c = shapes.Box(position=3, y=300)
 
-# CONVERT SHAPE OBJECTS TO SINGLE SVG STRING
-shape_objects = [box_a]
-full_string = ''
-for string in shape_objects:
-    full_string += (str(string))
+unsorted_items = [box_c, box_a, box_b]
+
+# SORT TUPLES BY POSITION
+sorted_items = sorted(unsorted_items, key=attrgetter('position'))
+
+# BUILD SINGLE SVG STRING
+svg_elements = ''
+for item in sorted_items:
+    svg_elements += item.element
 
 # BUILD IMAGE FILE CONTENT AND WRITE TO IMAGE FILE
 template_file = os.path.join(cwd, "template.html")
 template_handler = Template(filename=template_file)
-template_output = template_handler.render(myvar=full_string)
+template_output = template_handler.render(myvar=svg_elements)
 image_file = os.path.join(cwd, "image.html")
 image_write = open(image_file, "w")
 image_write.write(template_output)
@@ -56,4 +59,9 @@ image_write.close()
 
 # REFRESH THE WEB PAGE
 # use LivePage extension for Chrome
+
+# RENDER TO GUI DISPLAY
+
+
+
 
