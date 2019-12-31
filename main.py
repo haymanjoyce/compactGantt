@@ -14,7 +14,11 @@ from oauth2client.service_account import ServiceAccountCredentials
 import os
 from mako.template import Template
 from operator import attrgetter
-from PySide2 import QtSvg
+import sys
+from PySide2.QtWidgets import QApplication
+from PySide2.QtSvg import QSvgWidget
+from PySide2.QtSvg import QSvgRenderer
+from PySide2.QtCore import QByteArray
 
 # EXTRACT DATA FROM GOOGLE SHEETS
 # https://www.twilio.com/blog/2017/02/an-easy-way-to-read-and-write-to-a-google-spreadsheet-in-python.html
@@ -34,7 +38,7 @@ creds = ServiceAccountCredentials.from_json_keyfile_name(client_secret, scope)
 # print(list_of_hashes)
 
 # SHAPE OBJECTS
-box_a = shapes.Box(position=1, y=100)
+box_a = shapes.Box(position=1, y=100, inner_color='pink')
 box_b = shapes.Box(position=2, y=200)
 box_c = shapes.Box(position=3, y=300)
 
@@ -43,7 +47,7 @@ unsorted_items = [box_c, box_a, box_b]
 # SORT TUPLES BY POSITION
 sorted_items = sorted(unsorted_items, key=attrgetter('position'))
 
-# BUILD SINGLE SVG STRING
+# BUILD SINGLE SVG STRING OF ELEMENTS
 svg_elements = ''
 for item in sorted_items:
     svg_elements += item.element
@@ -60,8 +64,20 @@ image_write.close()
 # REFRESH THE WEB PAGE
 # use LivePage extension for Chrome
 
-# RENDER TO GUI DISPLAY
+# RENDER TO GUI DISPLA
+svg_string = f'<?xml version="1.0" encoding="UTF-8" standalone="no"?>' \
+            f'<svg width="800" height="800" viewBox="0 0 800 800" id="smile" version="1.1">' \
+            f'{svg_elements}' \
+            f'</svg>'
 
+svg_bytes = QByteArray(bytearray(svg_string, encoding='utf-8'))
+
+app = QApplication(sys.argv)
+svgWidget = QSvgWidget()
+svgWidget.renderer().load(svg_bytes)
+svgWidget.setGeometry(500,100,300,300)
+svgWidget.show()
+sys.exit(app.exec_())
 
 
 
