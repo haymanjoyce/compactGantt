@@ -19,6 +19,8 @@ from PySide2.QtWidgets import QApplication
 from PySide2.QtSvg import QSvgWidget
 from PySide2.QtSvg import QSvgRenderer
 from PySide2.QtCore import QByteArray
+import scales
+import pprint
 
 # EXTRACT DATA FROM GOOGLE SHEETS
 # https://www.twilio.com/blog/2017/02/an-easy-way-to-read-and-write-to-a-google-spreadsheet-in-python.html
@@ -42,7 +44,14 @@ box_a = shapes.Box(position=1, y=100, inner_color='pink')
 box_b = shapes.Box(position=2, y=200)
 box_c = shapes.Box(position=3, y=300)
 
-unsorted_items = [box_c, box_a, box_b]
+# TODO  Work out why object not retaining value
+unsorted_items = [box_a]
+print(box_a.y)
+box_a.y = 300
+print(box_a.y)
+print(box_a)
+unsorted_items.append(box_a)
+pprint.pprint(unsorted_items)
 
 # SORT TUPLES BY POSITION
 sorted_items = sorted(unsorted_items, key=attrgetter('position'))
@@ -64,7 +73,7 @@ image_write.close()
 # REFRESH THE WEB PAGE
 # use LivePage extension for Chrome
 
-# RENDER TO GUI DISPLA
+# RENDER TO GUI DISPLAY
 svg_string = f'<?xml version="1.0" encoding="UTF-8" standalone="no"?>' \
             f'<svg width="800" height="800" viewBox="0 0 800 800" id="smile" version="1.1">' \
             f'{svg_elements}' \
@@ -75,7 +84,7 @@ svg_bytes = QByteArray(bytearray(svg_string, encoding='utf-8'))
 app = QApplication(sys.argv)
 svgWidget = QSvgWidget()
 svgWidget.renderer().load(svg_bytes)
-svgWidget.setGeometry(500,100,300,300)
+svgWidget.setGeometry(10, 10, 300, 600)
 svgWidget.show()
 sys.exit(app.exec_())
 
