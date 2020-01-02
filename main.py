@@ -13,7 +13,7 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import os
 from mako.template import Template
-from operator import attrgetter
+from operator import itemgetter
 import sys
 from PySide2.QtWidgets import QApplication
 from PySide2.QtSvg import QSvgWidget
@@ -39,27 +39,18 @@ creds = ServiceAccountCredentials.from_json_keyfile_name(client_secret, scope)
 # list_of_hashes = sheet.get_all_records()
 # print(list_of_hashes)
 
-# SHAPE OBJECTS
-box_a = shapes.Box(position=1, y=100, inner_color='pink')
-box_b = shapes.Box(position=2, y=200)
-box_c = shapes.Box(position=3, y=300)
-
-# TODO  Work out why object not retaining value
-unsorted_items = [box_a]
-print(box_a.y)
-box_a.y = 300
-print(box_a.y)
-print(box_a)
-unsorted_items.append(box_a)
-pprint.pprint(unsorted_items)
+# GET ALL TUPLES
+unsorted_items = list()
+unsorted_items.append(scales.scale_a())
+unsorted_items.append(scales.Scale().make_tuple())
 
 # SORT TUPLES BY POSITION
-sorted_items = sorted(unsorted_items, key=attrgetter('position'))
+sorted_items = sorted(unsorted_items, key=itemgetter(0))
 
 # BUILD SINGLE SVG STRING OF ELEMENTS
 svg_elements = ''
 for item in sorted_items:
-    svg_elements += item.element
+    svg_elements += item[1]
 
 # BUILD IMAGE FILE CONTENT AND WRITE TO IMAGE FILE
 template_file = os.path.join(cwd, "template.html")
@@ -84,7 +75,7 @@ svg_bytes = QByteArray(bytearray(svg_string, encoding='utf-8'))
 app = QApplication(sys.argv)
 svgWidget = QSvgWidget()
 svgWidget.renderer().load(svg_bytes)
-svgWidget.setGeometry(10, 10, 300, 600)
+svgWidget.setGeometry(10, 100, 300, 600)
 svgWidget.show()
 sys.exit(app.exec_())
 

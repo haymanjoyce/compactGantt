@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, astuple
 
 
 @dataclass
@@ -7,44 +7,50 @@ class Box:
     This is a custom box model
     The border line does not bleed over the outer edge, as defined by width and height
     You can apply padding, and color to the padding
-    The object is returned as a tuple
-    The tuple exposes the SVG element and its position in the render order
+    The 'layer' variable defines the order in which the SVG element is rendered
     """
 
-    x: float = field(default=100, repr=False)
-    y: float = field(default=100, repr=False)
-    width: float = field(default=200, repr=False)
-    height: float = field(default=100, repr=False)
-    outer_color: str = field(default='red', repr=False)
-    inner_color: str = field(default='blue', repr=False)
-    border_color: str = field(default='green', repr=False)
-    padding: float = field(default=10, repr=False)
-    border: float = field(default=10, repr=False)
-    rounding: float = field(default=5, repr=False)
-    position: int = 100
-    element: str = field(init=False)
-
-    def __post_init__(self):
-        inner_origin = self.padding + (self.border / 2)
-        inner_size_reduction = (self.padding * 2) + self.border
-        self.element = f'<g ' \
-                       f'transform="translate({self.x}, {self.y})">' \
-                       f'<rect ' \
-                       f'x="0" y="0" ' \
-                       f'width="{self.width}" height="{self.height}" ' \
-                       f'fill="{self.outer_color}" ' \
-                       f'></rect>' \
-                       f'<rect ' \
-                       f'x="{inner_origin}" y="{inner_origin}" ' \
-                       f'rx="{self.rounding}" ry="{self.rounding}" ' \
-                       f'width="{self.width - inner_size_reduction}" height="{self.height - inner_size_reduction}" ' \
-                       f'stroke="{self.border_color}" stroke-width="{self.border}" ' \
-                       f'fill="{self.inner_color}" ' \
-                       f'></rect>' \
-                       f'</g>'
+    x: float = 100
+    y: float = 100
+    width: float = 200
+    height: float = 100
+    outer_color: str = 'red'
+    inner_color: str = 'blue'
+    border_color: str = 'green'
+    padding: float = 10
+    border: float = 10
+    rounding: float = 5
+    layer: int = 100
+    inner_origin: float = field(init=False, repr=False)
+    inner_size_reduction: float = field(init=False, repr=False)
 
     def __iter__(self):
-        return self.position, self.element
+        return self
+
+    def __post_init__(self):
+        self.inner_origin = self.padding + (self.border / 2)
+        self.inner_size_reduction = (self.padding * 2) + self.border
+
+    def make_tuple(self):
+        return self.layer, self.make_element()
+
+    def make_element(self):
+        return f'<g ' \
+               f'transform="translate({self.x}, {self.y})"' \
+               f'><rect ' \
+               f'x="0" y="0" ' \
+               f'width="{self.width}" height="{self.height}" ' \
+               f'fill="{self.outer_color}" ' \
+               f'></rect><rect ' \
+               f'x="{self.inner_origin}" y="{self.inner_origin}" ' \
+               f'rx="{self.rounding}" ry="{self.rounding}" ' \
+               f'width="{self.width - self.inner_size_reduction}" height="{self.height - self.inner_size_reduction}" ' \
+               f'stroke="{self.border_color}" stroke-width="{self.border}" ' \
+               f'fill="{self.inner_color}" ' \
+               f'></rect>' \
+               f'</g>'
+
+# REWRITE CLASSES BELOW
 
 
 @dataclass
@@ -54,7 +60,7 @@ class Diamond(Box):
     """
 
     size: float = 50
-    orientation: int = field(init=False, default=45)
+    orientation: int = field(default=45)
     tx: float = 0
     ty: float = 0
 
