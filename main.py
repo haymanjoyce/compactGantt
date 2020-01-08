@@ -30,14 +30,14 @@ module_path = str(__file__)  # os.getcwd() was getting to wrong place
 cwd = os.path.dirname(module_path)
 client_secret = os.path.join(cwd, "client_secret.json")
 creds = ServiceAccountCredentials.from_json_keyfile_name(client_secret, scope)
-# client = gspread.authorize(creds)
+client = gspread.authorize(creds)
 # Find a workbook by name and open the first sheet
 # Make sure you use the right name here.
-# sheet = client.open("data").sheet1
-# print(client.list_spreadsheet_files())
+sheet = client.open("data").sheet1
+print(client.list_spreadsheet_files())
 # Extract and print all of the values
-# list_of_hashes = sheet.get_all_records()
-# print(list_of_hashes)
+list_of_hashes = sheet.get_all_records()
+print(list_of_hashes)
 
 # GET ALL TUPLES
 unsorted_items = list()
