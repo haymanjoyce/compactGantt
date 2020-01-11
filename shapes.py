@@ -1,138 +1,198 @@
 from dataclasses import dataclass, field, astuple
+from math import sqrt
 
 
 @dataclass
-class Box:
+class Meta:
     """
-    This is a custom box model
-    The border line does not bleed over the outer edge, as defined by width and height
-    You can apply padding, and color to the padding
-    The 'layer' variable defines the order in which the SVG element is rendered
+    Lets you add meta-data to the shape
     """
+
+    layer: int = 100
+
+    def get_meta(self):
+        return self.layer
+
+
+@dataclass
+class Rect(Meta):
 
     x: float = 100
     y: float = 100
     width: float = 200
     height: float = 100
-    outer_color: str = 'red'
-    inner_color: str = 'blue'
-    border_color: str = 'green'
-    padding: float = 10
-    border: float = 10
-    rounding: float = 5
-    layer: int = 100
-    inner_origin: float = field(init=False, repr=False)
-    inner_size_reduction: float = field(init=False, repr=False)
+    fill: str = 'red'
+    border_color: str = 'black'
+    border_width: int = 1
+    rounding: int = 2
 
-    def __iter__(self):
-        return self
+    def get_item(self):
+        return self.get_meta(), self.get_element()
 
-    def __post_init__(self):
-        self.inner_origin = self.padding + (self.border / 2)
-        self.inner_size_reduction = (self.padding * 2) + self.border
-
-    def make_tuple(self):
-        return self.layer, self.make_element()
-
-    def make_element(self):
-        return f'<g ' \
-               f'transform="translate({self.x}, {self.y})"' \
-               f'><rect ' \
-               f'x="0" y="0" ' \
-               f'width="{self.width}" height="{self.height}" ' \
-               f'fill="{self.outer_color}" ' \
-               f'></rect><rect ' \
-               f'x="{self.inner_origin}" y="{self.inner_origin}" ' \
+    def get_element(self):
+        return f'<rect ' \
+               f'x="{self.x}" y="{self.y}" ' \
                f'rx="{self.rounding}" ry="{self.rounding}" ' \
-               f'width="{self.width - self.inner_size_reduction}" height="{self.height - self.inner_size_reduction}" ' \
-               f'stroke="{self.border_color}" stroke-width="{self.border}" ' \
-               f'fill="{self.inner_color}" ' \
-               f'></rect>' \
-               f'</g>'
-
-# REWRITE CLASSES BELOW
+               f'width="{self.width}" height="{self.height}" ' \
+               f'stroke="{self.border_color}" stroke-width="{self.border_width}" ' \
+               f'fill="{self.fill}" ' \
+               f'></rect>'
 
 
 @dataclass
-class Diamond(Box):
-    """
-    TBC
-    """
+class Line(Meta):
+
+    x1: float = 50
+    x2: float = 200
+    y1: float = 100
+    y2: float = 100
+    stroke: str = 'black'
+    stroke_width: int = 5
+
+    def get_item(self):
+        return self.get_meta(), self.get_element()
+
+    def get_element(self):
+        return f'<line ' \
+               f'x1="{self.x1}" y1="{self.y1}" ' \
+               f'x2="{self.x2}" y2="{self.y2}" ' \
+               f'stroke="{self.stroke}" ' \
+               f'stroke-width="{self.stroke_width}" ' \
+               f'></line>'
+
+
+@dataclass
+class Circle(Meta):
 
     size: float = 50
-    orientation: int = field(default=45)
-    tx: float = 0
-    ty: float = 0
-
-    def __post_init__(self):
-        self.box_padding_doubled = self.padding * 2
-        self.box_border_halved = self.border / 2
-        self.box_inner_rx = self.rounding
-        self.box_inner_ry = self.rounding
-        self.box_inner_x = self.padding + self.box_border_halved
-        self.box_inner_y = self.padding + self.box_border_halved
-        self.box_inner_width = self.width - self.box_padding_doubled - self.border
-        self.box_inner_height = self.height - self.box_padding_doubled - self.border
-        self.box_inner_tx = self.width / 2
-        self.box_inner_ty = self.height / 2
-        self.box_inner_angle = 45
-
-    def __str__(self):
-        return f'<g transform="translate({self.x}, {self.y})">' \
-               f'<rect x="0" y="0" width="{self.width}" height="{self.height}" fill="{self.outer_color}" ' \
-               f'>' \
-               f'</rect>' \
-               f'<rect x="{self.box_inner_x}" y="{self.box_inner_y}" rx="{self.box_inner_rx}" ry="{self.box_inner_ry}" ' \
-               f'width="{self.box_inner_width}" height="{self.box_inner_height}" stroke="{self.border_color}" ' \
-               f'stroke-width="{self.border}" fill="{self.inner_color}" ' \
-               f'transform="rotate({self.orientation}, {self.tx}, {self.ty})" ' \
-               f'>' \
-               f'</rect>' \
-               f'</g>'
-
-
-@dataclass
-class Line:
-    """
-    This is a standard SVG line
-    """
-
-    x1: float = 0
-    x2: float = 0
-    y1: float = 0
-    y2: float = 0
-    style: str = None  # string created by Style class
-
-    def __str__(self):
-        return f'<line x1="{self.x1}" y1="{self.y1}" x2="{self.x2}" y2="{self.y2}" style="{self.style}" />'
-
-
-@dataclass
-class Circle:
-    """
-    This SVG circle has non-standard attributes
-    If the circle was placed in a square, x and y would define its top-left corner
-    Size, which is twice r, is used to keep language common across shape classes
-    """
-
-    size: float = 0
-    r: float = field(init=False)
-    x: float = 0
-    y: float = 0
-    cx: float = 0
-    cy: float = 0
-    style: str = None  # string created by Style class
+    x: float = 100
+    y: float = 100
+    stroke: str = 'black'
+    stroke_width: int = 1
+    fill: str = 'red'
+    r: float = field(init=False, repr=False)
+    cx: float = field(init=False, repr=False)
+    cy: float = field(init=False, repr=False)
 
     def __post_init__(self):
         self.r = self.size / 2
         self.cx = self.x + self.r
         self.cy = self.y + self.r
 
-    def __str__(self):
-        return f'<circle cx="{self.cx}" cy="{self.cy}" r="{self.r}" style="{self.style}"/>'
+    def get_item(self):
+        return self.get_meta(), self.get_element()
+
+    def get_element(self):
+        return f'<circle ' \
+               f'cx="{self.cx}" cy="{self.cy}" ' \
+               f'r="{self.r}" ' \
+               f'stroke="{self.stroke}" ' \
+               f'stroke-width="{self.stroke_width}" ' \
+               f'fill="{self.fill}" ' \
+               f'></circle>'
 
 
 @dataclass
-class Text:
-    pass
+class Box(Meta):
+    """
+    Rectangle where the border line does not bleed over the outer edge
+    Define the background color if rectangle rounded
+    """
+
+    x: float = 100
+    y: float = 100
+    width: float = 200
+    height: float = 100
+    fill: str = 'red'
+    background_color: str = 'white'
+    border_color: str = 'black'
+    border_width: int = 1
+    rounding: int = 2
+
+    def get_item(self):
+        return self.get_meta(), self.get_element()
+
+    def get_element(self):
+        return f'<g ' \
+               f'transform="translate({self.x}, {self.y})"' \
+               f'><rect ' \
+               f'x="0" y="0" ' \
+               f'width="{self.width}" height="{self.height}" ' \
+               f'fill="{self.background_color}" ' \
+               f'></rect><rect ' \
+               f'x="{self.border_width / 2}" y="{self.border_width / 2}" ' \
+               f'rx="{self.rounding}" ry="{self.rounding}" ' \
+               f'width="{self.width - self.border_width}" height="{self.height - self.border_width}" ' \
+               f'stroke="{self.border_color}" stroke-width="{self.border_width}" ' \
+               f'fill="{self.fill}" ' \
+               f'></rect>' \
+               f'</g>'
+
+
+@dataclass
+class Diamond(Rect):
+    """
+    Rotates and shrink-fits a square
+    """
+
+    size: float = 100  # overrides height and width
+    height: float = field(init=False, repr=False)
+    width: float = field(init=False, repr=False)
+    orientation: int = field(default=45)
+    origin: float = field(init=False, repr=False)
+    resized: float = field(init=False, repr=False)
+    repositioned: float = field(init=False, repr=False)
+
+    def __post_init__(self):
+        self.origin = self.size / 2
+        self.resized = self.size / sqrt(2)
+        self.repositioned = (self.size - self.resized) / 2
+
+    def get_element(self):
+        return f'<rect ' \
+               f'x="{self.x + self.repositioned}" y="{self.y + self.repositioned}" ' \
+               f'rx="{self.rounding}" ry="{self.rounding}" ' \
+               f'transform="rotate({self.orientation} {self.x + self.origin} {self.y + self.origin})" ' \
+               f'width="{self.resized}" height="{self.resized}" ' \
+               f'stroke="{self.border_color}" stroke-width="{self.border_width}" ' \
+               f'fill="{self.fill}" ' \
+               f'></rect>'
+
+
+@dataclass
+class Text(Meta):
+
+    x: float = 100
+    y: float = 100
+    dx: float = field(init=False, repr=False, default=float())  # does not render on GUI
+    dy: float = field(init=False, repr=False, default=float())  # does not render on GUI
+    orientation: int = 0
+    translate: str = str()  # turn into int and x y
+    scale: str = str()  # turn into int and x y
+    text_length: float = field(init=False, repr=False, default=float())  # does not render on GUI
+    fill: str = 'black'
+    text: str = str()
+    font_size: float = 50
+    font_family: str = str()
+    text_anchor: str = str()  # start, middle, end
+    text_decoration: str = field(init=False, repr=False, default=str())  # does not render on GUI
+    # .35 for middle align
+
+    def get_item(self):
+        return self.get_meta(), self.get_element()
+
+    def get_element(self):
+        return f'<text ' \
+               f'x="{self.x}" y="{self.y}" ' \
+               f'dx="{self.dx}" dy="{self.dy}" ' \
+               f'fill="{self.fill}" ' \
+               f'transform="scale({self.scale}) translate(50, 0) rotate(45, 0, 0)" ' \
+               f'textLength="{self.text_length}" ' \
+               f'font-size="{self.font_size}" ' \
+               f'font-family="{self.font_family}" ' \
+               f'text-anchor="{self.text_anchor}" ' \
+               f'text-decoration="{self.text_decoration}" '\
+               f'>' \
+               f'{self.text}' \
+               f'</text>'
 

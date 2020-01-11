@@ -12,14 +12,14 @@ from dataclasses import dataclass, field
 
 def scale_a(layer=1):
 
-    a1 = Box(x=100, y=0, width=50, height=50, border=1, rounding=0, padding=2, inner_color='pink')
+    a1 = Box(x=100, y=0, width=50, height=50, border_width=1, rounding=0, fill='pink')
 
     scale = str()
 
     for i in range(1, 4):
 
         a1.y = (i * 100)
-        scale += a1.make_element()
+        scale += a1.get_element()
 
     return layer, scale
 
@@ -51,6 +51,6 @@ class Scale:
         return f'<g ' \
                f'transform="translate({self.x}, {self.y})"' \
                f'>' \
-               f'{Box(y=200).make_element()}{Box(y=500).make_element()}' \
+               f'{Box(y=200).get_element()}{Box(y=500).get_element()}' \
                f'</g>' \
 

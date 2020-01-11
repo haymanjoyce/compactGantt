@@ -33,16 +33,25 @@ creds = ServiceAccountCredentials.from_json_keyfile_name(client_secret, scope)
 client = gspread.authorize(creds)
 # Find a workbook by name and open the first sheet
 # Make sure you use the right name here.
-sheet = client.open("data").sheet1
-print(client.list_spreadsheet_files())
+# sheet = client.open("data").sheet1
+# print(client.list_spreadsheet_files())
 # Extract and print all of the values
-list_of_hashes = sheet.get_all_records()
-print(list_of_hashes)
+# list_of_hashes = sheet.get_all_records()
+# print(list_of_hashes)
 
 # GET ALL TUPLES
 unsorted_items = list()
-unsorted_items.append(scales.scale_a())
-unsorted_items.append(scales.Scale().make_tuple())
+unsorted_items.extend((scales.scale_a(),
+                       scales.Scale().make_tuple(),
+                       shapes.Box(x=300, y=100, layer=400, height=50, width=200, fill='pink', rounding=0).get_item(),
+                       shapes.Line().get_item(),
+                       shapes.Circle().get_item(),
+                       shapes.Rect(x=100, y=100, layer=299, fill='blue', width=100, height=100).get_item(),
+                       shapes.Diamond(fill='green', layer=300, size=100, y=100).get_item(),
+                       shapes.Text(x=300, y=100, text='50 by 200 text', layer=500, scale='1, 1').get_item()
+                       ))
+
+pprint.pprint(unsorted_items)
 
 # SORT TUPLES BY POSITION
 sorted_items = sorted(unsorted_items, key=itemgetter(0))
