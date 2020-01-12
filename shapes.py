@@ -138,7 +138,7 @@ class Diamond(Rect):
     size: float = 100  # overrides height and width
     height: float = field(init=False, repr=False)
     width: float = field(init=False, repr=False)
-    orientation: int = field(default=45)
+    rotate: int = field(default=45)
     origin: float = field(init=False, repr=False)
     resized: float = field(init=False, repr=False)
     repositioned: float = field(init=False, repr=False)
@@ -152,7 +152,7 @@ class Diamond(Rect):
         return f'<rect ' \
                f'x="{self.x + self.repositioned}" y="{self.y + self.repositioned}" ' \
                f'rx="{self.rounding}" ry="{self.rounding}" ' \
-               f'transform="rotate({self.orientation} {self.x + self.origin} {self.y + self.origin})" ' \
+               f'transform="rotate({self.rotate} {self.x + self.origin} {self.y + self.origin})" ' \
                f'width="{self.resized}" height="{self.resized}" ' \
                f'stroke="{self.border_color}" stroke-width="{self.border_width}" ' \
                f'fill="{self.fill}" ' \
@@ -166,8 +166,13 @@ class Text(Meta):
     y: float = 100
     dx: float = field(init=False, repr=False, default=float())  # does not render on GUI
     dy: float = field(init=False, repr=False, default=float())  # does not render on GUI
-    orientation: int = 0
-    translate: str = str()  # turn into int and x y
+    rotate: int = 0
+    rotate_x: float = None
+    rotate_y: float = None
+    translate_x: float = 0
+    translate_y: float = 0
+    scale_x: float = 1
+    scale_y: float = 1
     scale: str = str()  # turn into int and x y
     text_length: float = field(init=False, repr=False, default=float())  # does not render on GUI
     fill: str = 'black'
@@ -176,7 +181,14 @@ class Text(Meta):
     font_family: str = str()
     text_anchor: str = str()  # start, middle, end
     text_decoration: str = field(init=False, repr=False, default=str())  # does not render on GUI
+    word_spacing: int = field(init=False, repr=False, default=int())  # does not render on GUI
     # .35 for middle align
+
+    def __post_init__(self):
+        if self.rotate_x is None:
+            self.rotate_x = self.x
+        if self.rotate_y is None:
+            self.rotate_y = self.y
 
     def get_item(self):
         return self.get_meta(), self.get_element()
@@ -186,12 +198,16 @@ class Text(Meta):
                f'x="{self.x}" y="{self.y}" ' \
                f'dx="{self.dx}" dy="{self.dy}" ' \
                f'fill="{self.fill}" ' \
-               f'transform="scale({self.scale}) translate(50, 0) rotate(45, 0, 0)" ' \
+               f'transform="' \
+               f'scale({self.scale_x} {self.scale_y}) ' \
+               f'translate({self.translate_x}, {self.translate_y}) ' \
+               f'rotate({self.rotate}, {self.rotate_x}, {self.rotate_y})" ' \
                f'textLength="{self.text_length}" ' \
                f'font-size="{self.font_size}" ' \
                f'font-family="{self.font_family}" ' \
                f'text-anchor="{self.text_anchor}" ' \
-               f'text-decoration="{self.text_decoration}" '\
+               f'text-decoration="{self.text_decoration}" ' \
+               f'word-spacing="{self.word_spacing}" '\
                f'>' \
                f'{self.text}' \
                f'</text>'

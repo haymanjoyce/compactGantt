@@ -48,7 +48,8 @@ unsorted_items.extend((scales.scale_a(),
                        shapes.Circle().get_item(),
                        shapes.Rect(x=100, y=100, layer=299, fill='blue', width=100, height=100).get_item(),
                        shapes.Diamond(fill='green', layer=300, size=100, y=100).get_item(),
-                       shapes.Text(x=300, y=100, text='50 by 200 text', layer=500, scale='1, 1').get_item()
+                       shapes.Text(x=300, y=100, text='50 by 200 text', layer=410, fill='grey').get_item(),
+                       shapes.Text(x=300, y=100, text='50 by 200 text', layer=500, rotate=45).get_item(),
                        ))
 
 pprint.pprint(unsorted_items)
