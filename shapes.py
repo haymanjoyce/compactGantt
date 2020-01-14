@@ -168,34 +168,35 @@ class Text(Meta):
 
     x: float = 100
     y: float = 100
-    dx: float = field(init=False, repr=False, default=float())  # does not render on GUI
-    dy: float = field(init=False, repr=False, default=float())  # does not render on GUI
     rotate: int = 0
     rotate_x: float = None
     rotate_y: float = None
     translate_x: float = 0
     translate_y: float = 0  # add 0.35 of text size for middle align
-    scale_x: float = 1
-    scale_y: float = 1
-    skew_x: int = int()
-    skew_y: int = int()
-    text_length: float = field(init=False, repr=False, default=float())  # does not render on GUI
-    length_adjust: str = field(init=False, repr=False, default=str())  # does not render on GUI
     text: str = str()
     text_anchor: str = str()  # start | middle | end
-    text_decoration: str = field(init=False, repr=False, default=str())  # does not render on GUI
     fill: str = 'black'
-    font_size: str = str(50)  # 2em | smaller
-    font_size_adjust: float = field(init=False, repr=False, default=float())  # does not render on GUI or browser
+    font_size: str = str(50)  # 2em | smaller | etc.
     font_family: str = str()  # "Arial, Helvetica, sans-serif"
-    font_stretch: str = field(init=False, repr=False, default=str())  # does not render on GUI or browser
-    font_variant: str = field(init=False, repr=False, default=str())  # does not render on GUI
     font_style: str = str()  # normal | italic | oblique
     font_weight: str = str()  # normal | bold | bolder | lighter | <number>
-    word_spacing: int = field(init=False, repr=False, default=int())  # does not render on GUI
-    letter_spacing: int = field(init=False, repr=False, default=int())  # does not render on GUI
-    dominant_baseline: str = field(init=False, repr=False, default=str())  # does not render on GUI
-    alignment_baseline: str = field(init=False, repr=False, default=str())  # only applies to tspan element
+
+    # scale_x: float = 1  # the app does not need this feature
+    # scale_y: float = 1  # the app does not need this feature
+    # skew_x: int = int()  # the app does not need this feature
+    # skew_y: int = int()  # the app does not need this feature
+    # text_decoration: str = field(init=False, repr=False, default=str())  # does not render on GUI
+    # font_size_adjust: float = field(init=False, repr=False, default=float())  # does not render on GUI or browser
+    # font_stretch: str = field(init=False, repr=False, default=str())  # does not render on GUI or browser
+    # font_variant: str = field(init=False, repr=False, default=str())  # does not render on GUI
+    # dx: float = field(init=False, repr=False, default=float())  # does not render on GUI
+    # dy: float = field(init=False, repr=False, default=float())  # does not render on GUI
+    # text_length: float = field(init=False, repr=False, default=float())  # does not render on GUI
+    # length_adjust: str = field(init=False, repr=False, default=str())  # does not render on GUI
+    # word_spacing: int = field(init=False, repr=False, default=int())  # does not render on GUI
+    # letter_spacing: int = field(init=False, repr=False, default=int())  # does not render on GUI
+    # dominant_baseline: str = field(init=False, repr=False, default=str())  # does not render on GUI
+    # alignment_baseline: str = field(init=False, repr=False, default=str())  # only applies to tspan element
 
     def __post_init__(self):
         if self.rotate_x is None:
@@ -209,28 +210,15 @@ class Text(Meta):
     def get_element(self):
         return f'<text ' \
                f'x="{self.x}" y="{self.y}" ' \
-               f'dx="{self.dx}" dy="{self.dy}" ' \
                f'fill="{self.fill}" ' \
                f'transform="' \
-               f'scale({self.scale_x} {self.scale_y}) ' \
                f'translate({self.translate_x}, {self.translate_y}) ' \
-               f'rotate({self.rotate}, {self.rotate_x}, {self.rotate_y}) ' \
-               f'skewX({self.skew_x}) skewY({self.skew_y})" ' \
-               f'textLength="{self.text_length}" ' \
+               f'rotate({self.rotate}, {self.rotate_x}, {self.rotate_y})" ' \
                f'font-size="{self.font_size}" ' \
                f'font-family="{self.font_family}" ' \
                f'text-anchor="{self.text_anchor}" ' \
-               f'text-decoration="{self.text_decoration}" ' \
-               f'word-spacing="{self.word_spacing}" ' \
-               f'alignment-baseline="{self.alignment_baseline}" ' \
-               f'dominant-baseline="{self.dominant_baseline}" ' \
-               f'font-size-adjust="{self.font_size_adjust}" ' \
-               f'font-stretch-absolute="{self.font_stretch}" ' \
-               f'font-variant="{self.font_variant}" ' \
                f'font-style="{self.font_style}" ' \
                f'font-weight="{self.font_weight}" ' \
-               f'letter-spacing="{self.letter_spacing}" ' \
-               f'length-adjust="{self.length_adjust}" ' \
                f'>' \
                f'{self.text}' \
                f'</text>'
