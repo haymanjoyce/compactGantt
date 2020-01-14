@@ -1,6 +1,10 @@
 from shapes import Box
 from dataclasses import dataclass, field
 
+# needs to be self-contained
+# produce a single scale of multiple types, position and orientation
+# scale calculations separate from rendering so can use for grid lines
+
 # the shape is base
 # text is base
 # width is base
@@ -8,20 +12,6 @@ from dataclasses import dataclass, field
 # y can be base
 # ordinal is child
 # unit may be derived
-
-
-def scale_a(layer=1):
-
-    a1 = Box(x=100, y=0, width=50, height=50, border_width=1, rounding=0, fill='pink')
-
-    scale = str()
-
-    for i in range(1, 4):
-
-        a1.y = (i * 100)
-        scale += a1.get_element()
-
-    return layer, scale
 
 
 @dataclass

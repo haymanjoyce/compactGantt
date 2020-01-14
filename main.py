@@ -30,7 +30,7 @@ module_path = str(__file__)  # os.getcwd() was getting to wrong place
 cwd = os.path.dirname(module_path)
 client_secret = os.path.join(cwd, "client_secret.json")
 creds = ServiceAccountCredentials.from_json_keyfile_name(client_secret, scope)
-client = gspread.authorize(creds)
+# client = gspread.authorize(creds)
 # Find a workbook by name and open the first sheet
 # Make sure you use the right name here.
 # sheet = client.open("data").sheet1
@@ -41,8 +41,7 @@ client = gspread.authorize(creds)
 
 # GET ALL TUPLES
 unsorted_items = list()
-unsorted_items.extend((scales.scale_a(),
-                       scales.Scale().make_tuple(),
+unsorted_items.extend((scales.Scale().make_tuple(),
                        shapes.Box(x=300, y=100, layer=400, height=50, width=200, fill='pink', rounding=0).get_item(),
                        shapes.Line().get_item(),
                        shapes.Circle().get_item(),
