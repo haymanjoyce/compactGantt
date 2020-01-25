@@ -21,6 +21,7 @@ from PySide2.QtSvg import QSvgRenderer
 from PySide2.QtCore import QByteArray
 import scales
 import pprint
+import arrange
 
 # EXTRACT DATA FROM GOOGLE SHEETS
 # https://www.twilio.com/blog/2017/02/an-easy-way-to-read-and-write-to-a-google-spreadsheet-in-python.html
@@ -41,17 +42,15 @@ creds = ServiceAccountCredentials.from_json_keyfile_name(client_secret, scope)
 
 # GET ALL TUPLES
 unsorted_items = list()
-unsorted_items.extend((scales.Scale().make_tuple(),
-                       shapes.Box(x=300, y=100, layer=400, height=50, width=200, fill='pink', rounding=0).get_item(),
-                       shapes.Line().get_item(),
-                       shapes.Circle().get_item(),
-                       shapes.Rect(x=100, y=100, layer=299, fill='blue', width=100, height=100).get_item(),
-                       shapes.Diamond(fill='green', layer=300, size=100, y=100).get_item(),
-                       shapes.Text(x=300, y=100, text='50 by 200 text', layer=410, fill='grey').get_item(),
-                       shapes.Text(x=300, y=100, text='50 by 200 text', layer=500).get_item(),
-                       ))
+unsorted_items.extend((
+    arrange.Item(element=scales.TimeBox(y=300, fill='green').get_element(), layer=100).get_item(),
+    arrange.Item(element=shapes.Text(y=300, fill='blue', text='Blue Text').get_element(), layer=101).get_item(),
+))
 
 pprint.pprint(unsorted_items)
+print(scales.TimeBox(y=300).get_element())
+print(shapes.Rect().get_element())
+print(shapes.Line().get_element())
 
 # SORT TUPLES BY POSITION
 sorted_items = sorted(unsorted_items, key=itemgetter(0))

@@ -1,33 +1,54 @@
 from dataclasses import dataclass, field
 from math import sqrt
 
-
-@dataclass
-class Meta:
-    """
-    Lets you add meta-data to the shape
-    """
-
-    layer: int = 100
-
-    def get_meta(self):
-        return self.layer
+# No two shape classes can be parent of common child (e.g. Box and Text)
+# because methods (and sometimes attributes) will override each other
 
 
 @dataclass
-class Rect(Meta):
+class Base:
+    """
+    Attributes common to all classes
+    X and Y is generally treated as top left corner of shape classes
+    (Not applicable to Line class and is bottom left for Text class)
+    (Don't add attributes to this parent class that are unused by some subclasses)
+    (You may want to rename class as Position whilst only has position attributes)
+    """
 
     x: float = 100
     y: float = 100
+
+
+@dataclass
+class Line(Base):
+
+    dx: float = 200
+    dy: float = 100
+    stroke: str = 'black'
+    stroke_width: int = 5
+    stroke_line_cap: str = str()
+    stroke_dasharray: str = str()  # dash gap dash gap
+
+    def get_element(self):
+        return f'<line ' \
+               f'x1="{self.x}" y1="{self.y}" ' \
+               f'x2="{self.dx}" y2="{self.dy}" ' \
+               f'stroke="{self.stroke}" ' \
+               f'stroke-width="{self.stroke_width}" ' \
+               f'stroke-line-cap="{self.stroke_line_cap}" ' \
+               f'stroke-dasharray="{self.stroke_dasharray}" ' \
+               f'></line>'
+
+
+@dataclass
+class Rect(Base):
+
     width: float = 200
     height: float = 100
     fill: str = 'red'
     border_color: str = 'black'
     border_width: int = 1
     rounding: int = 2
-
-    def get_item(self):
-        return self.get_meta(), self.get_element()
 
     def get_element(self):
         return f'<rect ' \
@@ -40,37 +61,9 @@ class Rect(Meta):
 
 
 @dataclass
-class Line(Meta):
-
-    x1: float = 50
-    x2: float = 200
-    y1: float = 100
-    y2: float = 100
-    stroke: str = 'black'
-    stroke_width: int = 5
-    stroke_line_cap: str = str()
-    stroke_dasharray: str = str()  # dash gap dash gap
-
-    def get_item(self):
-        return self.get_meta(), self.get_element()
-
-    def get_element(self):
-        return f'<line ' \
-               f'x1="{self.x1}" y1="{self.y1}" ' \
-               f'x2="{self.x2}" y2="{self.y2}" ' \
-               f'stroke="{self.stroke}" ' \
-               f'stroke-width="{self.stroke_width}" ' \
-               f'stroke-line-cap="{self.stroke_line_cap}" ' \
-               f'stroke-dasharray="{self.stroke_dasharray}" ' \
-               f'></line>'
-
-
-@dataclass
-class Circle(Meta):
+class Circle(Base):
 
     size: float = 50
-    x: float = 100
-    y: float = 100
     stroke: str = 'black'
     stroke_width: int = 1
     fill: str = 'red'
@@ -83,9 +76,6 @@ class Circle(Meta):
         self.cx = self.x + self.r
         self.cy = self.y + self.r
 
-    def get_item(self):
-        return self.get_meta(), self.get_element()
-
     def get_element(self):
         return f'<circle ' \
                f'cx="{self.cx}" cy="{self.cy}" ' \
@@ -97,14 +87,12 @@ class Circle(Meta):
 
 
 @dataclass
-class Box(Meta):
+class Box(Base):
     """
     Rectangle where the border line does not bleed over the outer edge
     Define the background color if rectangle rounded
     """
 
-    x: float = 100
-    y: float = 100
     width: float = 200
     height: float = 100
     fill: str = 'red'
@@ -112,9 +100,6 @@ class Box(Meta):
     border_color: str = 'black'
     border_width: int = 1
     rounding: int = 2
-
-    def get_item(self):
-        return self.get_meta(), self.get_element()
 
     def get_element(self):
         return f'<g ' \
@@ -164,10 +149,10 @@ class Diamond(Rect):
 
 
 @dataclass
-class Text(Meta):
+class Text(Base):
 
-    x: float = 100
-    y: float = 100
+    # TODO set X and Y to be top left hand corner of shape space
+
     rotate: int = 0
     rotate_x: float = None
     rotate_y: float = None
@@ -203,9 +188,6 @@ class Text(Meta):
             self.rotate_x = self.x
         if self.rotate_y is None:
             self.rotate_y = self.y
-
-    def get_item(self):
-        return self.get_meta(), self.get_element()
 
     def get_element(self):
         return f'<text ' \

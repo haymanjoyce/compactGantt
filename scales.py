@@ -1,17 +1,20 @@
-from shapes import Box
+from shapes import *
 from dataclasses import dataclass, field
+from datetime import date
 
-# needs to be self-contained
-# produce a single scale of multiple types, position and orientation
-# scale calculations separate from rendering so can use for grid lines
 
-# the shape is base
-# text is base
-# width is base
-# x is base
-# y can be base
-# ordinal is child
-# unit may be derived
+@dataclass
+class TimeBox(Box):
+
+    start: int = 0
+    finish: int = 100
+    min: int = 0
+    max: int = 100
+    resolution: float = 2
+    duration: float = field(init=False)
+
+    def __post_init__(self):
+        pass
 
 
 @dataclass
