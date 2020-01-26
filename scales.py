@@ -1,20 +1,31 @@
 from shapes import *
 from dataclasses import dataclass, field
-from datetime import date
+from datetime import *
+from time import *
 
 
 @dataclass
 class TimeBox(Box):
 
-    start: int = 0
-    finish: int = 100
-    min: int = 0
-    max: int = 100
+    start: int = 737400
+    finish: int = 737600
+    min: int = 737450  # defines lower limit such as left edge
+    max: int = 7374550  # defines upper limit such as right edge
     resolution: float = 2
-    duration: float = field(init=False)
 
     def __post_init__(self):
-        pass
+        if self.start < self.min:  # if off the left hand edge
+            self.x = 0
+            # self.width is...
+            # convert to pixels
+        elif self.start > self.max:  # if off the right hand edge
+            self.x = 0
+            self.width = 0
+            self.visibility = 'hidden'
+        else:
+            self.x = self.start - self.min  # x in days if min was 0
+            # width is...
+            # convert to pixels
 
 
 @dataclass

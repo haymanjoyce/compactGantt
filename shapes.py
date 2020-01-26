@@ -2,18 +2,21 @@ from dataclasses import dataclass, field
 from math import sqrt
 
 # No two shape classes can be parent of common child (e.g. Box and Text)
-# because methods (and sometimes attributes) will override each other
+# If you do, methods (and sometimes attributes) will override each other
+# You can de-conflict by giving unique names (e.g. changing text "fill" to "color")
 
 
 @dataclass
 class Base:
     """
     Attributes common to all classes
-    X and Y is generally treated as top left corner of shape classes
-    (Not applicable to Line class and is bottom left for Text class)
-    (Don't add attributes to this parent class that are unused by some subclasses)
-    (You may want to rename class as Position whilst only has position attributes)
     """
+
+    # X and Y is generally treated as top left corner of shape classes
+    # This is not applicable to Line class and is bottom left for Text class
+    # Don't add attributes to this parent class that are unused by some subclasses
+    # Otherwise Pycharm will prompt you to add arguments that may not apply
+    # You may want to rename class as Position whilst only has position attributes
 
     x: float = 100
     y: float = 100
@@ -49,6 +52,7 @@ class Rect(Base):
     border_color: str = 'black'
     border_width: int = 1
     rounding: int = 2
+    visibility: str = str()
 
     def get_element(self):
         return f'<rect ' \
@@ -57,6 +61,7 @@ class Rect(Base):
                f'width="{self.width}" height="{self.height}" ' \
                f'stroke="{self.border_color}" stroke-width="{self.border_width}" ' \
                f'fill="{self.fill}" ' \
+               f'visibility="{self.visibility}" ' \
                f'></rect>'
 
 
@@ -100,6 +105,7 @@ class Box(Base):
     border_color: str = 'black'
     border_width: int = 1
     rounding: int = 2
+    visibility: str = str()
 
     def get_element(self):
         return f'<g ' \
@@ -108,12 +114,14 @@ class Box(Base):
                f'x="0" y="0" ' \
                f'width="{self.width}" height="{self.height}" ' \
                f'fill="{self.background_color}" ' \
+               f'visibility="{self.visibility}" ' \
                f'></rect><rect ' \
                f'x="{self.border_width / 2}" y="{self.border_width / 2}" ' \
                f'rx="{self.rounding}" ry="{self.rounding}" ' \
                f'width="{self.width - self.border_width}" height="{self.height - self.border_width}" ' \
                f'stroke="{self.border_color}" stroke-width="{self.border_width}" ' \
                f'fill="{self.fill}" ' \
+               f'visibility="{self.visibility}" ' \
                f'></rect>' \
                f'</g>'
 
@@ -150,8 +158,6 @@ class Diamond(Rect):
 
 @dataclass
 class Text(Base):
-
-    # TODO set X and Y to be top left hand corner of shape space
 
     rotate: int = 0
     rotate_x: float = None

@@ -45,12 +45,10 @@ unsorted_items = list()
 unsorted_items.extend((
     arrange.Item(element=scales.TimeBox(y=300, fill='green').get_element(), layer=100).get_item(),
     arrange.Item(element=shapes.Text(y=300, fill='blue', text='Blue Text').get_element(), layer=101).get_item(),
+    arrange.Item(element=scales.TimeBox(visibility='hidden').get_element(), layer=200).get_item(),
 ))
 
-pprint.pprint(unsorted_items)
-print(scales.TimeBox(y=300).get_element())
-print(shapes.Rect().get_element())
-print(shapes.Line().get_element())
+# pprint.pprint(unsorted_items)
 
 # SORT TUPLES BY POSITION
 sorted_items = sorted(unsorted_items, key=itemgetter(0))
