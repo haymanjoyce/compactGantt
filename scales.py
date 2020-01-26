@@ -14,18 +14,23 @@ class TimeBox(Box):
     resolution: float = 2
 
     def __post_init__(self):
-        if self.start < self.min:  # if off the left hand edge
-            self.x = 0
-            # self.width is...
-            # convert to pixels
-        elif self.start > self.max:  # if off the right hand edge
+        if self.finish < self.min:  # if finish off left edge
             self.x = 0
             self.width = 0
             self.visibility = 'hidden'
+        elif self.start > self.max:  # if start off right edge
+            self.x = 0
+            self.width = 0
+            self.visibility = 'hidden'
+        elif self.start < self.min:  # if start off left edge
+            self.x = 0
+            self.width = self.finish - self.min  # and converted to pixels
+        elif self.finish > self.max:  # if finish off right edge
+            self.x = self.start  # and converted to pixels
+            self.width = self.max - self.start  # and converted to pixels
         else:
-            self.x = self.start - self.min  # x in days if min was 0
-            # width is...
-            # convert to pixels
+            self.x = self.start  # and converted to pixels
+            self.width = self.finish - self.start  # and converted to pixels
 
 
 @dataclass
