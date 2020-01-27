@@ -7,15 +7,24 @@ from time import *
 @dataclass
 class TimeBox(Box):
 
-    min: int = 737000  # defines lower limit such as left edge
-    max: int = 738000  # defines upper limit such as right edge
-    start: int = 737400
-    finish: int = 737600
-    resolution: float = 2
+    # Class assumes it is receiving ordinal dates
+    # We don't change the values of date attributes (good design imho)
+
+    min: int = None  # defines lower limit such as left edge
+    max: int = None  # defines upper limit such as right edge
+    start: int = None
+    finish: int = None
+    resolution: float = 1
 
     def __post_init__(self):
-        # if self.min is None: self.min = 0
-        # if self.max is None: self.max = self.finish
+        if self.start is None:
+            self.start = date.toordinal(date.today())
+        if self.min is None:
+            self.min = self.start
+        if self.finish is None:
+            self.finish = self.start + 400
+        if self.max is None:
+            self.max = self.finish
         if self.finish < self.min:  # if finish off left edge
             self.x = 0
             self.width = 0
@@ -31,7 +40,7 @@ class TimeBox(Box):
             self.x = self.start  # and converted to pixels
             self.width = self.max - self.start  # and converted to pixels
         else:
-            self.x = self.start  # and converted to pixels
+            self.x = self.start - self.min  # and converted to pixels
             self.width = self.finish - self.start  # and converted to pixels
 
 

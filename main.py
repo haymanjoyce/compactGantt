@@ -44,9 +44,12 @@ creds = ServiceAccountCredentials.from_json_keyfile_name(client_secret, scope)
 unsorted_items = list()
 unsorted_items.extend((
     arrange.Item(element=shapes.Text(y=300, fill='blue', text='Blue Text').get_element(), layer=101).get_item(),
+    arrange.Item(element=scales.TimeBox().get_element(), layer=100).get_item(),
 ))
 
-# TODO programme seems to be hanging
+time_box = scales.TimeBox()
+pprint.pprint(time_box.get_element())
+pprint.pprint(vars(time_box))
 
 # SORT TUPLES BY POSITION
 sorted_items = sorted(unsorted_items, key=itemgetter(0))
