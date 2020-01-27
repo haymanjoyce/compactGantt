@@ -7,13 +7,15 @@ from time import *
 @dataclass
 class TimeBox(Box):
 
+    min: int = 737000  # defines lower limit such as left edge
+    max: int = 738000  # defines upper limit such as right edge
     start: int = 737400
     finish: int = 737600
-    min: int = 737450  # defines lower limit such as left edge
-    max: int = 7374550  # defines upper limit such as right edge
     resolution: float = 2
 
     def __post_init__(self):
+        # if self.min is None: self.min = 0
+        # if self.max is None: self.max = self.finish
         if self.finish < self.min:  # if finish off left edge
             self.x = 0
             self.width = 0
