@@ -22,7 +22,7 @@ class TimeBox(Box):
         if self.min is None:
             self.min = self.start
         if self.finish is None:
-            self.finish = self.start + 400
+            self.finish = self.start + 100
         if self.max is None:
             self.max = self.finish
         if self.finish < self.min:  # if finish off left edge
