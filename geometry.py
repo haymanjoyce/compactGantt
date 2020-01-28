@@ -5,6 +5,8 @@ import shapes
 @dataclass
 class Geometry:
 
+    # todo something not right about window geometry
+
     elements: str = str()
 
     # sets dimensions of SVG element
@@ -21,19 +23,19 @@ class Geometry:
     # sets viewBox size in GUI
     # below this size the SVG elements scale down but aspect ratio is maintained
     # above this size the SVG elements stay the same and padding automatically takes up slack (centre aligned)
-    viewBox_width: int = 800
-    viewBox_height: int = 400
+    viewBox_width: int = 400
+    viewBox_height: int = 200
 
     # sets top left corner of GUI window relative to display
-    x: int = 50
-    y: int = 50
+    GUI_x: int = 0
+    GUI_y: int = 0
 
     # defines "padding" (my conception) between GUI window edge and SVG element edge
-    padding: int = field(default=100)
+    padding: int = field(default=200)
 
     # sets dimensions of GUI window
-    GUI_width: int = field(default=800, init=False)
-    GUI_height: int = field(default=600, init=False)
+    GUI_width: int = field(init=False)
+    GUI_height: int = field(init=False)
 
     def __post_init__(self):
         self.GUI_width = self.viewBox_width + self.padding

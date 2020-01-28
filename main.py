@@ -44,8 +44,11 @@ creds = ServiceAccountCredentials.from_json_keyfile_name(client_secret, scope)
 # GET ALL TUPLES
 unsorted_items = list()
 unsorted_items.extend((
-    arrange.Item(element=shapes.Text(y=300, fill='blue', text='Blue Text').get_element(), layer=101).get_item(),
-    arrange.Item(element=scales.TimeBox().get_element(), layer=100).get_item(),
+    arrange.Item(element=shapes.Box(x=0, y=0, width=100, height=100, background_color='grey').get_element(), layer=100).get_item(),
+    arrange.Item(element=shapes.Box(x=200, width=100, height=100, fill='green', background_color='grey').get_element(), layer=100).get_item(),
+    arrange.Item(element=shapes.Box(x=0, y=200, width=100, height=100, fill='blue', background_color='grey').get_element(), layer=100).get_item(),
+    arrange.Item(element=shapes.Box(x=200, y=200, width=100, height=100, fill='yellow', background_color='grey').get_element(), layer=100).get_item(),
+    arrange.Item(element=shapes.Box(x=0, y=0, width=300, height=300, fill='grey', background_color='grey').get_element(), layer=50).get_item(),
 ))
 
 # SORT TUPLES BY POSITION
@@ -69,13 +72,19 @@ image_write.close()
 # use LivePage extension for Chrome
 
 # RENDER TO GUI DISPLAY
-svg_string = geometry.Geometry(svg_elements).get_elements()
-svg_bytes = QByteArray(bytearray(svg_string, encoding='utf-8'))
+geometry_obj = geometry.Geometry(svg_elements)
+svg_bytes = QByteArray(bytearray(geometry_obj.get_elements(), encoding='utf-8'))
 app = QApplication(sys.argv)
 svgWidget = QSvgWidget()
 svgWidget.renderer().load(svg_bytes)
-args = geometry.Geometry()
-svgWidget.setGeometry(args.x, args.y, args.GUI_width, args.GUI_height)
+svgWidget.setGeometry(geometry_obj.GUI_x, geometry_obj.GUI_y, geometry_obj.GUI_width, geometry_obj.GUI_height)
+pprint.pprint(vars(geometry_obj))
+pprint.pprint(svgWidget.geometry())
+pprint.pprint(svgWidget.width())
+pprint.pprint(svgWidget.getContentsMargins())
+pprint.pprint(svgWidget.__dir__())
+print(svgWidget.logicalDpiX())
+print(svgWidget.physicalDpiX())
 svgWidget.show()
 sys.exit(app.exec_())
 

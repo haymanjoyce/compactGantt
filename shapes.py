@@ -18,8 +18,8 @@ class Base:
     # Otherwise Pycharm will prompt you to add arguments that may not apply
     # You may want to rename class as Position whilst only has position attributes
 
-    x: float = 100
-    y: float = 100
+    x: float = 0
+    y: float = 0
 
 
 @dataclass
