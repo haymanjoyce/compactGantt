@@ -22,6 +22,7 @@ from PySide2.QtCore import QByteArray
 import scales
 import pprint
 import arrange
+import geometry
 
 # EXTRACT DATA FROM GOOGLE SHEETS
 # https://www.twilio.com/blog/2017/02/an-easy-way-to-read-and-write-to-a-google-spreadsheet-in-python.html
@@ -47,10 +48,6 @@ unsorted_items.extend((
     arrange.Item(element=scales.TimeBox().get_element(), layer=100).get_item(),
 ))
 
-time_box = scales.TimeBox()
-pprint.pprint(time_box.get_element())
-pprint.pprint(vars(time_box))
-
 # SORT TUPLES BY POSITION
 sorted_items = sorted(unsorted_items, key=itemgetter(0))
 
@@ -72,17 +69,13 @@ image_write.close()
 # use LivePage extension for Chrome
 
 # RENDER TO GUI DISPLAY
-svg_string = f'<?xml version="1.0" encoding="UTF-8" standalone="no"?>' \
-            f'<svg width="800" height="800" viewBox="0 0 800 800" id="smile" version="1.1" overflow="auto">' \
-            f'{svg_elements}' \
-            f'</svg>'
-
+svg_string = geometry.Geometry(svg_elements).get_elements()
 svg_bytes = QByteArray(bytearray(svg_string, encoding='utf-8'))
-
 app = QApplication(sys.argv)
 svgWidget = QSvgWidget()
 svgWidget.renderer().load(svg_bytes)
-svgWidget.setGeometry(10, 100, 300, 600)
+args = geometry.Geometry()
+svgWidget.setGeometry(args.x, args.y, args.GUI_width, args.GUI_height)
 svgWidget.show()
 sys.exit(app.exec_())
 
