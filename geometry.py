@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 import shapes
 
+# todo turn into display module
+
 
 @dataclass
 class Geometry:
