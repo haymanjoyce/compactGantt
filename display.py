@@ -11,16 +11,21 @@ class Window:
     display_height: int = 600
 
     # sets top left corner of window relative to display
-    # todo make proportional to display size
-    window_x: int = 10
-    window_y: int = 100
+    window_x: int = field(init=False, default=10, repr=False)
+    window_y: int = field(init=False, default=100, repr=False)
 
     # sets dimensions of GUI window
     # advice is to select size based on display size (not image size)
-    window_width: int = 300
-    window_height: int = 300
+    window_width: int = field(init=False, default=300, repr=False)
+    window_height: int = field(init=False, default=300, repr=False)
 
-    def set_geometry(self):
+    def __post_init__(self):
+        self.window_x = int(0.1 * self.display_width)
+        self.window_y = int(0.2 * self.display_height)
+        self.window_width = int(0.3 * self.display_width)
+        self.window_height = int(0.3 * self.display_height)
+
+    def get_geometry(self):
         return self.window_x, self.window_y, self.window_width, self.window_height
 
 
@@ -36,8 +41,8 @@ class Image:
 
     # margin (around image) defines size of viewBox
     # more accurately, it is: "panning back so that you see this much pixels around image border"
-    # todo make into Fibonacci proportion to image size (width and height)
-    margin: int = 50
+    # todo make proportion to image size (width and height)
+    margin: int = field(init=False, repr=False, default=100)
 
     # should set the dimensions of the root SVG element but seems to have no effect in GUI
     viewPort_width: int = field(default=None, repr=False, init=False)
@@ -60,9 +65,11 @@ class Image:
 
     def __post_init__(self):
 
+        # this will calculate margin n pixels
+        self.margin = int(0.1 * self.image_width)
         # this will expand the viewBox by value of padding
-        self.viewBox_width = self.image_width + self.margin
-        self.viewBox_height = self.image_height + self.margin
+        self.viewBox_width = int(self.image_width + self.margin)
+        self.viewBox_height = int(self.image_height + self.margin)
 
         # this will centre the image in the viewBox
         offset = int(self.margin * -0.5)

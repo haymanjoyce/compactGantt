@@ -72,21 +72,16 @@ image_write.close()
 # use LivePage extension for Chrome
 
 # RENDER TO GUI DISPLAY
-# todo split image from gui
 app = QApplication(sys.argv)
-
-
 svgWidget = QSvgWidget()
 
 image = display.Image(svg_elements)
 image_in_bytes = QByteArray(bytearray(image.get_image(), encoding='utf-8'))
 svgWidget.renderer().load(image_in_bytes)
 
-print(svgWidget.screen().availableSize())
-ab = display.Window()
-print(ab.set_geometry())
-svgWidget.setGeometry(*ab.set_geometry())  # the asterisk unpacks the tuple
-# svgWidget.setGeometry(image.GUI_x, image.GUI_y, image.GUI_width, image.GUI_height)
+display_size = svgWidget.screen().availableSize()
+geometry = display.Window(display_width=display_size.width(), display_height=display_size.height()).get_geometry()
+svgWidget.setGeometry(*geometry)  # the asterisk unpacks the tuple
 
 svgWidget.show()
 sys.exit(app.exec_())
