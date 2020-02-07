@@ -22,7 +22,7 @@ from PySide2.QtCore import QByteArray
 import scales
 import pprint
 import arrange
-import geometry
+import display
 
 # EXTRACT DATA FROM GOOGLE SHEETS
 # https://www.twilio.com/blog/2017/02/an-easy-way-to-read-and-write-to-a-google-spreadsheet-in-python.html
@@ -72,12 +72,22 @@ image_write.close()
 # use LivePage extension for Chrome
 
 # RENDER TO GUI DISPLAY
-geometry_obj = geometry.Geometry(svg_elements)
-svg_bytes = QByteArray(bytearray(geometry_obj.get_elements(), encoding='utf-8'))
+# todo split image from gui
 app = QApplication(sys.argv)
+
+
 svgWidget = QSvgWidget()
-svgWidget.renderer().load(svg_bytes)
-svgWidget.setGeometry(geometry_obj.GUI_x, geometry_obj.GUI_y, geometry_obj.GUI_width, geometry_obj.GUI_height)
+
+image = display.Image(svg_elements)
+image_in_bytes = QByteArray(bytearray(image.get_image(), encoding='utf-8'))
+svgWidget.renderer().load(image_in_bytes)
+
+print(svgWidget.screen().availableSize())
+ab = display.Window()
+print(ab.set_geometry())
+svgWidget.setGeometry(*ab.set_geometry())  # the asterisk unpacks the tuple
+# svgWidget.setGeometry(image.GUI_x, image.GUI_y, image.GUI_width, image.GUI_height)
+
 svgWidget.show()
 sys.exit(app.exec_())
 

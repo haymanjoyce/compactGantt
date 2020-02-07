@@ -1,11 +1,31 @@
 from dataclasses import dataclass, field
 import shapes
 
-# todo turn into display module
+
+@dataclass
+class Window:
+
+    # display dimensions (system should provide this data)
+    # display is the display area available on screen
+    display_width: int = 600
+    display_height: int = 600
+
+    # sets top left corner of window relative to display
+    # todo make proportional to display size
+    window_x: int = 10
+    window_y: int = 100
+
+    # sets dimensions of GUI window
+    # advice is to select size based on display size (not image size)
+    window_width: int = 300
+    window_height: int = 300
+
+    def set_geometry(self):
+        return self.window_x, self.window_y, self.window_width, self.window_height
 
 
 @dataclass
-class Geometry:
+class Image:
 
     # the SVG image to be rendered
     image: str = str()
@@ -14,25 +34,10 @@ class Geometry:
     image_width: int = 300
     image_height: int = 300
 
-    # padding defines size of viewBox
+    # margin (around image) defines size of viewBox
     # more accurately, it is: "panning back so that you see this much pixels around image border"
-    # todo make padding proportionate to display size
-    padding: int = 100
-
-    # display dimensions (system should provide this data)
-    # todo https://stackoverflow.com/questions/3129322/how-do-i-get-monitor-resolution-in-python
-    display_width: int = 600
-    display_height: int = 600
-
-    # sets top left corner of GUI window relative to display
-    # todo make proportional to display size
-    GUI_x: int = 10
-    GUI_y: int = 100
-
-    # sets dimensions of GUI window
-    # advice is to select size based on display size (not image size)
-    GUI_width: int = 300
-    GUI_height: int = 300
+    # todo make into Fibonacci proportion to image size (width and height)
+    margin: int = 50
 
     # should set the dimensions of the root SVG element but seems to have no effect in GUI
     viewPort_width: int = field(default=None, repr=False, init=False)
@@ -56,19 +61,18 @@ class Geometry:
     def __post_init__(self):
 
         # this will expand the viewBox by value of padding
-        self.viewBox_width = self.image_width + self.padding
-        self.viewBox_height = self.image_height + self.padding
+        self.viewBox_width = self.image_width + self.margin
+        self.viewBox_height = self.image_height + self.margin
 
         # this will centre the image in the viewBox
-        offset = int(self.padding * -0.5)
+        offset = int(self.margin * -0.5)
         self.viewBox_x = offset
         self.viewBox_y = offset
 
-    def get_elements(self):
+    def get_image(self):
         return f'<?xml version="1.0" encoding="UTF-8" standalone="no"?> ' \
                f'<svg width="{self.viewPort_width}" height="{self.viewPort_height}" ' \
                f'viewBox="{self.viewBox_x} {self.viewBox_y} {self.viewBox_width} {self.viewBox_height}" ' \
                f'id="" version="1.1" overflow="auto"> ' \
                f'{self.image}' \
                f'</svg>'
-
