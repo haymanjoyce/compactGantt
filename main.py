@@ -8,7 +8,7 @@
 # mako - templating engine
 # PySide2 - GUI under LGPL license
 
-import shapes
+from shapes import Box
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import os
@@ -19,9 +19,9 @@ from PySide2.QtWidgets import QApplication
 from PySide2.QtSvg import QSvgWidget
 from PySide2.QtSvg import QSvgRenderer
 from PySide2.QtCore import QByteArray
-import scales
+from scales import TimeBox
 import pprint
-import arrange
+from arrange import Item
 import display
 
 # EXTRACT DATA FROM GOOGLE SHEETS
@@ -44,15 +44,17 @@ creds = ServiceAccountCredentials.from_json_keyfile_name(client_secret, scope)
 # GET ALL TUPLES
 unsorted_items = list()
 unsorted_items.extend((
-    arrange.Item(element=shapes.Box(x=0, y=0, width=100, height=100, background_color='grey').get_element(), layer=100).get_item(),
-    arrange.Item(element=shapes.Box(x=200, width=100, height=100, fill='green', background_color='grey').get_element(), layer=100).get_item(),
-    arrange.Item(element=shapes.Box(x=0, y=200, width=100, height=100, fill='blue', background_color='grey').get_element(), layer=100).get_item(),
-    arrange.Item(element=shapes.Box(x=200, y=200, width=100, height=100, fill='yellow', background_color='grey').get_element(), layer=100).get_item(),
-    arrange.Item(element=shapes.Box(x=0, y=0, width=300, height=300, fill='grey', background_color='grey').get_element(), layer=50).get_item(),
+    Item(element=Box(x=0, y=0, width=100, height=100, background_color='grey').get_element(), layer=100).get_item(),
+    Item(element=Box(x=200, width=100, height=100, fill='green', background_color='grey').get_element(), layer=100).get_item(),
+    Item(element=Box(x=0, y=200, width=100, height=100, fill='blue', background_color='grey').get_element(), layer=100).get_item(),
+    Item(element=Box(x=200, y=200, width=100, height=100, fill='yellow', background_color='grey').get_element(), layer=100).get_item(),
+    Item(element=Box(x=0, y=0, width=300, height=300, fill='grey', background_color='grey').get_element(), layer=50).get_item(),
+    Item(element=TimeBox(fill='pink').get_element(), layer=200).get_item(),
 ))
 
 # SORT TUPLES BY POSITION
 sorted_items = sorted(unsorted_items, key=itemgetter(0))
+pprint.pprint(sorted_items)
 
 # BUILD SINGLE SVG STRING OF ELEMENTS
 svg_elements = ''
@@ -74,15 +76,12 @@ image_write.close()
 # RENDER TO GUI DISPLAY
 app = QApplication(sys.argv)
 svgWidget = QSvgWidget()
-
 image = display.Image(svg_elements)
 image_in_bytes = QByteArray(bytearray(image.get_image(), encoding='utf-8'))
 svgWidget.renderer().load(image_in_bytes)
-
 display_size = svgWidget.screen().availableSize()
-geometry = display.Window(display_width=display_size.width(), display_height=display_size.height()).get_geometry()
-svgWidget.setGeometry(*geometry)  # the asterisk unpacks the tuple
-
+window_geometry = display.Window(display_width=display_size.width(), display_height=display_size.height()).get_geometry()
+svgWidget.setGeometry(*window_geometry)  # the asterisk unpacks the tuple
 svgWidget.show()
 sys.exit(app.exec_())
 

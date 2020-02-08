@@ -1,47 +1,21 @@
 from dataclasses import dataclass, field
-import shapes
-
-
-@dataclass
-class Window:
-
-    # display dimensions (system should provide this data)
-    # display is the display area available on screen
-    display_width: int = 600
-    display_height: int = 600
-
-    # sets top left corner of window relative to display
-    window_x: int = field(init=False, default=10, repr=False)
-    window_y: int = field(init=False, default=100, repr=False)
-
-    # sets dimensions of GUI window
-    # advice is to select size based on display size (not image size)
-    window_width: int = field(init=False, default=300, repr=False)
-    window_height: int = field(init=False, default=300, repr=False)
-
-    def __post_init__(self):
-        self.window_x = int(0.1 * self.display_width)
-        self.window_y = int(0.2 * self.display_height)
-        self.window_width = int(0.3 * self.display_width)
-        self.window_height = int(0.3 * self.display_height)
-
-    def get_geometry(self):
-        return self.window_x, self.window_y, self.window_width, self.window_height
 
 
 @dataclass
 class Image:
+    """
+    Wraps the shapes and text in a root SVG element
+    """
 
     # the SVG image to be rendered
     image: str = str()
 
     # image dimensions (user defined)
-    image_width: int = 300
-    image_height: int = 300
+    image_width: int = 800
+    image_height: int = 600
 
     # margin (around image) defines size of viewBox
     # more accurately, it is: "panning back so that you see this much pixels around image border"
-    # todo make proportion to image size (width and height)
     margin: int = field(init=False, repr=False, default=100)
 
     # should set the dimensions of the root SVG element but seems to have no effect in GUI
@@ -67,6 +41,7 @@ class Image:
 
         # this will calculate margin n pixels
         self.margin = int(0.1 * self.image_width)
+
         # this will expand the viewBox by value of padding
         self.viewBox_width = int(self.image_width + self.margin)
         self.viewBox_height = int(self.image_height + self.margin)
@@ -77,9 +52,40 @@ class Image:
         self.viewBox_y = offset
 
     def get_image(self):
-        return f'<?xml version="1.0" encoding="UTF-8" standalone="no"?> ' \
-               f'<svg width="{self.viewPort_width}" height="{self.viewPort_height}" ' \
+        return f'<svg width="{self.viewPort_width}" height="{self.viewPort_height}" ' \
                f'viewBox="{self.viewBox_x} {self.viewBox_y} {self.viewBox_width} {self.viewBox_height}" ' \
                f'id="" version="1.1" overflow="auto"> ' \
                f'{self.image}' \
                f'</svg>'
+
+
+@dataclass
+class Window:
+    """
+    Sets up the GUI window in which the SVG image is displayed
+    """
+
+    # display dimensions (system should provide this data)
+    # display is the display area available on screen
+    display_width: int = 600
+    display_height: int = 600
+
+    # sets top left corner of window relative to display
+    window_x: int = field(init=False, default=10, repr=False)
+    window_y: int = field(init=False, default=100, repr=False)
+
+    # sets dimensions of GUI window
+    # advice is to select size based on display size (not image size)
+    window_width: int = field(init=False, default=300, repr=False)
+    window_height: int = field(init=False, default=300, repr=False)
+
+    def __post_init__(self):
+        # todo change proportions are for production
+        self.window_x = int(0 * self.display_width)
+        self.window_y = int(0.2 * self.display_height)
+        self.window_width = int(0.2 * self.display_width)
+        self.window_height = int(0.3 * self.display_height)
+
+    def get_geometry(self):
+        return self.window_x, self.window_y, self.window_width, self.window_height
+
