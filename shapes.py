@@ -103,7 +103,7 @@ class Box(Base):
     fill: str = 'red'
     background_color: str = 'white'
     border_color: str = 'black'
-    border_width: int = 1
+    border_width: float = 1
     rounding: int = 2
     visibility: str = str()
 

@@ -19,7 +19,7 @@ from PySide2.QtWidgets import QApplication
 from PySide2.QtSvg import QSvgWidget
 from PySide2.QtSvg import QSvgRenderer
 from PySide2.QtCore import QByteArray
-from scales import TimeBox
+from scales import TimeBox, Scale
 import pprint
 from arrange import Item
 import display
@@ -50,11 +50,11 @@ unsorted_items.extend((
     Item(element=Box(x=200, y=200, width=100, height=100, fill='yellow', background_color='grey').get_element(), layer=100).get_item(),
     Item(element=Box(x=0, y=0, width=300, height=300, fill='grey', background_color='grey').get_element(), layer=50).get_item(),
     Item(element=TimeBox(fill='pink').get_element(), layer=200).get_item(),
+    Item(element=Scale().get_element(), layer=300).get_item(),
 ))
 
 # SORT TUPLES BY POSITION
 sorted_items = sorted(unsorted_items, key=itemgetter(0))
-pprint.pprint(sorted_items)
 
 # BUILD SINGLE SVG STRING OF ELEMENTS
 svg_elements = ''
