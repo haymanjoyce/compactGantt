@@ -19,10 +19,11 @@ from PySide2.QtWidgets import QApplication
 from PySide2.QtSvg import QSvgWidget
 from PySide2.QtSvg import QSvgRenderer
 from PySide2.QtCore import QByteArray
-from scales import TimeBox, Scale
+from scales import TimeBox, Scale, Iterator
 import pprint
 from arrange import Item
 import display
+from datetime import date, timedelta
 
 # EXTRACT DATA FROM GOOGLE SHEETS
 # https://www.twilio.com/blog/2017/02/an-easy-way-to-read-and-write-to-a-google-spreadsheet-in-python.html
@@ -52,6 +53,13 @@ unsorted_items.extend((
     Item(element=TimeBox(fill='pink').get_element(), layer=200).get_item(),
     Item(element=Scale().get_element(), layer=300).get_item(),
 ))
+
+# TEMP
+st = date.today().toordinal()
+fn = st + 100
+itr = Iterator(type="DAYS", start=st, finish=fn)
+print(itr.start, itr.finish, itr.type)
+print(itr.get_iterator())
 
 # SORT TUPLES BY POSITION
 sorted_items = sorted(unsorted_items, key=itemgetter(0))

@@ -69,6 +69,10 @@ class Scale:
     Arranges TimeBoxes to form scale
     """
 
+    # this method needs iterator that shows start and finish dates and various kinds of interval dates
+    # it's got enough to work out the rest (e.g. resolution or finish from duration absence of finish)
+    # iterator needs dates in ordinals; other classes can convert ordinals to other formats as required
+
     x: float = 0
     y: float = 0
 
@@ -100,5 +104,26 @@ class Scale:
                f'transform="translate({self.x}, {self.y})"' \
                f'>' \
                f'{self.scale}' \
-               f'</g>' \
+               f'</g>'
+
+
+@dataclass
+class Iterator:
+
+    # this class needs to return iterators
+    # each iterator should show intervals between a start and a finish date
+    # interval options are day, week, month, quarter, half, year
+    # each interval should have an ordinal date and a interval count
+    # the intervals must map to calendar dates (i.e. not regular)
+
+    start: int
+    finish: int
+
+    type: str  # DAYS | WEEKS | MONTHS | QUARTERS | HALVES | YEARS
+
+    def __post_init__(self):
+        pass
+
+    def get_iterator(self):
+        pass
 
