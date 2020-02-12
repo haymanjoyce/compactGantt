@@ -115,11 +115,19 @@ class Iterator:
     # interval options are day, week, month, quarter, half, year
     # each interval should have an ordinal date and a interval count
     # the intervals must map to calendar dates (i.e. not regular)
+    # the common denominator is a day (design decision not to do half days or less)
 
     start: int
     finish: int
 
     type: str  # DAYS | WEEKS | MONTHS | QUARTERS | HALVES | YEARS
+
+    # for days, it just iterates through date range
+    # for weeks, it detects end of weeks between start and finish
+    # end of weeks can be defined by user (e.g. eow = "SUNDAY")
+    # for months, it detects start of month and subtracts one
+    # for halves, it detects 30 Jun
+    # for years, it detects 31 Dec
 
     def __post_init__(self):
         pass
