@@ -57,9 +57,10 @@ unsorted_items.extend((
 # TEMP
 st = date.today().toordinal()
 fn = st + 100
-itr = Iterator(type="DAYS", start=st, finish=fn)
-print(itr.start, itr.finish, itr.type)
-print(itr.get_iterator())
+itr = Iterator(start=st, finish=fn)
+print("S:", itr.start, date.fromordinal(itr.start), date.fromordinal(itr.start).weekday())
+print("F:", itr.finish, date.fromordinal(itr.finish), date.fromordinal(itr.finish).weekday())
+print(itr.get_iterator('WEEKS'))
 
 # SORT TUPLES BY POSITION
 sorted_items = sorted(unsorted_items, key=itemgetter(0))
