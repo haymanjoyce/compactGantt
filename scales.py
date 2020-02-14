@@ -69,6 +69,11 @@ class Scale:
     Arranges TimeBoxes to form scale
     """
 
+    # todo get boxes to abut
+    # todo tidy up Scale - does it need duration? - self.finish calc is verbose
+    # todo solve partial boxes at scale ends
+    # todo clean up comments
+
     # this method needs iterator that shows start and finish dates and various kinds of interval dates
     # it's got enough to work out the rest (e.g. resolution or finish from duration absence of finish)
     # iterator needs dates in ordinals; other classes can convert ordinals to other formats as required
@@ -87,17 +92,15 @@ class Scale:
 
     scale: str = str()
 
+    intervals: str = 'WEEKS'  # DAYS | WEEKS | MONTHS | QUARTERS | HALVES | YEARS
+
     def __post_init__(self):
         self.start = date.today().toordinal()
         self.finish = (date.today() + timedelta(days=365)).toordinal()
         self.duration = self.finish - self.start
 
-        start = self.start
-        finish = start + 7
-        for day in range(self.duration):
-            self.scale += TimeBox(min=self.start, max=self.finish, start=start, finish=finish, resolution=2, background_color="black", border_width=0.5).get_element()
-            start += 7
-            finish += 7
+        for unit in get_iterator(self.start, self.finish, self.intervals):
+            self.scale += TimeBox(min=self.start, max=self.finish, start=unit[0], finish=unit[1], resolution=2, background_color="black", border_width=0.5).get_element()
 
     def get_element(self):
         return f'<g ' \
@@ -107,64 +110,47 @@ class Scale:
                f'</g>'
 
 
-@dataclass
-class Iterator:
-
-    # this class needs to return iterators
-    # each iterator should show intervals between a start and a finish date
-    # interval options are day, week, month, quarter, half, year
-    # each interval should have an ordinal date and a interval count
-    # the intervals must map to calendar dates (i.e. not regular)
-    # the common denominator is a day (design decision not to do half days or less)
-
-    start: int
-    finish: int
-
-    # for days, it just iterates through date range
-    # for weeks, it detects end of weeks between start and finish
-    # end of weeks can be defined by user (e.g. eow = "SUNDAY")
-    # for months, it detects start of month and subtracts one
-    # for halves, it detects 30 Jun
-    # for years, it detects 31 Dec
-
-    range: int = field(init=False)  # difference between start and finish in ordinal days
-
-    def __post_init__(self):
-        self.range = self.finish - self.start
-
-    def get_iterator(self, interval='DAYS'):  # DAYS | WEEKS | MONTHS | QUARTERS | HALVES | YEARS
-        """Creator method which decides which concrete implementation to use."""
-        if interval == 'DAYS':
-            return self.iterate_days()
-        elif interval == 'WEEKS':
-            return self.iterate_weeks()
-        else:
-            raise ValueError(interval)
-
-    def iterate_days(self):
-        iterator = tuple()
-        for day in range(1, self.range):
-            entry = ((day, self.start + day), )
-            iterator += entry
-        return iterator
-
-    def iterate_weeks(self):
-        first_seven_days = [date.fromordinal(self.start + day).weekday() for day in range(0, self.range)[:7]]
-        first_end_of_week = first_seven_days.index(6)
-        print([self.start + day for day in range(0, self.range)[:7]])
-        print(first_seven_days)
-        print(first_end_of_week)
-        iterator = tuple()
-        interval = 7
-        count = 1
-        for day in range(first_end_of_week, self.range, interval):
-            entry = ((count, self.start + day), )
-            iterator += entry
-            count += 1
-        return iterator
+def get_iterator(start, finish, interval='DAYS'):
+    """Creator method which decides which concrete implementation to use (i.e. factory method design pattern)"""
+    if interval == 'DAYS':
+        return iterate_days(start, finish)
+    elif interval == 'WEEKS':
+        print(start, finish)
+        print(iterate_weeks(start, finish))
+        return iterate_weeks(start, finish)
+    else:
+        raise ValueError(interval)
 
 
-@dataclass
-class Selector(Iterator):
-    pass
+def iterate_days(start, finish):
+    """Returns iterator showing all days in a given range"""
+    number_of_days = finish - start
+    iterator = tuple()
+    for day_number in range(1, number_of_days):
+        entry = ((start + day_number, day_number),)
+        iterator += entry
+    return iterator
+
+
+def iterate_weeks(start, finish, week_start=0):
+    """Returns iterator showing whole weeks in a given range"""
+
+    # calculate number of days in range
+    number_of_days = finish - start
+
+    # find start of first whole week
+    first_seven_days = [date.fromordinal(start + day).weekday() for day in range(0, number_of_days)[:7]]
+    first_week_start = first_seven_days.index(week_start)
+
+    # build iterator
+    iterator = tuple()
+    week_count = 1
+    for day_number in range(first_week_start, number_of_days, 7):
+        start_week = start + day_number
+        end_week = start_week + 6  # first day and another 6 days
+        entry = ((start_week, end_week, week_count), )
+        iterator += entry
+        week_count += 1
+    return iterator
+
 

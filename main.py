@@ -19,7 +19,7 @@ from PySide2.QtWidgets import QApplication
 from PySide2.QtSvg import QSvgWidget
 from PySide2.QtSvg import QSvgRenderer
 from PySide2.QtCore import QByteArray
-from scales import TimeBox, Scale, Iterator
+from scales import TimeBox, Scale
 import pprint
 from arrange import Item
 import display
@@ -53,14 +53,6 @@ unsorted_items.extend((
     Item(element=TimeBox(fill='pink').get_element(), layer=200).get_item(),
     Item(element=Scale().get_element(), layer=300).get_item(),
 ))
-
-# TEMP
-st = date.today().toordinal()
-fn = st + 100
-itr = Iterator(start=st, finish=fn)
-print("S:", itr.start, date.fromordinal(itr.start), date.fromordinal(itr.start).weekday())
-print("F:", itr.finish, date.fromordinal(itr.finish), date.fromordinal(itr.finish).weekday())
-print(itr.get_iterator('WEEKS'))
 
 # SORT TUPLES BY POSITION
 sorted_items = sorted(unsorted_items, key=itemgetter(0))
