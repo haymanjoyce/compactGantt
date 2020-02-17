@@ -78,26 +78,39 @@ class Scale:
     # it's got enough to work out the rest (e.g. resolution or finish from duration absence of finish)
     # iterator needs dates in ordinals; other classes can convert ordinals to other formats as required
 
+    # places the scale
     x: float = 0
     y: float = 0
 
-    width: float = 800
-    height: float = 100
+    # sets scale dimensions
+    width: float = 800  # used to calculate resolution
+    height: float = 100  # passed to TimeBox
 
+    # defines time window
+    # passed to TimeBox as min and max
     start: int = None
     finish: int = None
 
-    duration: int = None
-    resolution: float = None
-
-    scale: str = str()
-
+    # defines interval type for scale
+    # passed to .get_iterator function
     intervals: str = 'WEEKS'  # DAYS | WEEKS | MONTHS | QUARTERS | HALVES | YEARS
 
+    # defines pixels per day
+    # passed to TimeBox
+    # value calculated post initiation
+    resolution: float = field(repr=False, init=False, default=float())
+
+    # holds the final SVG code for the scale
+    # value calculated post initiation
+    scale: str = field(repr=False, init=False, default=str())
+
     def __post_init__(self):
-        self.start = date.today().toordinal()
-        self.finish = (date.today() + timedelta(days=365)).toordinal()
-        self.duration = self.finish - self.start
+
+        if self.start is None:
+            self.start = date.today().toordinal()
+
+        if self.finish is None:
+            self.finish = (date.today() + timedelta(days=200)).toordinal()
 
         for unit in get_iterator(self.start, self.finish, self.intervals):
             self.scale += TimeBox(min=self.start, max=self.finish, start=unit[0], finish=unit[1], resolution=2, background_color="black", border_width=0.5).get_element()
