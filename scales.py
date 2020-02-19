@@ -13,8 +13,10 @@ class TimeBox(Box):
     # we keep the date values as ordinal dates (we don't convert them into pixels)
     start: int = None
     finish: int = None
-    min: int = None  # defines lower limit such as left edge
-    max: int = None  # defines upper limit such as right edge
+
+    # defines lower and uppers limits (i.e. edges)
+    min: int = None
+    max: int = None
 
     # an optional way to define finish if no finish available
     duration: int = 150
@@ -69,10 +71,11 @@ class Scale:
     Arranges TimeBoxes to form scale
     """
 
-    # todo get boxes to abut
     # todo tidy up Scale - does it need duration? - self.finish calc is verbose
     # todo solve partial boxes at scale ends
     # todo clean up comments
+    # todo add in resolution
+    # todo how to define Box and TimeBox attributes in Scale
 
     # this method needs iterator that shows start and finish dates and various kinds of interval dates
     # it's got enough to work out the rest (e.g. resolution or finish from duration absence of finish)
@@ -91,14 +94,17 @@ class Scale:
     start: int = None
     finish: int = None
 
+    # an optional way to define finish if no finish available
+    duration: int = 200
+
     # defines interval type for scale
     # passed to .get_iterator function
     intervals: str = 'WEEKS'  # DAYS | WEEKS | MONTHS | QUARTERS | HALVES | YEARS
 
     # defines pixels per day
     # passed to TimeBox
-    # value calculated post initiation
-    resolution: float = field(repr=False, init=False, default=float())
+    # value calculated, based on width, after initiation
+    resolution: float = field(repr=False, init=False, default=1.0)
 
     # holds the final SVG code for the scale
     # value calculated post initiation
@@ -106,14 +112,31 @@ class Scale:
 
     def __post_init__(self):
 
+        # convert interval value to upper case if not already upper case
+        self.intervals = self.intervals.upper()
+
+        # use today if start not given
         if self.start is None:
             self.start = date.today().toordinal()
 
+        # use duration if no finish defined
         if self.finish is None:
-            self.finish = (date.today() + timedelta(days=200)).toordinal()
+            self.finish = (date.today() + timedelta(days=self.duration)).toordinal()
 
-        for unit in get_iterator(self.start, self.finish, self.intervals):
-            self.scale += TimeBox(min=self.start, max=self.finish, start=unit[0], finish=unit[1], resolution=2, background_color="black", border_width=0.5).get_element()
+        # build scale
+        self.scale = self.build_scale()
+
+    def build_scale(self):
+        iterator = get_iterator(self.start, self.finish, self.intervals)
+
+        first_interval = TimeBox(min=self.start, max=self.finish, start=self.start, finish=iterator[0][0], resolution=2, background_color="black", border_width=0.5, fill='blue').get_element()
+        last_interval = TimeBox(min=self.start, max=self.finish, start=iterator[-1][1], finish=self.finish, resolution=2, background_color="black", border_width=0.5, fill='blue').get_element()
+
+        whole_intervals = str()
+        for interval in iterator:
+            whole_intervals += TimeBox(min=self.start, max=self.finish, start=interval[0], finish=interval[1], resolution=2, background_color="black", border_width=0.5).get_element()
+
+        return first_interval + whole_intervals + last_interval
 
     def get_element(self):
         return f'<g ' \
@@ -128,8 +151,6 @@ def get_iterator(start, finish, interval='DAYS'):
     if interval == 'DAYS':
         return iterate_days(start, finish)
     elif interval == 'WEEKS':
-        print(start, finish)
-        print(iterate_weeks(start, finish))
         return iterate_weeks(start, finish)
     else:
         raise ValueError(interval)
@@ -139,9 +160,13 @@ def iterate_days(start, finish):
     """Returns iterator showing all days in a given range"""
     number_of_days = finish - start
     iterator = tuple()
-    for day_number in range(1, number_of_days):
-        entry = ((start + day_number, day_number),)
+    day_count = 1
+    for day_number in range(0, number_of_days):
+        day_start = start + day_number
+        day_end = day_start + 1
+        entry = ((day_start, day_end, day_count),)
         iterator += entry
+        day_count += 1
     return iterator
 
 
@@ -151,19 +176,22 @@ def iterate_weeks(start, finish, week_start=0):
     # calculate number of days in range
     number_of_days = finish - start
 
-    # find start of first whole week
+    # find start of first whole week in range
     first_seven_days = [date.fromordinal(start + day).weekday() for day in range(0, number_of_days)[:7]]
-    first_week_start = first_seven_days.index(week_start)
+    first_week_start_day = first_seven_days.index(week_start)
 
     # build iterator
+    range_start = first_week_start_day - 1  # start of first day is end of preceding day
+    range_end = number_of_days - first_week_start_day  # cut range length proportionate to new range_start
+    range_interval = 7  # weekly
     iterator = tuple()
-    week_count = 1
-    for day_number in range(first_week_start, number_of_days, 7):
-        start_week = start + day_number
-        end_week = start_week + 6  # first day and another 6 days
+    week_count = 1  # the first whole week counts as 1 (not 0 or 2)
+    for day_number in range(range_start, range_end, range_interval):
+        start_week = start + day_number  # first day_number value is 0
+        end_week = start_week + 7
         entry = ((start_week, end_week, week_count), )
         iterator += entry
-        week_count += 1
+        week_count += 1  # prepare week_count for next entry
     return iterator
 
 
