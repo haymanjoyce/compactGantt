@@ -68,18 +68,15 @@ class TimeBox(Box):
 @dataclass
 class Scale:
     """
-    Arranges TimeBoxes to form scale
+    Builds scale out of TimeBoxes
     """
 
-    # todo tidy up Scale - does it need duration? - self.finish calc is verbose
-    # todo solve partial boxes at scale ends
+    # Does not inherit TimeBox because it is a different kind of object
+
     # todo clean up comments
     # todo add in resolution
-    # todo how to define Box and TimeBox attributes in Scale
-
-    # this method needs iterator that shows start and finish dates and various kinds of interval dates
-    # it's got enough to work out the rest (e.g. resolution or finish from duration absence of finish)
-    # iterator needs dates in ordinals; other classes can convert ordinals to other formats as required
+    # todo add text
+    # todo make code more efficient by changing same object rather than building new ones
 
     # places the scale
     x: float = 0
@@ -101,13 +98,21 @@ class Scale:
     # passed to .get_iterator function
     intervals: str = 'WEEKS'  # DAYS | WEEKS | MONTHS | QUARTERS | HALVES | YEARS
 
+    # scale styling
+    background_color: str = 'black'
+    border_color: str = 'black'
+    border_width: float = 1
+    rounding: int = 1
+    fill: str = 'grey'
+    ends: str = None  # option to use different fill on scale ends
+
     # defines pixels per day
     # passed to TimeBox
     # value calculated, based on width, after initiation
-    resolution: float = field(repr=False, init=False, default=1.0)
+    resolution: float = field(repr=False, init=False, default=4.0)
 
     # holds the final SVG code for the scale
-    # value calculated post initiation
+    # value calculated after initiation
     scale: str = field(repr=False, init=False, default=str())
 
     def __post_init__(self):
@@ -121,22 +126,48 @@ class Scale:
 
         # use duration if no finish defined
         if self.finish is None:
-            self.finish = (date.today() + timedelta(days=self.duration)).toordinal()
+            self.finish = self.start + self.duration
+
+        # use fill if no end fill is defined
+        if self.ends is None:
+            self.ends = self.fill
 
         # build scale
         self.scale = self.build_scale()
 
     def build_scale(self):
+
+        # iterator is not object specific
         iterator = get_iterator(self.start, self.finish, self.intervals)
 
-        first_interval = TimeBox(min=self.start, max=self.finish, start=self.start, finish=iterator[0][0], resolution=2, background_color="black", border_width=0.5, fill='blue').get_element()
-        last_interval = TimeBox(min=self.start, max=self.finish, start=iterator[-1][1], finish=self.finish, resolution=2, background_color="black", border_width=0.5, fill='blue').get_element()
+        # first interval
+        first_interval = TimeBox(min=self.start, max=self.finish,
+                                 start=self.start, finish=iterator[0][0],
+                                 height=self.height,
+                                 resolution=self.resolution,
+                                 background_color=self.background_color, fill=self.ends, border_color=self.border_color,
+                                 border_width=self.border_width, rounding=self.rounding).get_element()
 
+        # last interval
+        last_interval = TimeBox(min=self.start, max=self.finish,
+                                start=iterator[-1][1], finish=self.finish,
+                                height=self.height,
+                                resolution=self.resolution,
+                                background_color=self.background_color, fill=self.ends, border_color=self.border_color,
+                                border_width=self.border_width, rounding=self.rounding).get_element()
+
+        # whole intervals
         whole_intervals = str()
         for interval in iterator:
-            whole_intervals += TimeBox(min=self.start, max=self.finish, start=interval[0], finish=interval[1], resolution=2, background_color="black", border_width=0.5).get_element()
+            whole_intervals += TimeBox(min=self.start, max=self.finish,
+                                       start=interval[0], finish=interval[1],
+                                       height=self.height,
+                                       resolution=self.resolution,
+                                       background_color=self.background_color, fill=self.fill, border_color=self.border_color,
+                                       border_width=self.border_width, rounding=self.rounding).get_element()
 
-        return first_interval + whole_intervals + last_interval
+        # whole intervals are laid on top (i.e. rendered last) of first and last intervals in case of overlap
+        return first_interval + last_interval + whole_intervals
 
     def get_element(self):
         return f'<g ' \
