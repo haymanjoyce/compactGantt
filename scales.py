@@ -74,9 +74,9 @@ class Scale:
     # Does not inherit TimeBox because it is a different kind of object
 
     # todo clean up comments
-    # todo add in resolution
+    # todo add in resolution calc based on width
     # todo add text
-    # todo make code more efficient by changing same object rather than building new ones
+    # todo work out why build_scale not working
 
     # places the scale
     x: float = 0
@@ -140,34 +140,47 @@ class Scale:
         # iterator is not object specific
         iterator = get_iterator(self.start, self.finish, self.intervals)
 
+        # SVG string
+        scale = str()
+
+        # create TimeBox object
+        timebox = TimeBox()
+
+        # general settings of TimeBox object
+        timebox.min = self.start
+        timebox.max = self.finish
+        timebox.height = self.height
+        timebox.resolution = self.resolution
+        timebox.background_color = self.background_color
+        timebox.border_color = self.border_color
+        timebox.border_width = self.border_width
+        timebox.rounding = self.rounding
+
         # first interval
-        first_interval = TimeBox(min=self.start, max=self.finish,
-                                 start=self.start, finish=iterator[0][0],
-                                 height=self.height,
-                                 resolution=self.resolution,
-                                 background_color=self.background_color, fill=self.ends, border_color=self.border_color,
-                                 border_width=self.border_width, rounding=self.rounding).get_element()
+        timebox.start = self.start
+        timebox.finish = iterator[0][0]
+        timebox.fill = self.ends
+        scale += timebox.get_element()
+        pprint(scale)
+        print()
 
         # last interval
-        last_interval = TimeBox(min=self.start, max=self.finish,
-                                start=iterator[-1][1], finish=self.finish,
-                                height=self.height,
-                                resolution=self.resolution,
-                                background_color=self.background_color, fill=self.ends, border_color=self.border_color,
-                                border_width=self.border_width, rounding=self.rounding).get_element()
+        timebox.start = iterator[-1][1]
+        timebox.finish = self.finish
+        scale += timebox.get_element()
+        pprint(scale)
+        print()
 
         # whole intervals
-        whole_intervals = str()
+        timebox.fill = self.fill
         for interval in iterator:
-            whole_intervals += TimeBox(min=self.start, max=self.finish,
-                                       start=interval[0], finish=interval[1],
-                                       height=self.height,
-                                       resolution=self.resolution,
-                                       background_color=self.background_color, fill=self.fill, border_color=self.border_color,
-                                       border_width=self.border_width, rounding=self.rounding).get_element()
+            timebox.start = interval[0]
+            timebox.finish = interval[1]
+            scale += timebox.get_element()
+        pprint(scale)
+        print()
 
-        # whole intervals are laid on top (i.e. rendered last) of first and last intervals in case of overlap
-        return first_interval + last_interval + whole_intervals
+        return scale
 
     def get_element(self):
         return f'<g ' \
