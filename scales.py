@@ -76,7 +76,7 @@ class Scale:
     # todo clean up comments
     # todo add in resolution calc based on width
     # todo add text
-    # todo work out why build_scale not working
+    # todo rebuild all classes so that changing instance variable recalculates all related variables (not just as part of post_init)
 
     # places the scale
     x: float = 0
@@ -164,6 +164,8 @@ class Scale:
         timebox.fill = self.ends
         scale += timebox.get_element()
 
+        pprint(scale)
+
         # last interval
         timebox.start = iterator[-1][1]
         timebox.finish = self.finish
@@ -205,8 +207,10 @@ class Scale:
                                        border_color=self.border_color,
                                        border_width=self.border_width, rounding=self.rounding).get_element()
 
+        print()
+        pprint(first_interval)
+
         return first_interval + last_interval + whole_intervals
-        # return scale
 
     def get_element(self):
         return f'<g ' \
