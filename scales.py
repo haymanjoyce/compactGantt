@@ -77,6 +77,7 @@ class Scale:
     # todo add in resolution calc based on width
     # todo add text
     # todo rebuild all classes so that changing instance variable recalculates all related variables (not just as part of post_init)
+    # todo answer is all post_init calcs to call a method and so always have option to call method too
 
     # places the scale
     x: float = 0

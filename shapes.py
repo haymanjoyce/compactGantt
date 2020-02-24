@@ -4,7 +4,9 @@ from math import sqrt
 # No two shape classes can be parent of common child (e.g. Box and Text)
 # If you do, methods (and sometimes attributes) will override each other
 # You can de-conflict by giving unique names (e.g. changing text "fill" to "color")
-
+# May have issue using same object to print out different SVG code...
+# Say I change Diamond size, post_int calcs will not run (because only run at instance creation)...
+# This may require a code change
 
 @dataclass
 class Base:
@@ -81,6 +83,9 @@ class Circle(Base):
         self.cx = self.x + self.r
         self.cy = self.y + self.r
 
+    def get_radius(self):
+        return self.size / 2
+
     def get_element(self):
         return f'<circle ' \
                f'cx="{self.cx}" cy="{self.cy}" ' \
@@ -135,7 +140,7 @@ class Diamond(Rect):
     size: float = 100  # overrides height and width
     height: float = field(init=False, repr=False)
     width: float = field(init=False, repr=False)
-    rotate: int = field(default=45)
+    rotate: int = field(default=45, repr=False)
     origin: float = field(init=False, repr=False)
     resized: float = field(init=False, repr=False)
     repositioned: float = field(init=False, repr=False)
