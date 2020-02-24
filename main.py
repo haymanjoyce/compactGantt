@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 
-# ENV02
-# pip (default)
-# setuptools (default)
+# REQUIREMENTS
 # oauth2client - access Google Cloud Platform
 # gspread - access Google Sheets
-# mako - templating engine
+# Mako - templating engine
 # PySide2 - GUI under LGPL license
 
 from shapes import Box
