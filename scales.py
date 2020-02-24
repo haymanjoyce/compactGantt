@@ -76,7 +76,8 @@ class Scale:
     # todo clean up comments
     # todo add in resolution calc based on width
     # todo add text
-    # todo work out why build_scale not working
+    # todo rebuild all classes so that changing instance variable recalculates all related variables (not just as part of post_init)
+    # todo answer is all post_init calcs to call a method and so always have option to call method too
 
     # places the scale
     x: float = 0
@@ -140,6 +141,8 @@ class Scale:
         # iterator is not object specific
         iterator = get_iterator(self.start, self.finish, self.intervals)
 
+        # NEW METHOD
+
         # SVG string
         scale = str()
 
@@ -161,15 +164,13 @@ class Scale:
         timebox.finish = iterator[0][0]
         timebox.fill = self.ends
         scale += timebox.get_element()
+
         pprint(scale)
-        print()
 
         # last interval
         timebox.start = iterator[-1][1]
         timebox.finish = self.finish
         scale += timebox.get_element()
-        pprint(scale)
-        print()
 
         # whole intervals
         timebox.fill = self.fill
@@ -177,10 +178,40 @@ class Scale:
             timebox.start = interval[0]
             timebox.finish = interval[1]
             scale += timebox.get_element()
-        pprint(scale)
-        print()
 
-        return scale
+        # OLD METHOD
+
+        # first interval
+        first_interval = TimeBox(min=self.start, max=self.finish,
+                                 start=self.start, finish=iterator[0][0],
+                                 height=self.height,
+                                 resolution=self.resolution,
+                                 background_color=self.background_color, fill='green', border_color=self.border_color,
+                                 border_width=self.border_width, rounding=self.rounding).get_element()
+
+        # last interval
+        last_interval = TimeBox(min=self.start, max=self.finish,
+                                start=iterator[-1][1], finish=self.finish,
+                                height=self.height,
+                                resolution=self.resolution,
+                                background_color=self.background_color, fill='green', border_color=self.border_color,
+                                border_width=self.border_width, rounding=self.rounding).get_element()
+
+        # whole intervals
+        whole_intervals = str()
+        for interval in iterator:
+            whole_intervals += TimeBox(min=self.start, max=self.finish,
+                                       start=interval[0], finish=interval[1],
+                                       height=self.height,
+                                       resolution=self.resolution,
+                                       background_color=self.background_color, fill=self.fill,
+                                       border_color=self.border_color,
+                                       border_width=self.border_width, rounding=self.rounding).get_element()
+
+        print()
+        pprint(first_interval)
+
+        return first_interval + last_interval + whole_intervals
 
     def get_element(self):
         return f'<g ' \
