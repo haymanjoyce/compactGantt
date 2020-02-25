@@ -1,3 +1,8 @@
+# todo clean up comments
+# todo add in resolution calc based on width
+# todo add text
+# todo rebuild classes so that changing instance variable recalculates all related variables
+
 from shapes import Box
 from dataclasses import dataclass, field
 from datetime import date, timedelta
@@ -72,12 +77,6 @@ class Scale:
     """
 
     # Does not inherit TimeBox because it is a different kind of object
-
-    # todo clean up comments
-    # todo add in resolution calc based on width
-    # todo add text
-    # todo rebuild all classes so that changing instance variable recalculates all related variables (not just as part of post_init)
-    # todo answer is all post_init calcs to call a method and so always have option to call method too
 
     # places the scale
     x: float = 0
@@ -208,7 +207,6 @@ class Scale:
                                        border_color=self.border_color,
                                        border_width=self.border_width, rounding=self.rounding).get_element()
 
-        print()
         pprint(first_interval)
 
         return first_interval + last_interval + whole_intervals

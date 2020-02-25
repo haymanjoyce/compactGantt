@@ -1,3 +1,5 @@
+# todo rebuild classes using property() decorator
+
 from dataclasses import dataclass, field
 from math import sqrt
 
