@@ -1,4 +1,4 @@
-# todo rebuild classes using property() decorator
+# todo for any fields calculated by post init, you need a new_[user defined value] function to recalc them
 
 from dataclasses import dataclass, field
 
@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 @dataclass
 class Image:
     """
-    Wraps the shapes and text in a root SVG element
+    Wraps the SVG shapes and text in a root SVG element
     """
 
     # the SVG image to be rendered

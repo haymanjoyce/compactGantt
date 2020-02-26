@@ -1,14 +1,15 @@
-# todo rebuild classes using property() decorator
+# todo for any fields calculated by post init, you need a new_[user defined value] function to recalc them
+# No two shape classes can be parent of common child (e.g. Box and Text)
+# If you do, methods (and sometimes attributes) will override each other
+# You can de-conflict by giving unique names (e.g. changing text "fill" to "color")
+
+# May have issue using same object to print out different SVG code...
+# Say I change Diamond size, post_int calcs will not run (because only run at instance creation)...
+# This may require a code change (for example, using property() instead of post_init)
 
 from dataclasses import dataclass, field
 from math import sqrt
 
-# No two shape classes can be parent of common child (e.g. Box and Text)
-# If you do, methods (and sometimes attributes) will override each other
-# You can de-conflict by giving unique names (e.g. changing text "fill" to "color")
-# May have issue using same object to print out different SVG code...
-# Say I change Diamond size, post_int calcs will not run (because only run at instance creation)...
-# This may require a code change
 
 @dataclass
 class Base:
@@ -18,8 +19,10 @@ class Base:
 
     # X and Y is generally treated as top left corner of shape classes
     # This is not applicable to Line class and is bottom left for Text class
+
     # Don't add attributes to this parent class that are unused by some subclasses
-    # Otherwise Pycharm will prompt you to add arguments that may not apply
+    # Otherwise your editor will prompt you to add arguments that may not apply
+
     # You may want to rename class as Position whilst only has position attributes
 
     x: float = 0
@@ -139,7 +142,7 @@ class Diamond(Rect):
     Rotates and shrink-fits a square
     """
 
-    size: float = 100  # overrides height and width
+    size: float = 100  # replaces height and width
     height: float = field(init=False, repr=False)
     width: float = field(init=False, repr=False)
     rotate: int = field(default=45, repr=False)

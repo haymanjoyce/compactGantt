@@ -1,7 +1,7 @@
 # todo clean up comments
 # todo add in resolution calc based on width
-# todo add text
-# todo rebuild classes so that changing instance variable recalculates all related variables
+# todo add text to scale image
+# todo for any fields calculated by post init, you need a new_[user defined value] function to recalc them
 
 from shapes import Box
 from dataclasses import dataclass, field
