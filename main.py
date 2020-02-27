@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# todo hold data in database not spreadsheets
+# todo GUI interface to database
+
 # REQUIREMENTS
 # oauth2client - access Google Cloud Platform
 # gspread - access Google Sheets
