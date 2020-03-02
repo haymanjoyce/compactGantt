@@ -1,13 +1,11 @@
-# todo for any fields calculated by post init, you need a new_[user defined value] function to recalc them
+# Module creates and displays the final SVG image
 
 from dataclasses import dataclass, field
 
 
 @dataclass
 class Image:
-    """
-    Wraps the SVG shapes and text in a root SVG element
-    """
+    """Wraps the SVG shapes and text in a root SVG element"""
 
     # the SVG image to be rendered
     image: str = str()
@@ -63,9 +61,7 @@ class Image:
 
 @dataclass
 class Window:
-    """
-    Sets up the GUI window in which the SVG image is displayed
-    """
+    """Sets up the GUI window in which the SVG image is displayed"""
 
     # display dimensions (system should provide this data)
     # display is the display area available on screen

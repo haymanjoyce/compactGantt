@@ -1,11 +1,8 @@
-# todo for any fields calculated by post init, you need a new_[user defined value] function to recalc them
+# Module for building SVG shapes
+
 # No two shape classes can be parent of common child (e.g. Box and Text)
 # If you do, methods (and sometimes attributes) will override each other
 # You can de-conflict by giving unique names (e.g. changing text "fill" to "color")
-
-# May have issue using same object to print out different SVG code...
-# Say I change Diamond size, post_int calcs will not run (because only run at instance creation)...
-# This may require a code change (for example, using property() instead of post_init)
 
 from dataclasses import dataclass, field
 from math import sqrt
@@ -13,9 +10,7 @@ from math import sqrt
 
 @dataclass
 class Base:
-    """
-    Attributes common to all classes
-    """
+    """Attributes common to all classes"""
 
     # X and Y is generally treated as top left corner of shape classes
     # This is not applicable to Line class and is bottom left for Text class
@@ -103,15 +98,12 @@ class Circle(Base):
 
 @dataclass
 class Box(Base):
-    """
-    Rectangle where the border line does not bleed over the outer edge
-    Define the background color if rectangle rounded
-    """
+    """Rectangle where the border line does not bleed over the outer edge"""
 
     width: float = 200
     height: float = 100
     fill: str = 'red'
-    background_color: str = 'white'
+    background_color: str = 'white'  # define the background color if rectangle rounded
     border_color: str = 'black'
     border_width: float = 1
     rounding: int = 2
@@ -138,9 +130,7 @@ class Box(Base):
 
 @dataclass
 class Diamond(Rect):
-    """
-    Rotates and shrink-fits a square
-    """
+    """Rotates and shrink-fits a square"""
 
     size: float = 100  # replaces height and width
     height: float = field(init=False, repr=False)

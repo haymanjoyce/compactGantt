@@ -1,128 +1,12 @@
-# todo clean up comments
+# Module for building scales
+
 # todo add in resolution calc based on width
 # todo add text to scale image
-# todo for any fields calculated by post init, you need a new_[user defined value] function to recalc them
 
-from shapes import Box
+from shapetime import TimeBox
 from dataclasses import dataclass, field
 from datetime import date, timedelta
 from pprint import pprint
-
-
-@dataclass
-class TimeBox(Box):
-    """
-    Builds Box using ordinal dates
-    """
-
-    # we must use property() decorator because
-    # any change to variables of this class
-    # requires recalculation of other variables in class
-
-    # we keep the date values as ordinal dates (we don't convert them into pixels)
-    _start: int = None
-    _finish: int = None
-
-    # defines lower and uppers limits (i.e. edges), as ordinal dates
-    _min: int = None
-    _max: int = None
-
-    # an optional way to define finish if no finish available
-    _duration: int = 150
-
-    # pixels per day
-    _resolution: float = 1
-
-    def __post_init__(self):
-
-        # todo check that property() values run first and defaults not overriding them
-
-        # if no start given then we assume today
-        if self._start is None:
-            self._start = date.toordinal(date.today())
-
-        # if no finish given then we build from duration
-        if self._finish is None:
-            self._finish = self._start + self._duration
-
-        # if no min given then we assume same as start
-        if self._min is None:
-            self._min = self._start
-
-        # if no max given then we assume same as finish
-        if self._max is None:
-            self._max = self._finish
-
-    @property
-    def start(self):
-        return self._start
-
-    @start.setter
-    def start(self, value):
-        self._start = value
-
-    @property
-    def finish(self):
-        return self._finish
-
-    @finish.setter
-    def finish(self, value):
-        self._finish = value
-
-    @property
-    def min(self):
-        return self._min
-
-    @min.setter
-    def min(self, value):
-        self._min = value
-
-    @property
-    def max(self):
-        return self._max
-
-    @max.setter
-    def max(self, value):
-        self._max = value
-
-    @property
-    def duration(self):
-        return self._duration
-
-    @duration.setter
-    def duration(self, value):
-        self._duration = value
-
-    @property
-    def resolution(self):
-        return self._resolution
-
-    @resolution.setter
-    def resolution(self, value):
-        self._resolution = value
-
-    def recalculate(self):
-        """Recalculates derived variables when a property changes"""
-
-        self.x = (self.start - self.min) * self.resolution
-
-        self.width = (self.finish - self.start) * self.resolution
-
-        # don't display if finish less than min
-        if self._finish < self.min:
-            self.visibility = 'hidden'
-
-        # don't display if start more than max
-        if self._start > self.max:
-            self.visibility = 'hidden'
-
-        # reset start if start less than min
-        if self._start < self.min:
-            self.start = self.min
-
-        # reset finish is finish more than max
-        if self._finish > self.max:
-            self.finish = self.max
 
 
 @dataclass
@@ -195,6 +79,9 @@ class Scale:
         # iterator is not object specific
         iterator = get_iterator(self.start, self.finish, self.intervals)
 
+        print(iterator[-1][1])
+        print(self.finish)
+
         # NEW METHOD
 
         # SVG string
@@ -215,25 +102,33 @@ class Scale:
 
         # first interval
         timebox.start = self.start
-        # TEMP
-        timebox.finish = timebox.new_finish(iterator[0][0])
+        timebox.finish = iterator[0][0]
         timebox.fill = self.ends
-        scale += timebox.get_element()
 
-        print(timebox.start)
-        print(timebox.finish)
-        print(vars(timebox))
+        # update instance
+        timebox.update()
+
+        # generate SVG code
+        scale += timebox.get_element()
 
         # last interval
         timebox.start = iterator[-1][1]
         timebox.finish = self.finish
+
+        # update instance
+        timebox.update()
+
+        # generate SVG code
         scale += timebox.get_element()
+
+        print(vars(timebox))
 
         # whole intervals
         timebox.fill = self.fill
         for interval in iterator:
             timebox.start = interval[0]
             timebox.finish = interval[1]
+            timebox.update()
             scale += timebox.get_element()
 
         # OLD METHOD
@@ -265,11 +160,7 @@ class Scale:
                                        border_color=self.border_color,
                                        border_width=self.border_width, rounding=self.rounding).get_element()
 
-        print(first_interval.start)
-        print(first_interval.finish)
-        print(vars(first_interval))
-
-        return first_interval.get_element() + last_interval.get_element() + whole_intervals
+        return scale
 
     def get_element(self):
         return f'<g ' \
