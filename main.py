@@ -9,7 +9,6 @@
 # Mako - templating engine
 # PySide2 - GUI under LGPL license
 
-from shapes import Box
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import os
@@ -20,8 +19,9 @@ from PySide2.QtWidgets import QApplication
 from PySide2.QtSvg import QSvgWidget
 from PySide2.QtSvg import QSvgRenderer
 from PySide2.QtCore import QByteArray
-from scales import TimeBox, Scale
-import pprint
+from scales import Scale
+from shapes import TimeBox
+from pprint import pprint
 from arrange import Item
 import display
 from datetime import date, timedelta
@@ -43,17 +43,19 @@ creds = ServiceAccountCredentials.from_json_keyfile_name(client_secret, scope)
 # list_of_hashes = sheet.get_all_records()
 # print(list_of_hashes)
 
+# TEMP
+timebox_a = TimeBox(fill='pink', start=100, finish=400, min=0, max=500, resolution=1, height=50)
+timebox_b = TimeBox(fill='green', start=0, finish=300, min=0, max=500, resolution=1, y=50)
+scale_a = Scale(intervals='WEEKS', duration=210, border_width=0.2, fill='#CCC', ends='pink', y=400, start=737400)
+
 # GET ALL TUPLES
 unsorted_items = list()
-unsorted_items.extend((
-    Item(element=Box(x=0, y=0, width=100, height=100, background_color='grey').get_element(), layer=100).get_item(),
-    Item(element=Box(x=200, width=100, height=100, fill='green', background_color='grey').get_element(), layer=100).get_item(),
-    Item(element=Box(x=0, y=200, width=100, height=100, fill='blue', background_color='grey').get_element(), layer=100).get_item(),
-    Item(element=Box(x=200, y=200, width=100, height=100, fill='yellow', background_color='grey').get_element(), layer=100).get_item(),
-    Item(element=Box(x=0, y=0, width=300, height=300, fill='grey', background_color='grey').get_element(), layer=50).get_item(),
-    Item(element=TimeBox(fill='pink').get_element(), layer=200).get_item(),
-    Item(element=Scale(intervals='WEEKS', duration=210, border_width=0.2, fill='#CCC', ends='pink', y=400, start=737400).get_element(), layer=300).get_item(),
-))
+
+item_a = Item(element=timebox_a.get_element(), layer=200).get_item()
+item_b = Item(element=timebox_b.get_element(), layer=300).get_item()
+item_c = Item(element=scale_a.get_element(), layer=300).get_item()
+
+unsorted_items.extend((item_a, item_b, item_c))
 
 # SORT TUPLES BY POSITION
 sorted_items = sorted(unsorted_items, key=itemgetter(0))

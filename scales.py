@@ -3,7 +3,7 @@
 # todo add in resolution calc based on width
 # todo add text to scale image
 
-from shapetime import TimeBox
+from shapes import TimeBox
 from dataclasses import dataclass, field
 from datetime import date, timedelta
 from pprint import pprint
@@ -79,9 +79,6 @@ class Scale:
         # iterator is not object specific
         iterator = get_iterator(self.start, self.finish, self.intervals)
 
-        print(iterator[-1][1])
-        print(self.finish)
-
         # NEW METHOD
 
         # SVG string
@@ -120,8 +117,6 @@ class Scale:
 
         # generate SVG code
         scale += timebox.get_element()
-
-        print(vars(timebox))
 
         # whole intervals
         timebox.fill = self.fill
