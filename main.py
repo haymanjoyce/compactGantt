@@ -52,7 +52,7 @@ unsorted_items.extend((
     Item(element=Box(x=200, y=200, width=100, height=100, fill='yellow', background_color='grey').get_element(), layer=100).get_item(),
     Item(element=Box(x=0, y=0, width=300, height=300, fill='grey', background_color='grey').get_element(), layer=50).get_item(),
     Item(element=TimeBox(fill='pink').get_element(), layer=200).get_item(),
-    Item(element=Scale(intervals='WEEKS', duration=200, border_width=0.2, fill='#CCC', ends='pink', y=400).get_element(), layer=300).get_item(),
+    Item(element=Scale(intervals='WEEKS', duration=205, border_width=0.2, fill='#CCC', ends='pink', y=400).get_element(), layer=300).get_item(),
 ))
 
 # SORT TUPLES BY POSITION

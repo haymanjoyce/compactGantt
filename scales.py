@@ -15,59 +15,114 @@ class TimeBox(Box):
     Builds Box using ordinal dates
     """
 
-    # we keep the date values as ordinal dates (we don't convert them into pixels)
-    start: int = None
-    finish: int = None
+    # we must use property() decorator because
+    # any change to variables of this class
+    # requires recalculation of other variables in class
 
-    # defines lower and uppers limits (i.e. edges)
-    min: int = None
-    max: int = None
+    # we keep the date values as ordinal dates (we don't convert them into pixels)
+    _start: int = None
+    _finish: int = None
+
+    # defines lower and uppers limits (i.e. edges), as ordinal dates
+    _min: int = None
+    _max: int = None
 
     # an optional way to define finish if no finish available
-    duration: int = 150
+    _duration: int = 150
 
     # pixels per day
-    resolution: float = 1
+    _resolution: float = 1
 
     def __post_init__(self):
 
-        # if no start given then we assume start is today
-        if self.start is None:
-            self.start = date.toordinal(date.today())
+        # todo check that property() values run first and defaults not overriding them
 
-        # if no finish given then we create finish based on duration
-        if self.finish is None:
-            self.finish = self.start + self.duration
+        # if no start given then we assume today
+        if self._start is None:
+            self._start = date.toordinal(date.today())
+
+        # if no finish given then we build from duration
+        if self._finish is None:
+            self._finish = self._start + self._duration
 
         # if no min given then we assume same as start
-        if self.min is None:
-            self.min = self.start
+        if self._min is None:
+            self._min = self._start
 
         # if no max given then we assume same as finish
-        if self.max is None:
-            self.max = self.finish
+        if self._max is None:
+            self._max = self._finish
+
+    @property
+    def start(self):
+        return self._start
+
+    @start.setter
+    def start(self, value):
+        self._start = value
+
+    @property
+    def finish(self):
+        return self._finish
+
+    @finish.setter
+    def finish(self, value):
+        self._finish = value
+
+    @property
+    def min(self):
+        return self._min
+
+    @min.setter
+    def min(self, value):
+        self._min = value
+
+    @property
+    def max(self):
+        return self._max
+
+    @max.setter
+    def max(self, value):
+        self._max = value
+
+    @property
+    def duration(self):
+        return self._duration
+
+    @duration.setter
+    def duration(self, value):
+        self._duration = value
+
+    @property
+    def resolution(self):
+        return self._resolution
+
+    @resolution.setter
+    def resolution(self, value):
+        self._resolution = value
+
+    def recalculate(self):
+        """Recalculates derived variables when a property changes"""
+
+        self.x = (self.start - self.min) * self.resolution
+
+        self.width = (self.finish - self.start) * self.resolution
 
         # don't display if finish less than min
-        if self.finish < self.min:
+        if self._finish < self.min:
             self.visibility = 'hidden'
 
         # don't display if start more than max
-        if self.start > self.max:
+        if self._start > self.max:
             self.visibility = 'hidden'
 
         # reset start if start less than min
-        if self.start < self.min:
+        if self._start < self.min:
             self.start = self.min
 
         # reset finish is finish more than max
-        if self.finish > self.max:
+        if self._finish > self.max:
             self.finish = self.max
-
-        # set x
-        self.x = (self.start - self.min) * self.resolution
-
-        # set width
-        self.width = (self.finish - self.start) * self.resolution
 
 
 @dataclass
@@ -160,11 +215,14 @@ class Scale:
 
         # first interval
         timebox.start = self.start
-        timebox.finish = iterator[0][0]
+        # TEMP
+        timebox.finish = timebox.new_finish(iterator[0][0])
         timebox.fill = self.ends
         scale += timebox.get_element()
 
-        pprint(scale)
+        print(timebox.start)
+        print(timebox.finish)
+        print(vars(timebox))
 
         # last interval
         timebox.start = iterator[-1][1]
@@ -186,7 +244,7 @@ class Scale:
                                  height=self.height,
                                  resolution=self.resolution,
                                  background_color=self.background_color, fill='green', border_color=self.border_color,
-                                 border_width=self.border_width, rounding=self.rounding).get_element()
+                                 border_width=self.border_width, rounding=self.rounding)
 
         # last interval
         last_interval = TimeBox(min=self.start, max=self.finish,
@@ -194,7 +252,7 @@ class Scale:
                                 height=self.height,
                                 resolution=self.resolution,
                                 background_color=self.background_color, fill='green', border_color=self.border_color,
-                                border_width=self.border_width, rounding=self.rounding).get_element()
+                                border_width=self.border_width, rounding=self.rounding)
 
         # whole intervals
         whole_intervals = str()
@@ -207,9 +265,11 @@ class Scale:
                                        border_color=self.border_color,
                                        border_width=self.border_width, rounding=self.rounding).get_element()
 
-        pprint(first_interval)
+        print(first_interval.start)
+        print(first_interval.finish)
+        print(vars(first_interval))
 
-        return first_interval + last_interval + whole_intervals
+        return first_interval.get_element() + last_interval.get_element() + whole_intervals
 
     def get_element(self):
         return f'<g ' \
