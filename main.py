@@ -46,8 +46,7 @@ creds = ServiceAccountCredentials.from_json_keyfile_name(client_secret, scope)
 # TEMP
 timebox_a = TimeBox(fill='pink', start=100, finish=400, min=0, max=500, resolution=1, height=50)
 timebox_b = TimeBox(fill='green', start=0, finish=300, min=0, max=500, resolution=1, y=50)
-scale_a = Scale(intervals='WEEKS', border_width=0.2, y=400, start=737389, finish=737603, resolution=4, ends='pink')
-# todo scale_a broke with start at 737388
+scale_a = Scale(intervals='WEEKS', border_width=0.2, y=400, start=737384, finish=737596, resolution=3.5, ends='pink', height=50)
 
 # GET ALL TUPLES
 unsorted_items = list()

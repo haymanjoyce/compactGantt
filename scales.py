@@ -1,11 +1,13 @@
 # Module for building scales
 
+# todo test day iterator
 # todo add in resolution calc based on width
 # todo add text to scale image
 
 from shapes import TimeBox
 from dataclasses import dataclass
 from datetime import date
+from pprint import pprint
 
 
 @dataclass
@@ -59,7 +61,7 @@ class Scale:
         timebox.min = self.start
         timebox.max = self.finish
         timebox.height = self.height
-        timebox.resolution = self.resolution
+        timebox.resolution = abs(self.resolution)
 
         # style settings
         timebox.background_color = self.background_color

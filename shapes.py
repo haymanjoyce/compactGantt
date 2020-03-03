@@ -237,13 +237,12 @@ class TimeBox(Box):
 
         # you need to call this manually if changing variable after initiation
 
-        # don't display if finish less than min
-        if self.finish < self.min:
+        if self.finish < self.min:  # don't display if finish less than min
             self.visibility = 'hidden'
-
-        # don't display if start more than max
-        if self.start > self.max:
+        elif self.start > self.max:  # don't display if start more than max
             self.visibility = 'hidden'
+        else:  # else set to visible
+            self.visibility = ''
 
         # reset start if start less than min
         if self.start < self.min:
@@ -254,8 +253,8 @@ class TimeBox(Box):
             self.finish = self.max
 
         # removes all time before min
-        self.x = (self.start - self.min) * self.resolution
+        self.x = (self.start - self.min) * abs(self.resolution)
 
         # difference, in days, between start and finish
-        self.width = (self.finish - self.start) * self.resolution
+        self.width = (self.finish - self.start) * abs(self.resolution)
 
