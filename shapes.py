@@ -258,3 +258,24 @@ class TimeBox(Box):
         # difference, in days, between start and finish
         self.width = (self.finish - self.start) * abs(self.resolution)
 
+
+@dataclass
+class TimeText(Text):
+
+    # accepts ordinal dates
+    start: int = 0
+    finish: int = 0
+
+    # defines lower and uppers limits (i.e. edges)
+    min: int = 0
+    max: int = 0
+
+    # pixels per day
+    resolution: float = 1
+
+    def update(self):
+        """Updates all variables"""
+
+        # removes all time before min
+        self.x = (self.start - self.min) * abs(self.resolution)
+

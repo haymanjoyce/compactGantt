@@ -1,10 +1,10 @@
 # Module for building scales
 
-# todo test day iterator
-# todo add in resolution calc based on width
-# todo add text to scale image
+# todo add text to scales
+# todo add MONTHS | QUARTERS | HALVES | YEARS
+# todo fix WEEKS so does not break if period too small to pass assertions
 
-from shapes import TimeBox
+from shapes import TimeBox, TimeText
 from dataclasses import dataclass
 from datetime import date
 from pprint import pprint
@@ -43,7 +43,6 @@ class Scale:
 
     # defines pixels per day
     # passed to TimeBox
-    # value calculated, based on width, after initiation
     resolution: float = 1
 
     def build_scale(self):
@@ -56,6 +55,9 @@ class Scale:
 
         # create TimeBox object
         timebox = TimeBox()
+
+        # create TimeText object
+        timetext = TimeText()
 
         # general settings of TimeBox object
         timebox.min = self.start
@@ -89,12 +91,26 @@ class Scale:
         # setting color for for whole intervals
         timebox.fill = self.fill
 
+        # general settings for TimeText object
+        timetext.min = self.start
+        timetext.max = self.finish
+        timetext.resolution = abs(self.resolution)
+        timetext.fill = 'black'
+
         # whole intervals
         for interval in iterator:
+
+            # timebox
             timebox.start = interval[0]
             timebox.finish = interval[1]
             timebox.update()
             scale += timebox.get_element()
+
+            # timetext
+            timetext.start = interval[0]
+            timetext.text = interval[2]
+            timetext.update()
+            scale += timetext.get_element()
 
         return scale
 
