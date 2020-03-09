@@ -260,22 +260,42 @@ class TimeBox(Box):
 
 
 @dataclass
-class TimeText(Text):
+class ScaleText(Text):
 
+    # todo rebuild asking for things class needs(up to caller to work out values)
+    # todo consider making Text parent of TimeBox
+
+    # todo drop this; this is just x
     # accepts ordinal dates
     start: int = 0
-    finish: int = 0
 
-    # defines lower and uppers limits (i.e. edges)
+    # todo drop this; not up to text to calculate
+    # defines lower limit
+    # max not needed for text
     min: int = 0
-    max: int = 0
+
+    # defines width of given whole interval
+    width: float = 0
 
     # pixels per day
     resolution: float = 1
+
+    # defines height of associated box
+    height: float = 50
+
+    def __post_init__(self):
+
+        # calls update automatically on initiation
+        self.update()
 
     def update(self):
         """Updates all variables"""
 
         # removes all time before min
         self.x = (self.start - self.min) * abs(self.resolution)
+
+        # font size calculations
+
+        # vertical offset based on box height and text size
+        self.translate_y = self.height
 

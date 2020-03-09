@@ -4,7 +4,7 @@
 # todo add MONTHS | QUARTERS | HALVES | YEARS
 # todo fix WEEKS so does not break if period too small to pass assertions
 
-from shapes import TimeBox, TimeText
+from shapes import TimeBox, ScaleText
 from dataclasses import dataclass
 from datetime import date
 from pprint import pprint
@@ -42,13 +42,18 @@ class Scale:
     ends: str = None
 
     # defines pixels per day
+    # calculated field
     # passed to TimeBox
-    resolution: float = 1
+    _resolution: float = 1
 
     def build_scale(self):
 
         # iterator is not object specific
         iterator = get_iterator(self.start, self.finish, self.intervals.upper())
+
+        # calculate resolution
+        total_days = self.finish - self.start
+        self._resolution = self.width / total_days
 
         # SVG string
         scale = str()
@@ -57,13 +62,13 @@ class Scale:
         timebox = TimeBox()
 
         # create TimeText object
-        timetext = TimeText()
+        timetext = ScaleText()
 
         # general settings of TimeBox object
         timebox.min = self.start
         timebox.max = self.finish
         timebox.height = self.height
-        timebox.resolution = abs(self.resolution)
+        timebox.resolution = abs(self._resolution)
 
         # style settings
         timebox.background_color = self.background_color
@@ -94,7 +99,7 @@ class Scale:
         # general settings for TimeText object
         timetext.min = self.start
         timetext.max = self.finish
-        timetext.resolution = abs(self.resolution)
+        timetext.resolution = abs(self._resolution)
         timetext.fill = 'black'
 
         # whole intervals
