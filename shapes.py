@@ -1,5 +1,7 @@
 # Module for building SVG shapes
 
+# todo de-conflict names and so can mash classes
+
 # No two shape classes can be parent of common child (e.g. Box and Text)
 # If you do, methods (and sometimes attributes) will override each other
 # You can de-conflict by giving unique names (e.g. changing text "fill" to "color")
@@ -109,7 +111,7 @@ class Box(Base):
     rounding: int = 2
     visibility: str = str()
 
-    def get_element(self):
+    def get_box(self):
         return f'<g ' \
                f'transform="translate({self.x}, {self.y})"' \
                f'><rect ' \
@@ -166,7 +168,7 @@ class Text(Base):
     translate_y: float = 0  # add 0.35 of text size for middle align
     text: str = str()
     text_anchor: str = str()  # start | middle | end
-    fill: str = 'black'
+    font_fill: str = 'black'
     font_size: str = str(50)  # 2em | smaller | etc.
     font_family: str = str()  # "Arial, Helvetica, sans-serif"
     font_style: str = str()  # normal | italic | oblique
@@ -195,10 +197,10 @@ class Text(Base):
         if self.rotate_y is None:
             self.rotate_y = self.y
 
-    def get_element(self):
+    def get_text(self):
         return f'<text ' \
                f'x="{self.x}" y="{self.y}" ' \
-               f'fill="{self.fill}" ' \
+               f'fill="{self.font_fill}" ' \
                f'transform="' \
                f'translate({self.translate_x}, {self.translate_y}) ' \
                f'rotate({self.rotate}, {self.rotate_x}, {self.rotate_y})" ' \
@@ -213,7 +215,7 @@ class Text(Base):
 
 
 @dataclass
-class TimeBox(Box):
+class TimeBox(Box, Text):
     """Builds Box using ordinal dates"""
 
     # accepts ordinal dates
@@ -257,44 +259,6 @@ class TimeBox(Box):
 
         # difference, in days, between start and finish
         self.width = (self.finish - self.start) * abs(self.resolution)
-
-
-@dataclass
-class ScaleText(Text):
-
-    # todo rebuild asking for things class needs(up to caller to work out values)
-    # todo consider making Text parent of TimeBox
-
-    # todo drop this; this is just x
-    # accepts ordinal dates
-    start: int = 0
-
-    # todo drop this; not up to text to calculate
-    # defines lower limit
-    # max not needed for text
-    min: int = 0
-
-    # defines width of given whole interval
-    width: float = 0
-
-    # pixels per day
-    resolution: float = 1
-
-    # defines height of associated box
-    height: float = 50
-
-    def __post_init__(self):
-
-        # calls update automatically on initiation
-        self.update()
-
-    def update(self):
-        """Updates all variables"""
-
-        # removes all time before min
-        self.x = (self.start - self.min) * abs(self.resolution)
-
-        # font size calculations
 
         # vertical offset based on box height and text size
         self.translate_y = self.height

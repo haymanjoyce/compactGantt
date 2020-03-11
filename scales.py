@@ -4,7 +4,7 @@
 # todo add MONTHS | QUARTERS | HALVES | YEARS
 # todo fix WEEKS so does not break if period too small to pass assertions
 
-from shapes import TimeBox, ScaleText
+from shapes import TimeBox
 from dataclasses import dataclass
 from datetime import date
 from pprint import pprint
@@ -62,7 +62,7 @@ class Scale:
         timebox = TimeBox()
 
         # create TimeText object
-        timetext = ScaleText()
+        # timetext = ScaleText()
 
         # general settings of TimeBox object
         timebox.min = self.start
@@ -85,22 +85,22 @@ class Scale:
         timebox.start = self.start
         timebox.finish = iterator[0][0]
         timebox.update()
-        scale += timebox.get_element()
+        scale += timebox.get_box()
 
         # last non-whole interval
         timebox.start = iterator[-1][1]
         timebox.finish = self.finish
         timebox.update()
-        scale += timebox.get_element()
+        scale += timebox.get_box()
 
         # setting color for for whole intervals
         timebox.fill = self.fill
 
         # general settings for TimeText object
-        timetext.min = self.start
-        timetext.max = self.finish
-        timetext.resolution = abs(self._resolution)
-        timetext.fill = 'black'
+        # timetext.min = self.start
+        # timetext.max = self.finish
+        # timetext.resolution = abs(self._resolution)
+        # timetext.font_fill = 'black'
 
         # whole intervals
         for interval in iterator:
@@ -109,13 +109,15 @@ class Scale:
             timebox.start = interval[0]
             timebox.finish = interval[1]
             timebox.update()
-            scale += timebox.get_element()
+            scale += timebox.get_box()
 
             # timetext
-            timetext.start = interval[0]
-            timetext.text = interval[2]
-            timetext.update()
-            scale += timetext.get_element()
+            # timetext.start = interval[0]
+            # timetext.text = interval[2]
+            # timetext.update()
+            timebox.translate_y = self.height
+            timebox.text = interval[2]
+            scale += timebox.get_text()
 
         return scale
 

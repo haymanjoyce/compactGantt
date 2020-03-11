@@ -51,8 +51,8 @@ scale_a = Scale(intervals='WEEKS', border_width=0.2, y=400, start=737300, finish
 # GET ALL TUPLES
 unsorted_items = list()
 
-item_a = Item(element=timebox_a.get_element(), layer=200).get_item()
-item_b = Item(element=timebox_b.get_element(), layer=300).get_item()
+item_a = Item(element=timebox_a.get_box(), layer=200).get_item()
+item_b = Item(element=timebox_b.get_box(), layer=300).get_item()
 item_c = Item(element=scale_a.get_element(), layer=300).get_item()
 
 unsorted_items.extend((item_a, item_b, item_c))
