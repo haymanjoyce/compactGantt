@@ -260,6 +260,3 @@ class TimeBox(Box, Text):
         # difference, in days, between start and finish
         self.width = (self.finish - self.start) * abs(self.resolution)
 
-        # vertical offset based on box height and text size
-        self.translate_y = self.height
-

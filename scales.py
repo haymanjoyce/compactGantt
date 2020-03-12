@@ -20,6 +20,10 @@ class Scale:
     x: float = 0
     y: float = 0
 
+    # places the text relative to x and y
+    translate_x: float = 2  # defaults to 2px
+    translate_y: float = 0  # calculated post init for life of object
+
     # sets scale dimensions
     width: float = 800  # used to calculate resolution
     height: float = 100  # passed to TimeBox
@@ -46,6 +50,9 @@ class Scale:
     # passed to TimeBox
     _resolution: float = 1
 
+    def __post_init__(self):
+        pass
+
     def build_scale(self):
 
         # iterator is not object specific
@@ -55,14 +62,14 @@ class Scale:
         total_days = self.finish - self.start
         self._resolution = self.width / total_days
 
+        # calculates translate_y
+        self.translate_y = self.height - 5  # Text shifted arbitrary 5px up
+
         # SVG string
         scale = str()
 
         # create TimeBox object
         timebox = TimeBox()
-
-        # create TimeText object
-        # timetext = ScaleText()
 
         # general settings of TimeBox object
         timebox.min = self.start
@@ -96,26 +103,19 @@ class Scale:
         # setting color for for whole intervals
         timebox.fill = self.fill
 
-        # general settings for TimeText object
-        # timetext.min = self.start
-        # timetext.max = self.finish
-        # timetext.resolution = abs(self._resolution)
-        # timetext.font_fill = 'black'
-
         # whole intervals
         for interval in iterator:
 
-            # timebox
+            # box
             timebox.start = interval[0]
             timebox.finish = interval[1]
             timebox.update()
             scale += timebox.get_box()
 
-            # timetext
-            # timetext.start = interval[0]
-            # timetext.text = interval[2]
-            # timetext.update()
-            timebox.translate_y = self.height
+            # text
+            timebox.translate_x = self.translate_x
+            timebox.translate_y = self.translate_y
+
             timebox.text = interval[2]
             scale += timebox.get_text()
 
