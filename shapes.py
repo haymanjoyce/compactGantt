@@ -1,33 +1,22 @@
 # Module for building SVG shapes
 
-# todo de-conflict names and so can mash classes
-
-# No two shape classes can be parent of common child (e.g. Box and Text)
-# If you do, methods (and sometimes attributes) will override each other
-# You can de-conflict by giving unique names (e.g. changing text "fill" to "color")
-
 from dataclasses import dataclass, field
 from math import sqrt
 
 
 @dataclass
-class Base:
+class Point:
     """Attributes common to all classes"""
 
     # X and Y is generally treated as top left corner of shape classes
     # This is not applicable to Line class and is bottom left for Text class
-
-    # Don't add attributes to this parent class that are unused by some subclasses
-    # Otherwise your editor will prompt you to add arguments that may not apply
-
-    # You may want to rename class as Position whilst only has position attributes
 
     x: float = 0
     y: float = 0
 
 
 @dataclass
-class Line(Base):
+class Line(Point):
 
     dx: float = 200
     dy: float = 100
@@ -36,7 +25,7 @@ class Line(Base):
     stroke_line_cap: str = str()
     stroke_dasharray: str = str()  # dash gap dash gap
 
-    def get_element(self):
+    def get_line(self):
         return f'<line ' \
                f'x1="{self.x}" y1="{self.y}" ' \
                f'x2="{self.dx}" y2="{self.dy}" ' \
@@ -48,7 +37,7 @@ class Line(Base):
 
 
 @dataclass
-class Rect(Base):
+class Rect(Point):
 
     width: float = 200
     height: float = 100
@@ -58,7 +47,7 @@ class Rect(Base):
     rounding: int = 2
     visibility: str = str()
 
-    def get_element(self):
+    def get_rect(self):
         return f'<rect ' \
                f'x="{self.x}" y="{self.y}" ' \
                f'rx="{self.rounding}" ry="{self.rounding}" ' \
@@ -70,7 +59,7 @@ class Rect(Base):
 
 
 @dataclass
-class Circle(Base):
+class Circle(Point):
 
     size: float = 50
     stroke: str = 'black'
@@ -88,7 +77,7 @@ class Circle(Base):
     def get_radius(self):
         return self.size / 2
 
-    def get_element(self):
+    def get_circle(self):
         return f'<circle ' \
                f'cx="{self.cx}" cy="{self.cy}" ' \
                f'r="{self.r}" ' \
@@ -99,7 +88,7 @@ class Circle(Base):
 
 
 @dataclass
-class Box(Base):
+class Box(Point):
     """Rectangle where the border line does not bleed over the outer edge"""
 
     width: float = 200
@@ -147,7 +136,7 @@ class Diamond(Rect):
         self.resized = self.size / sqrt(2)
         self.repositioned = (self.size - self.resized) / 2
 
-    def get_element(self):
+    def get_diamond(self):
         return f'<rect ' \
                f'x="{self.x + self.repositioned}" y="{self.y + self.repositioned}" ' \
                f'rx="{self.rounding}" ry="{self.rounding}" ' \
@@ -159,7 +148,7 @@ class Diamond(Rect):
 
 
 @dataclass
-class Text(Base):
+class Text(Point):
 
     rotate: int = 0
     rotate_x: float = None
@@ -169,10 +158,11 @@ class Text(Base):
     text: str = str()
     text_anchor: str = str()  # start | middle | end
     font_fill: str = 'black'
-    font_size: str = str(50)  # 2em | smaller | etc.
+    font_size: str = str(20)  # 2em | smaller | etc.
     font_family: str = str()  # "Arial, Helvetica, sans-serif"
     font_style: str = str()  # normal | italic | oblique
     font_weight: str = str()  # normal | bold | bolder | lighter | <number>
+    text_visibility: str = str()
 
     # scale_x: float = 1  # the app does not need this feature
     # scale_y: float = 1  # the app does not need this feature
@@ -192,6 +182,7 @@ class Text(Base):
     # alignment_baseline: str = field(init=False, repr=False, default=str())  # only applies to tspan element
 
     def __post_init__(self):
+
         if self.rotate_x is None:
             self.rotate_x = self.x
         if self.rotate_y is None:
@@ -209,6 +200,7 @@ class Text(Base):
                f'text-anchor="{self.text_anchor}" ' \
                f'font-style="{self.font_style}" ' \
                f'font-weight="{self.font_weight}" ' \
+               f'visibility="{self.text_visibility}" ' \
                f'>' \
                f'{self.text}' \
                f'</text>'
@@ -229,15 +221,11 @@ class TimeBox(Box, Text):
     # pixels per day
     resolution: float = 1
 
-    def __post_init__(self):
-
-        # calls update automatically on initiation
-        self.update()
-
     def update(self):
         """Updates all variables"""
 
-        # you need to call this manually if changing variable after initiation
+        # you need to call this manually after initiation
+        # cannot use post_init to call because post_init overides subclass post_inits
 
         if self.finish < self.min:  # don't display if finish less than min
             self.visibility = 'hidden'

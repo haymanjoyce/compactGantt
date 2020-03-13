@@ -1,6 +1,5 @@
 # Module for building scales
 
-# todo add text to scales
 # todo add MONTHS | QUARTERS | HALVES | YEARS
 # todo fix WEEKS so does not break if period too small to pass assertions
 
@@ -20,21 +19,15 @@ class Scale:
     x: float = 0
     y: float = 0
 
-    # places the text relative to x and y
-    translate_x: float = 2  # defaults to 2px
-    translate_y: float = 0  # calculated post init for life of object
-
     # sets scale dimensions
     width: float = 800  # used to calculate resolution
-    height: float = 100  # passed to TimeBox
+    height: float = 100
 
     # defines time window
-    # passed to TimeBox as min and max
     start: int = 0
     finish: int = 0
 
     # defines interval type for scale
-    # passed to .get_iterator function
     intervals: str = 'WEEKS'  # DAYS | WEEKS | MONTHS | QUARTERS | HALVES | YEARS
 
     # scale styling
@@ -46,12 +39,21 @@ class Scale:
     ends: str = None
 
     # defines pixels per day
-    # calculated field
-    # passed to TimeBox
-    _resolution: float = 1
+    resolution: float = None
 
-    def __post_init__(self):
-        pass
+    # text positioning
+    translate_x: float = 2
+    translate_y: float = None  # calculated if None
+
+    # text styling
+    font_fill: str = '#000'
+    font_size: str = str(20)  # 2em | smaller | etc.
+    font_family: str = str()  # "Arial, Helvetica, sans-serif"
+    font_style: str = str()  # normal | italic | oblique
+    font_weight: str = str()  # normal | bold | bolder | lighter | <number>
+
+    # text visibility
+    text_visibility: str = str()
 
     def build_scale(self):
 
@@ -60,10 +62,16 @@ class Scale:
 
         # calculate resolution
         total_days = self.finish - self.start
-        self._resolution = self.width / total_days
+        if self.resolution is None:
+            self.resolution = self.width / total_days
 
         # calculates translate_y
-        self.translate_y = self.height - 5  # Text shifted arbitrary 5px up
+        if self.translate_y is None:
+            self.translate_y = self.height - 3
+
+        # sets text visibility
+        if self.font_size == str(0):
+            self.text_visibility = 'hidden'
 
         # SVG string
         scale = str()
@@ -71,17 +79,21 @@ class Scale:
         # create TimeBox object
         timebox = TimeBox()
 
-        # general settings of TimeBox object
+        # general settings for timebox object
         timebox.min = self.start
         timebox.max = self.finish
         timebox.height = self.height
-        timebox.resolution = abs(self._resolution)
-
-        # style settings
+        timebox.resolution = abs(self.resolution)
         timebox.background_color = self.background_color
         timebox.border_color = self.border_color
         timebox.border_width = self.border_width
         timebox.rounding = self.rounding
+        timebox.font_fill = self.font_fill
+        timebox.font_size = self.font_size
+        timebox.font_weight = self.font_weight
+        timebox.font_family = self.font_family
+        timebox.font_style = self.font_style
+        timebox.text_visibility = self.text_visibility
 
         # setting a color for non-whole intervals
         if self.ends is None:
@@ -121,7 +133,7 @@ class Scale:
 
         return scale
 
-    def get_element(self):
+    def get_scale(self):
         return f'<g ' \
                f'transform="translate({self.x}, {self.y})"' \
                f'>' \
