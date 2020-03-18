@@ -5,6 +5,7 @@
 # todo ability to set date format
 # todo improve using map()
 # todo put non-whole intervals into iterator
+# todo change name of ends to partial
 
 from shapes import TimeBox
 from dataclasses import dataclass
@@ -150,6 +151,7 @@ def get_iterator(start, finish, interval='DAYS', week_start=0):
     if interval == 'DAYS':
         return iterate_days(start, finish)
     elif interval == 'WEEKS':
+        iterate_weeks_temp(start, finish, week_start)
         return iterate_weeks(start, finish, week_start)
     else:
         raise ValueError(interval)
@@ -170,7 +172,7 @@ def iterate_days(start, finish):
 
 
 def iterate_weeks(start, finish, week_start=0):
-    """Returns iterator showing whole weeks in a given range"""
+    """Returns iterator showing partial and whole weeks in a given range"""
 
     # calculate number of days in range
     number_of_days = finish - start
@@ -181,15 +183,12 @@ def iterate_weeks(start, finish, week_start=0):
     # find position of start of whole week in range
     first_week = days[:7]
     first_week_day_numbers = [day.weekday() for day in first_week]
-    print(first_week_day_numbers)
 
     # breaks if week start not found in range
     try:
         range_start = (first_week_day_numbers.index(week_start)) - 1  # day before first week day
-        print(range_start)
     except ValueError:
         range_start = 0  # start with first day
-        print(range_start)
 
     # find position of end of last whole week in range
     over_hang = (number_of_days - range_start) % 7
@@ -210,7 +209,9 @@ def iterate_weeks(start, finish, week_start=0):
     if len(iterator) == 0:
         iterator = ((start, finish, 1), )
 
-    print(iterator)
     return iterator
 
+
+def iterate_weeks_temp(start, finish, week_start=0):
+    print(start, finish, week_start)
 
