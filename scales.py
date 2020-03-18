@@ -2,6 +2,9 @@
 
 # todo add MONTHS | QUARTERS | HALVES | YEARS
 # todo fix WEEKS so does not break if period too small to pass assertions
+# todo ability to set date format
+# todo improve using map()
+# todo put non-whole intervals into iterator
 
 from shapes import TimeBox
 from dataclasses import dataclass
@@ -29,6 +32,7 @@ class Scale:
 
     # defines interval type for scale
     intervals: str = 'WEEKS'  # DAYS | WEEKS | MONTHS | QUARTERS | HALVES | YEARS
+    week_start: int = 0  # 0 is Monday
 
     # scale styling
     background_color: str = 'black'
@@ -58,14 +62,14 @@ class Scale:
     def build_scale(self):
 
         # iterator is not object specific
-        iterator = get_iterator(self.start, self.finish, self.intervals.upper())
+        iterator = get_iterator(self.start, self.finish, self.intervals.upper(), self.week_start)
 
-        # calculate resolution
+        # calculates resolution
         total_days = self.finish - self.start
         if self.resolution is None:
             self.resolution = self.width / total_days
 
-        # calculates translate_y
+        # calculates text vertical alignment
         if self.translate_y is None:
             self.translate_y = self.height - 3
 
@@ -141,12 +145,12 @@ class Scale:
                f'</g>'
 
 
-def get_iterator(start, finish, interval='DAYS'):
+def get_iterator(start, finish, interval='DAYS', week_start=0):
     """Creator method which decides which concrete implementation to use (i.e. factory method design pattern)"""
     if interval == 'DAYS':
         return iterate_days(start, finish)
     elif interval == 'WEEKS':
-        return iterate_weeks(start, finish)
+        return iterate_weeks(start, finish, week_start)
     else:
         raise ValueError(interval)
 
@@ -177,7 +181,15 @@ def iterate_weeks(start, finish, week_start=0):
     # find position of start of whole week in range
     first_week = days[:7]
     first_week_day_numbers = [day.weekday() for day in first_week]
-    range_start = (first_week_day_numbers.index(week_start)) - 1  # day before first week day
+    print(first_week_day_numbers)
+
+    # breaks if week start not found in range
+    try:
+        range_start = (first_week_day_numbers.index(week_start)) - 1  # day before first week day
+        print(range_start)
+    except ValueError:
+        range_start = 0  # start with first day
+        print(range_start)
 
     # find position of end of last whole week in range
     over_hang = (number_of_days - range_start) % 7
@@ -194,9 +206,11 @@ def iterate_weeks(start, finish, week_start=0):
         iterator += entry
         week_count += 1  # prepare week_count for next entry
 
-    assert date.fromordinal(iterator[0][0]).weekday() == 6  # first day of first whole week is last day of previous week
-    assert date.fromordinal(iterator[-1][1]).weekday() == 6  # last day of last whole week is last day of current week
+    # if there are no whole weeks in range then return iterator with start and finish
+    if len(iterator) == 0:
+        iterator = ((start, finish, 1), )
 
+    print(iterator)
     return iterator
 
 
