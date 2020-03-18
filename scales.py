@@ -6,6 +6,8 @@
 # todo improve using map()
 # todo put non-whole intervals into iterator
 # todo change name of ends to partial
+# todo what happens if week partial interval start and finish are same date (i.e. 1 day)
+# todo what if range less than 1 week
 
 from shapes import TimeBox
 from dataclasses import dataclass
@@ -213,5 +215,38 @@ def iterate_weeks(start, finish, week_start=0):
 
 
 def iterate_weeks_temp(start, finish, week_start=0):
-    print(start, finish, week_start)
 
+    iterator = tuple()
+    week_count = 1
+
+    # create iterator
+    for day in range(start, finish + 1):
+        week_day = date.fromordinal(day).weekday()
+        if week_day == week_start:
+            entry = tuple()
+            entry += day,
+            week_stop = day + 6
+            entry += week_stop,
+            entry += week_count,
+            week_count += 1
+            iterator += entry,
+
+    # if first week start more than range start
+    if iterator[0][0] > start:
+        entry = start, iterator[0][0] - 1, 0,  # 0 denotes incomplete week
+        iterator = (entry, ) + iterator
+
+    # if last week finish more than range finish
+    if iterator[-1][1] > finish:
+        entry = iterator[-1][0], finish, 0,  # 0 denotes incomplete week
+        iterator = iterator[:-1] + (entry, )
+
+    print("range start ", start)
+    print("range finish", finish)
+    print("iterator", iterator)
+    print("first interval, start", date.fromordinal(iterator[0][0]))
+    print("first interval, finish", date.fromordinal(iterator[0][1]))
+    print("last interval, start", date.fromordinal(iterator[-1][0]))
+    print("last interval, finish", date.fromordinal(iterator[-1][1]))
+
+    assert date.fromordinal(iterator[1][0]).weekday() == week_start
