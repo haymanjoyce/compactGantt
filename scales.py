@@ -8,10 +8,11 @@
 # todo change name of ends to partial
 # todo what happens if week partial interval start and finish are same date (i.e. 1 day)
 # todo what if range less than 1 week
+# todo rewrite TimeBox to assume start is 00:00 and next argument adds days
 
 from shapes import TimeBox
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime
 from pprint import pprint
 
 
@@ -64,79 +65,73 @@ class Scale:
 
     def build_scale(self):
 
-        # iterator is not object specific
+        # create iterator
         iterator = get_iterator(self.start, self.finish, self.intervals.upper(), self.week_start)
 
-        # calculates resolution
-        total_days = self.finish - self.start
-        if self.resolution is None:
-            self.resolution = self.width / total_days
-
-        # calculates text vertical alignment
-        if self.translate_y is None:
-            self.translate_y = self.height - 3
-
-        # sets text visibility
-        if self.font_size == str(0):
-            self.text_visibility = 'hidden'
-
-        # SVG string
+        # create SVG string
         scale = str()
 
         # create TimeBox object
-        timebox = TimeBox()
+        time_box = TimeBox()
 
-        # general settings for timebox object
-        timebox.min = self.start
-        timebox.max = self.finish
-        timebox.height = self.height
-        timebox.resolution = abs(self.resolution)
-        timebox.background_color = self.background_color
-        timebox.border_color = self.border_color
-        timebox.border_width = self.border_width
-        timebox.rounding = self.rounding
-        timebox.font_fill = self.font_fill
-        timebox.font_size = self.font_size
-        timebox.font_weight = self.font_weight
-        timebox.font_family = self.font_family
-        timebox.font_style = self.font_style
-        timebox.text_visibility = self.text_visibility
+        # calculates total days
+        total_days = self.finish - self.start
 
-        # setting a color for non-whole intervals
+        # calculate resolution
+        if self.resolution is None:
+            self.resolution = self.width / total_days
+
+        # calculate text vertical alignment
+        if self.translate_y is None:
+            self.translate_y = self.height - 3
+
+        # set text visibility
+        if self.font_size == str(0):
+            self.text_visibility = 'hidden'
+
+        # set color for non-whole intervals
         if self.ends is None:
             self.ends = self.fill
-        timebox.fill = self.ends
 
-        # first non-whole interval
-        timebox.start = self.start
-        timebox.finish = iterator[0][0]
-        timebox.update()
-        scale += timebox.get_box()
+        # general settings for time_box object
+        time_box.min = self.start
+        time_box.max = self.finish
+        time_box.height = self.height
+        time_box.resolution = abs(self.resolution)
+        time_box.background_color = self.background_color
+        time_box.border_color = self.border_color
+        time_box.border_width = self.border_width
+        time_box.rounding = self.rounding
+        time_box.fill = self.fill
+        time_box.font_fill = self.font_fill
+        time_box.font_size = self.font_size
+        time_box.font_weight = self.font_weight
+        time_box.font_family = self.font_family
+        time_box.font_style = self.font_style
+        time_box.text_visibility = self.text_visibility
 
-        # last non-whole interval
-        timebox.start = iterator[-1][1]
-        timebox.finish = self.finish
-        timebox.update()
-        scale += timebox.get_box()
-
-        # setting color for for whole intervals
-        timebox.fill = self.fill
-
-        # whole intervals
+        # changes to TimeBox object by iteration
         for interval in iterator:
 
-            # box
-            timebox.start = interval[0]
-            timebox.finish = interval[1]
-            timebox.update()
-            scale += timebox.get_box()
+            # we assume the date marks the end of the day
+            time_box.start = interval[0] - 1
+            time_box.finish = interval[1]
 
-            # text
-            timebox.translate_x = self.translate_x
-            timebox.translate_y = self.translate_y
+            # updates derived values in TimeBox object
+            time_box.update()
 
-            timebox.text = interval[2]
-            scale += timebox.get_text()
+            # needs to render before text
+            scale += time_box.get_box()
+
+            # position text relative to box
+            time_box.translate_x = self.translate_x
+            time_box.translate_y = self.translate_y
+
+            # label box
+            time_box.text = interval[2]
+
+            # add text to scale
+            scale += time_box.get_text()
 
         return scale
 
@@ -149,11 +144,10 @@ class Scale:
 
 
 def get_iterator(start, finish, interval='DAYS', week_start=0):
-    """Creator method which decides which concrete implementation to use (i.e. factory method design pattern)"""
+    """Creator method which decides which concrete implementation to use (a factory method design pattern)"""
     if interval == 'DAYS':
         return iterate_days(start, finish)
     elif interval == 'WEEKS':
-        iterate_weeks_temp(start, finish, week_start)
         return iterate_weeks(start, finish, week_start)
     else:
         raise ValueError(interval)
@@ -174,47 +168,6 @@ def iterate_days(start, finish):
 
 
 def iterate_weeks(start, finish, week_start=0):
-    """Returns iterator showing partial and whole weeks in a given range"""
-
-    # calculate number of days in range
-    number_of_days = finish - start
-
-    # list days as datetime objects
-    days = [date.fromordinal(start + day) for day in range(0, number_of_days)]
-
-    # find position of start of whole week in range
-    first_week = days[:7]
-    first_week_day_numbers = [day.weekday() for day in first_week]
-
-    # breaks if week start not found in range
-    try:
-        range_start = (first_week_day_numbers.index(week_start)) - 1  # day before first week day
-    except ValueError:
-        range_start = 0  # start with first day
-
-    # find position of end of last whole week in range
-    over_hang = (number_of_days - range_start) % 7
-    range_end = number_of_days - over_hang
-
-    range_interval = 7  # weekly
-    week_count = 1  # the first whole week counts as 1 (not 0 or 2)
-    iterator = tuple()
-
-    for day_number in range(range_start, range_end, range_interval):
-        start_week = start + day_number  # first day_number value is 0
-        end_week = start_week + 7
-        entry = ((start_week, end_week, week_count), )
-        iterator += entry
-        week_count += 1  # prepare week_count for next entry
-
-    # if there are no whole weeks in range then return iterator with start and finish
-    if len(iterator) == 0:
-        iterator = ((start, finish, 1), )
-
-    return iterator
-
-
-def iterate_weeks_temp(start, finish, week_start=0):
 
     iterator = tuple()
     week_count = 1
@@ -241,12 +194,15 @@ def iterate_weeks_temp(start, finish, week_start=0):
         entry = iterator[-1][0], finish, 0,  # 0 denotes incomplete week
         iterator = iterator[:-1] + (entry, )
 
+    assert date.fromordinal(iterator[1][0]).weekday() == week_start
+
     print("range start ", start)
     print("range finish", finish)
     print("iterator", iterator)
-    print("first interval, start", date.fromordinal(iterator[0][0]))
-    print("first interval, finish", date.fromordinal(iterator[0][1]))
-    print("last interval, start", date.fromordinal(iterator[-1][0]))
-    print("last interval, finish", date.fromordinal(iterator[-1][1]))
+    print("first interval, start", datetime.fromordinal(iterator[0][0]))
+    print("first interval, finish", datetime.fromordinal(iterator[0][1]))
+    print("last interval, start", datetime.fromordinal(iterator[-1][0]))
+    print("last interval, finish", datetime.fromordinal(iterator[-1][1]))
 
-    assert date.fromordinal(iterator[1][0]).weekday() == week_start
+    return iterator
+
