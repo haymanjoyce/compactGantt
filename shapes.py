@@ -211,8 +211,8 @@ class TimeBox(Box, Text):
     """Builds Box using ordinal dates"""
 
     # accepts ordinal dates
-    start: int = 0
-    finish: int = 0
+    start: int = 0  # taken to be 00:00
+    finish: int = 0  # taken to be 23:59 or + 1
 
     # defines lower and uppers limits (i.e. edges)
     min: int = 0

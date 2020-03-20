@@ -9,8 +9,10 @@
 # todo what happens if week partial interval start and finish are same date (i.e. 1 day)
 # todo what if range less than 1 week
 # todo rewrite TimeBox to assume start is 00:00 and next argument adds days
+# todo rename scale properties as box properties (e.g. rounding is not of scale object but of box object)
+# todo rename iterator to intervals
 
-from shapes import TimeBox
+from shapes import TimeBox, Box, Text
 from dataclasses import dataclass
 from datetime import date, datetime
 from pprint import pprint
@@ -18,9 +20,7 @@ from pprint import pprint
 
 @dataclass
 class Scale:
-    """
-    Builds scale out of TimeBoxes
-    """
+    """Builds scales"""
 
     # places the scale
     x: float = 0
@@ -34,7 +34,7 @@ class Scale:
     start: int = 0
     finish: int = 0
 
-    # defines interval type for scale
+    # defines interval type
     intervals: str = 'WEEKS'  # DAYS | WEEKS | MONTHS | QUARTERS | HALVES | YEARS
     week_start: int = 0  # 0 is Monday
 
@@ -49,7 +49,7 @@ class Scale:
     # defines pixels per day
     resolution: float = None
 
-    # text positioning
+    # text positioning relative to x and y
     translate_x: float = 2
     translate_y: float = None  # calculated if None
 
@@ -63,10 +63,61 @@ class Scale:
     # text visibility
     text_visibility: str = str()
 
+    # iterator
+    iterator: tuple = tuple()
+
+    def __post_init__(self):
+
+        # calculates total days
+        total_days = self.finish - self.start
+
+        # calculate resolution
+        if self.resolution is None:
+            self.resolution = self.width / total_days
+
+        self.iterator = weeks(self.start, self.finish, self.resolution, self.week_start)
+        # self.iterator = get_iterator(self.start, self.finish, self.intervals.upper(), self.week_start)
+
+    def build_boxes(self):
+
+        box = Box()
+        boxes = str()
+
+        # unchanging variables
+        box.y = self.y - 300
+        box.height = self.height
+
+        # unchanging variables which need renaming
+        box.rounding = self.rounding
+        box.background_color = self.background_color
+        box.border_color = self.border_color
+        box.border_width = self.border_width
+
+        # changing variables
+        for i in self.iterator:
+            box.x = i[0]
+            box.width = i[1]
+            box.fill = self.fill
+            boxes += box.get_box()
+
+        # should return scale with svg added so scale needs to be property of Scale
+        return boxes
+
+    def build_labels(self):
+
+        label = Text()
+        label.font_fill = self.font_fill
+        label.font_size = self.font_size
+        label.font_weight = self.font_weight
+        label.font_family = self.font_family
+        label.font_style = self.font_style
+        label.text_visibility = self.text_visibility
+
     def build_scale(self):
 
         # create iterator
         iterator = get_iterator(self.start, self.finish, self.intervals.upper(), self.week_start)
+        print(iterator)
 
         # create SVG string
         scale = str()
@@ -139,7 +190,7 @@ class Scale:
         return f'<g ' \
                f'transform="translate({self.x}, {self.y})"' \
                f'>' \
-               f'{self.build_scale()}' \
+               f'{self.build_scale()}{self.build_boxes()}' \
                f'</g>'
 
 
@@ -148,6 +199,7 @@ def get_iterator(start, finish, interval='DAYS', week_start=0):
     if interval == 'DAYS':
         return iterate_days(start, finish)
     elif interval == 'WEEKS':
+        weeks(start, finish, resolution=1, week_start=0)
         return iterate_weeks(start, finish, week_start)
     else:
         raise ValueError(interval)
@@ -196,13 +248,48 @@ def iterate_weeks(start, finish, week_start=0):
 
     assert date.fromordinal(iterator[1][0]).weekday() == week_start
 
-    print("range start ", start)
-    print("range finish", finish)
-    print("iterator", iterator)
-    print("first interval, start", datetime.fromordinal(iterator[0][0]))
-    print("first interval, finish", datetime.fromordinal(iterator[0][1]))
-    print("last interval, start", datetime.fromordinal(iterator[-1][0]))
-    print("last interval, finish", datetime.fromordinal(iterator[-1][1]))
+    # print("range start ", start)
+    # print("range finish", finish)
+    # print("iterator", iterator)
+    # print("first interval, start", datetime.fromordinal(iterator[0][0]))
+    # print("first interval, finish", datetime.fromordinal(iterator[0][1]))
+    # print("last interval, start", datetime.fromordinal(iterator[-1][0]))
+    # print("last interval, finish", datetime.fromordinal(iterator[-1][1]))
 
     return iterator
+
+
+def weeks(start, finish, resolution, week_start=0):
+
+    entries = tuple()
+    days = finish - start
+    day = [date.fromordinal(day).weekday() for day in range(start, finish)[:20]].index(week_start)
+    width = 7 * resolution
+    commencing = start + day
+    week = 1
+
+    # create entries
+    while day < days:
+        x = day * resolution
+        entries += (x, width, commencing, week),
+        day += 7
+        commencing += 7
+        week += 1
+
+    # underhang
+    if entries[0][2] > start:
+        underhang = (entries[0][2] - start) * resolution
+        entry = 0, underhang, start, 0,
+        entries = (entry,) + entries
+
+    # overhang
+    if entries[-1][2] + 7 > finish:
+        overhang = ((entries[-1][2] + 7) - finish) * resolution
+        overhang = width - overhang
+        entry = entries[-1][0], overhang, entries[-1][2], 0,
+        entries = entries[:-1] + (entry, )
+
+    print(entries)
+
+    return entries
 
