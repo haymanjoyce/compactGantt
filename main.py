@@ -44,9 +44,9 @@ creds = ServiceAccountCredentials.from_json_keyfile_name(client_secret, scope)
 # print(list_of_hashes)
 
 # TEMP
-timebox_a = TimeBox(fill='pink', start=100, finish=400, min=0, max=500, resolution=1, height=50)
+timebox_a = TimeBox(fill='pink', start=100, finish=400, min=0, max=500, resolution=1, height=50, y=400)
 timebox_b = TimeBox(fill='green', start=0, finish=300, min=0, max=500, resolution=1, y=50)
-scale_a = Scale(intervals='WEEKS', border_width=0.2, y=400, start=737505, finish=737545, ends='pink', height=50, width=800, week_start=0)
+scale_a = Scale(kind='WEEKS', start=737504, finish=737517, width=800, scale_ends='pink')
 
 # GET ALL TUPLES
 unsorted_items = list()
@@ -55,7 +55,7 @@ item_a = Item(element=timebox_a.get_box(), layer=200).get_item()
 item_b = Item(element=timebox_b.get_box(), layer=300).get_item()
 item_c = Item(element=scale_a.get_scale(), layer=300).get_item()
 
-unsorted_items.extend((item_a, item_b, item_c))
+unsorted_items.extend((item_a, item_c))
 
 # SORT TUPLES BY POSITION
 sorted_items = sorted(unsorted_items, key=itemgetter(0))

@@ -1,4 +1,6 @@
-# Module for building SVG shapes
+"""Module for building SVG shapes"""
+
+# todo delete TimeBox
 
 from dataclasses import dataclass, field
 from math import sqrt

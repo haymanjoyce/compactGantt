@@ -1,3 +1,5 @@
+"""Module for arranging shapes"""
+
 from dataclasses import dataclass
 
 

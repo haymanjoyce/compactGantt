@@ -1,4 +1,4 @@
-# Module creates and displays the final SVG image
+"""Module creates and displays the final SVG image"""
 
 from dataclasses import dataclass, field
 
