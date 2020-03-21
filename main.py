@@ -2,6 +2,8 @@
 
 # todo hold data in database not spreadsheets
 # todo GUI interface to database
+# todo week numbers from start of year option
+# todo ability to hide labels
 
 # REQUIREMENTS
 # oauth2client - access Google Cloud Platform
@@ -46,7 +48,7 @@ creds = ServiceAccountCredentials.from_json_keyfile_name(client_secret, scope)
 # TEMP
 timebox_a = TimeBox(fill='pink', start=100, finish=400, min=0, max=500, resolution=1, height=50, y=400)
 timebox_b = TimeBox(fill='green', start=0, finish=300, min=0, max=500, resolution=1, y=50)
-scale_a = Scale(kind='WEEKS', start=737504, finish=737517, width=800, scale_ends='pink')
+scale_a = Scale(kind='WEEKS', start=737504, finish=737604, width=800, scale_ends='pink')
 
 # GET ALL TUPLES
 unsorted_items = list()

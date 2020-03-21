@@ -1,8 +1,8 @@
 """Module for building scales"""
 
 # todo add MONTHS | QUARTERS | HALVES | YEARS
-# todo fix WEEKS so does not break if period too small
-# todo ability to set date format
+# todo ability to set label format
+# todo ability to choose to show count or date
 
 from shapes import Box, Text
 from dataclasses import dataclass
@@ -54,6 +54,10 @@ class Scale:
 
     def __post_init__(self):
 
+        # clean start and finish dates
+        if self.finish <= self.start or self.start >= self.finish:
+            self.finish = self.start + 1
+
         # calculate resolution (pixels per day)
         self.resolution = self.width / (self.finish - self.start)  # // will reduce float (good) and precision (bad)
 
@@ -66,7 +70,10 @@ class Scale:
 
         # set default text_x if None
         if self.text_x is None:
-            self.text_x = self.intervals[1][1] * 0.15
+            try:
+                self.text_x = self.intervals[1][1] * 0.15  # we take second entry as first may not be a whole interval
+            except IndexError:
+                self.text_x = 0  # if no second entry available
 
         # set default text_y if None
         if self.text_y is None:
@@ -158,33 +165,45 @@ def days(start, finish):
 def weeks(start, finish, resolution, week_start):
     """Returns iterable showing all weeks in a given range"""
 
-    entries = tuple()
-    total_days = finish - start
-    first_weekday = [date.fromordinal(day).weekday() for day in range(start, finish)[:20]].index(week_start)
-    box_width = 7 * resolution
-    week_commencing = start + first_weekday
-    week_number = 1
+    try:  # requires a week_start to be found
 
-    # create entries
-    while first_weekday < total_days:
-        x = first_weekday * resolution
-        entries += (x, box_width, week_commencing, week_number),
-        first_weekday += 7
-        week_commencing += 7
-        week_number += 1
+        entries = tuple()
+        total_days = finish - start
+        first_weekday = [date.fromordinal(day).weekday() for day in range(start, finish)[:20]].index(week_start)
+        box_width = 7 * resolution
+        week_commencing = start + first_weekday
+        week_number = 1
 
-    # underhang
-    if entries[0][2] > start:
-        underhang = (entries[0][2] - start) * resolution
-        entry = 0, underhang, start, 0,  # a week number of 0 means not a whole week
-        entries = (entry,) + entries
+        # create entries
+        while first_weekday < total_days:
+            x = first_weekday * resolution
+            entries += (x, box_width, week_commencing, week_number),
+            first_weekday += 7
+            week_commencing += 7
+            week_number += 1
 
-    # overhang
-    if entries[-1][2] + 7 > finish:
-        overhang = ((entries[-1][2] + 7) - finish) * resolution
-        overhang = box_width - overhang
-        entry = entries[-1][0], overhang, entries[-1][2], 0,  # a week number of 0 means not a whole week
-        entries = entries[:-1] + (entry, )
+        # underhang
+        if entries[0][2] > start:
+            underhang = (entries[0][2] - start) * resolution
+            entry = 0, underhang, start, 0,  # a week number of 0 means not a whole week
+            entries = (entry,) + entries
 
-    return entries
+        # overhang
+        if entries[-1][2] + 7 > finish:
+            overhang = ((entries[-1][2] + 7) - finish) * resolution
+            overhang = box_width - overhang
+            entry = entries[-1][0], overhang, entries[-1][2], 0  # a week number of 0 means not a whole week
+            entries = entries[:-1] + (entry, )
+
+        return entries
+
+    except ValueError:  # if no week_start found (i.e. range too short)
+
+        entries = tuple()
+        total_days = finish - start
+        box_width = total_days * resolution
+        entry = 0, box_width, start, 0
+        entries += (entry, )
+
+        return entries
 
