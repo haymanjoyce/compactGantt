@@ -7,6 +7,7 @@
 # todo date format; use map(); mapping ordinal to function whose arg is date_format; may need an entire dates module
 # todo will need date split type as option too
 # todo going to need dates module for interpreting and cleaning dates too
+# todo limit date format types by interval type
 
 # todo create function in utilities module for interpreting color variables
 
