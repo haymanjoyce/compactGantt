@@ -1,10 +1,13 @@
 """Module for building scales"""
 
 # todo add MONTHS | QUARTERS | HALVES | YEARS
-# todo label type
-# todo date type
-# todo date format
 # todo give more options for defining week start (0, Mon, M, etc.)
+# todo if text size not set then calculated
+
+# todo date format; use map(); mapping ordinal to function whose arg is date_format; may need an entire dates module
+# todo will need date split type as option too
+# todo going to need dates module for interpreting and cleaning dates too
+
 # todo create function in utilities module for interpreting color variables
 
 from shapes import Box, Text
@@ -37,11 +40,8 @@ class Scale:
     # defines label type
     label_type: str = str()  # count (default) | hidden | date
 
-    # defines date type
-    date_type: str = str()  # ordinal | Gregorian
-
     # defines date format
-    date_format: str = str()
+    date_format: str = str()  # nnn | ddd | www | mmm | q | h | yyy
 
     # interval styling
     box_background_color: str = 'black'  # this fills the outer box which is revealed when using rounding
