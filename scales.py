@@ -48,6 +48,9 @@ class Scale:
     font_style: str = str()  # normal | italic | oblique
     font_weight: str = str()  # normal | bold | bolder | lighter | <number>
 
+    # text visibility
+    text_visibility: str = str()  # hidden
+
     # text positioning relative to x and y
     text_x: float = None
     text_y: float = None
@@ -121,6 +124,7 @@ class Scale:
         label.font_weight = self.font_weight
         label.font_family = self.font_family
         label.font_style = self.font_style
+        label.text_visibility = self.text_visibility
 
         # changing variables
         for i in self.intervals:
@@ -141,25 +145,32 @@ class Scale:
 def select(start, finish, kind='DAYS', resolution=1.0, week_start=0):
     """Selects appropriate iterable based on kind"""
     if kind == 'DAYS':
-        return days(start, finish)
+        return days(start, finish, resolution)
     elif kind == 'WEEKS':
         return weeks(start, finish, resolution, week_start)
     else:
         raise ValueError(kind)
 
 
-def days(start, finish):
+def days(start, finish, resolution):
     """Returns iterable showing all days in a given range"""
-    number_of_days = finish - start
-    iterator = tuple()
+
+    entries = tuple()
+
+    total_days = finish - start
+    box_width = 1 * resolution
+    x = 0
+    ordinal = start
     day_count = 1
-    for day_number in range(0, number_of_days):
-        day_start = start + day_number
-        day_end = day_start + 1
-        entry = ((day_start, day_end, day_count),)
-        iterator += entry
+
+    for day in range(total_days):
+        entry = x, box_width, ordinal, day_count,
+        entries += (entry, )
+        x += box_width
+        ordinal += 1
         day_count += 1
-    return iterator
+
+    return entries
 
 
 def weeks(start, finish, resolution, week_start):
@@ -172,15 +183,15 @@ def weeks(start, finish, resolution, week_start):
         first_weekday = [date.fromordinal(day).weekday() for day in range(start, finish)[:20]].index(week_start)
         box_width = 7 * resolution
         week_commencing = start + first_weekday
-        week_number = 1
+        week_count = 1
 
         # create entries
         while first_weekday < total_days:
             x = first_weekday * resolution
-            entries += (x, box_width, week_commencing, week_number),
+            entries += (x, box_width, week_commencing, week_count),
             first_weekday += 7
             week_commencing += 7
-            week_number += 1
+            week_count += 1
 
         # underhang
         if entries[0][2] > start:
