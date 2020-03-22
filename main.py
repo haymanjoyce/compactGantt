@@ -50,16 +50,18 @@ today = date.toordinal(date.today())
 duration = 20
 end = today + duration
 
-scale_a = Scale(kind='DAYS', start=today, finish=end, width=800, scale_ends='pink', y=0, height=50)
-scale_b = Scale(kind='WEEKS', start=today, finish=end, width=800, scale_ends='pink', y=50, height=50)
+scale_a = Scale(interval_type='DAYS', start=today, finish=end, width=800, scale_ends='pink', y=0, height=50)
+scale_b = Scale(interval_type='WEEKS', start=today, finish=end, width=800, scale_ends='pink', y=50, height=50)
+scale_c = Scale(interval_type='WEEKS', start=today, finish=end, width=800, scale_ends='pink', y=100, height=50, label_type='DATES')
 
 # GET ALL TUPLES
 unsorted_items = list()
 
 item_a = Item(element=scale_a.get_scale(), layer=300).get_item()
 item_b = Item(element=scale_b.get_scale(), layer=300).get_item()
+item_c = Item(element=scale_c.get_scale(), layer=300).get_item()
 
-unsorted_items.extend((item_a, item_b))
+unsorted_items.extend((item_a, item_b, item_c))
 
 # SORT TUPLES BY POSITION
 sorted_items = sorted(unsorted_items, key=itemgetter(0))
