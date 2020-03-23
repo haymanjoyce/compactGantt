@@ -8,12 +8,14 @@
 # todo will need date split type as option too
 # todo going to need dates module for interpreting and cleaning dates too
 # todo limit date format types by interval type
+# todo consider limiting format types and then creating them in intervals entries
 
 # todo create function in utilities module for interpreting color variables
 
 from shapes import Box, Text
 from dataclasses import dataclass
 from datetime import date
+import dates
 
 
 @dataclass
@@ -84,7 +86,7 @@ class Scale:
         # set default text_x if None
         if self.text_x is None:
             try:
-                self.text_x = self.intervals[1][1] * 0.15  # we take second entry as first may not be a whole interval
+                self.text_x = self.intervals[1][1] * 0.236  # we take second entry as first may not be a whole interval
             except IndexError:
                 self.text_x = 0  # if no second entry available
 
@@ -92,17 +94,13 @@ class Scale:
         if self.text_y is None:
             self.text_y = self.height * 0.65
 
-        # new private variables
-        self.text_visibility = str()
-        self.entry_item = int()
-
-        # set variables depending on label type
+        # label type cleaning
         if self.label_type in ['HIDDEN', 'hidden', 'hide', 'h']:
-            self.text_visibility = 'hidden'
+            self.label_type = 'hidden'
         elif self.label_type in ['COUNT', 'count', 'c', '']:
-            self.entry_item = 3  # third index in an intervals entry is count
+            self.label_type = 'count'
         elif self.label_type in ['DATES', 'DATE', 'dates', 'date', 'd']:
-            self.entry_item = 2  # second index in an intervals entry is date (ordinal)
+            self.label_type = 'date'
         else:
             raise ValueError(self.label_type)
 
@@ -145,15 +143,20 @@ class Scale:
         label.font_weight = self.font_weight
         label.font_family = self.font_family
         label.font_style = self.font_style
-        label.text_visibility = self.text_visibility
+
+        # set visibility
+        if self.label_type == 'hidden':
+            label.text_visibility = self.label_type
 
         # changing variables
         for i in self.intervals:
             label.x = i[0]
             if i[3] == 0:
                 label.text = str()  # you could hide label but then you would need to reveal it again (more verbose)
+            elif self.label_type == 'date':
+                label.text = dates.temp(i[2], self.date_format)
             else:
-                label.text = i[self.entry_item]
+                label.text = i[3]  # references count in intervals entry
             labels += label.get_text()
 
         return labels
