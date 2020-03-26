@@ -9,6 +9,8 @@
 # todo going to need dates module for interpreting and cleaning dates too
 # todo limit date format types by interval type
 # todo consider limiting format types and then creating them in intervals entries
+# todo limit week start to mon or sun
+# todo clean interval type
 
 # todo create function in utilities module for interpreting color variables
 
@@ -45,6 +47,7 @@ class Scale:
 
     # defines date format
     date_format: str = str()  # nnn | ddd | www | mmm | q | h | yyy
+    separator: str = str()
 
     # interval styling
     box_background_color: str = 'black'  # this fills the outer box which is revealed when using rounding
@@ -154,7 +157,7 @@ class Scale:
             if i[3] == 0:
                 label.text = str()  # you could hide label but then you would need to reveal it again (more verbose)
             elif self.label_type == 'date':
-                label.text = dates.temp(i[2], self.date_format)
+                label.text = dates.change_format(i[2], self.date_format, self.week_start, self.separator)
             else:
                 label.text = i[3]  # references count in intervals entry
             labels += label.get_text()
