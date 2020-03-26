@@ -52,7 +52,7 @@ end = today + duration
 
 scale_a = Scale(interval_type='DAYS', start=today, finish=end, width=800, scale_ends='pink', y=0, height=50)
 scale_b = Scale(interval_type='WEEKS', start=today, finish=end, width=800, scale_ends='pink', y=50, height=50)
-scale_c = Scale(interval_type='WEEKS', start=today, finish=end, width=800, scale_ends='pink', y=100, height=50, label_type='DATES')
+scale_c = Scale(interval_type='WEEKS', start=today, finish=end, width=800, scale_ends='pink', y=100, height=50, label_type='date', date_format='yy mmm dd', separator='/')
 
 # GET ALL TUPLES
 unsorted_items = list()

@@ -46,7 +46,9 @@ class Scale:
     label_type: str = str()  # count (default) | hidden | date
 
     # defines date format
-    date_format: str = str()  # nnn | ddd | www | mmm | q | h | yyy
+    date_format: str = str()  # y | yyyy | m | mm | mmm | M | d | dd | a | aaa | A | n | nnn | w
+
+    # defines date format separator
     separator: str = str()
 
     # interval styling
@@ -102,7 +104,7 @@ class Scale:
             self.label_type = 'hidden'
         elif self.label_type in ['COUNT', 'count', 'c', '']:
             self.label_type = 'count'
-        elif self.label_type in ['DATES', 'DATE', 'dates', 'date', 'd']:
+        elif self.label_type in ['DATE', 'DATES', 'date', 'dates', 'd']:
             self.label_type = 'date'
         else:
             raise ValueError(self.label_type)
