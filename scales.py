@@ -159,7 +159,7 @@ class Scale:
             if i[3] == 0:
                 label.text = str()  # you could hide label but then you would need to reveal it again (more verbose)
             elif self.label_type == 'date':
-                label.text = dates.change_format(i[2], self.date_format, self.week_start, self.separator)
+                label.text = dates.convert_ordinal(i[2], self.date_format, self.week_start, self.separator)
             else:
                 label.text = i[3]  # references count in intervals entry
             labels += label.get_text()

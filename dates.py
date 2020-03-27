@@ -1,15 +1,30 @@
 """Module for handling dates"""
 
-# todo conditionals in if x in [a, b, c] format to interpret date person is after
-# todo will need label entries to be tuples with order as one of the values
-# todo raise value error if format does not apply to interval type
-# todo else raise valueerror
-# todo clean separator
+# todo clean separator (e.g. only one or two chars or forbidden chars)
+# todo restrict week start to Mon or Sun (boolean) because no week labels for other cases in Python
+# todo ability to prefix date format (e.g. Week 2)
+# todo improve speed (e.g. by making it class)
 
 import datetime as dt
 
 
-def change_format(ordinal_date, date_format, week_start=0, separator=' '):
+def convert_ordinal(ordinal_date, date_format, week_start=0, separator=' '):
+    """Converts ordinal date into custom date format"""
+
+    # y - 20
+    # yyyy - 2020
+    # m - 4
+    # mm - 04
+    # mmm - Apr
+    # M - April
+    # d - 6
+    # dd - 06
+    # a - M
+    # aaa - Mon
+    # A - Monday
+    # n - 97 (day of the year as number where 1 Jan is day 1)
+    # nnn - 097 (day of the year as number where 1 Jan is day 1)
+    # w - 14 (week number where week_start argument determines weeks commencing Mon or Sun)
 
     date = dt.date.fromordinal(ordinal_date)
     items = str(date_format).strip().split()
@@ -17,61 +32,46 @@ def change_format(ordinal_date, date_format, week_start=0, separator=' '):
 
     for item in items:
 
-        if item in ['y', 'yy']:
-            label += date.strftime("%y") + separator
-        elif 'y'.upper() in item.upper():  # anything else with a y or Y in it
-            label += date.strftime("%Y") + separator
+        if "y".upper() in item.upper():
+            if item == "y":
+                label += date.strftime("%y")
+            else:
+                label += date.strftime("%Y")
+        elif "m".upper() in item.upper():
+            if item == "m":
+                label += str(date.month)
+            elif item == "mm":
+                label += date.strftime("%m")
+            elif item == "mmm":
+                label += date.strftime("%b")
+            else:
+                label += date.strftime("%B")
+        elif "d".upper() in item.upper():
+            if item == "d":
+                label += str(date.day)
+            else:
+                label += date.strftime("%d")
+        elif "a".upper() in item.upper():
+            if item in ["a", "aa"]:
+                label += date.strftime("%a")[0]
+            elif item == "aaa":
+                label += date.strftime("%a")
+            else:
+                label += date.strftime("%A")
+        elif "n".upper() in item.upper():
+            if item in ["n", "nn"]:
+                label += str(date.timetuple()[7])
+            else:
+                label += date.strftime("%j")
+        elif "w".upper() in item.upper():
+            if week_start == 0:
+                label += date.strftime("%W")
+            else:
+                label += date.strftime("%U")
+        else:
+            raise ValueError(item)
 
-    # print("{0} {1} {2} {3}".format(ordinal_date, date_format, week_start, separator))
-    # print(label)
+        label += " "
 
-    return str(label)
-
-
-def conversions():
-    """List of all the ways to convert an ordinal"""
-
-    delta = dt.timedelta(days=10)
-    today = dt.date.today() + delta
-    today = today.toordinal()
-    today = dt.date.fromordinal(today)
-
-    # y | yyyy | m | mm | mmm | M | d | dd | a | aaa | A | n | nnn | w
-
-    print("years:")
-    # print(today.year)
-    print(today.strftime("%y"), "y or yy")
-    print(today.strftime("%Y"), "yyyy expected but any other kind of y or Y accepted")
-
-    print()
-    print("months:")
-    print(today.month, "m")
-    print(today.strftime("%m"), "mm")
-    print(today.strftime("%b"), "mmm")
-    print(today.strftime("%B"), "M expected but any other kind of m or M accepted")
-
-    print()
-    print("dates:")
-    print(today.day, "d")
-    print(today.strftime("%d"), "dd expected but any other kind of d or D accepted")
-
-    print()
-    print("day names:")
-    print(today.strftime("%a")[0], "a or aa")
-    print(today.strftime("%a"), "aaa")
-    print(today.strftime("%A"), "A expected but any other kind of a or A accepted")
-
-    print()
-    print("day of the week as number (not an option):")
-    print(today.weekday(), "")
-
-    print()
-    print("day of the year as number (where 1 Jan is day 1):")
-    print(today.timetuple()[7], "n or nn")
-    print(today.strftime("%j"), "nnn expected but any other kind of n or N accepted")
-
-    print()
-    print("week number (where week_start determines which, automatically):")
-    print(today.strftime("%U"), "w expected but any kind of w or W accepted (w/c Sunday)")
-    print(today.strftime("%W"), "w expected but any kind of w or W accepted (w/c Monday)")
+    return label.strip().replace(" ", str(separator))
 
