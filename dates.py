@@ -26,6 +26,9 @@ def convert_ordinal(ordinal_date, date_format, week_start=0, separator=' '):
     # nnn - 097 (day of the year as number where 1 Jan is day 1)
     # w - 14 (week number where week_start argument determines weeks commencing Mon or Sun)
 
+    if week_start not in [0, 6]:
+        raise ValueError(week_start)
+
     date = dt.date.fromordinal(ordinal_date)
     items = str(date_format).strip().split()
     label = str()

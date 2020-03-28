@@ -11,6 +11,7 @@
 # todo consider limiting format types and then creating them in intervals entries
 # todo limit week start to mon or sun
 # todo clean interval type
+# todo clean separator
 
 # todo create function in utilities module for interpreting color variables
 
@@ -36,8 +37,8 @@ class Scale:
     start: int = 0  # note that ordinal dates are at 00:00hrs (day start)
     finish: int = 0  # we handle the missing 23:59 hours (you don't need to)
 
-    # defines first day of week
-    week_start: int = 0  # 0 is Monday
+    # defines first day of week as a string
+    week_start: str = str(0)
 
     # defines interval type
     interval_type: str = str()  # DAYS (default) | WEEKS | MONTHS | QUARTERS | HALVES | YEARS
@@ -78,11 +79,27 @@ class Scale:
         if self.finish <= self.start or self.start >= self.finish:
             self.finish = self.start + 1
 
+        # cleans first day of week string and converts to integer
+        if self.week_start in ['6', '7', 'S', 'Sun', 'Sunday', 'SUN', 'SUNDAY']:
+            self._week_start = 6
+        else:
+            self._week_start = 0
+
+        # label type cleaning
+        if self.label_type in ['HIDDEN', 'hidden', 'hide', 'h']:
+            self.label_type = 'hidden'
+        elif self.label_type in ['COUNT', 'count', 'c', '']:
+            self.label_type = 'count'
+        elif self.label_type in ['DATE', 'DATES', 'date', 'dates', 'd']:
+            self.label_type = 'date'
+        else:
+            raise ValueError(self.label_type)
+
         # calculate resolution (pixels per day) (note, this is a private variable)
         self.resolution = self.width / (self.finish - self.start)  # // will reduce float (good) and precision (bad)
 
         # build interval data (note, this is a private variable)
-        self.intervals = select(self.start, self.finish, self.interval_type, self.resolution, self.week_start)
+        self.intervals = select(self.start, self.finish, self.interval_type, self.resolution, self._week_start)
 
         # set default scale end color if None
         if self.scale_ends is None:
@@ -98,16 +115,6 @@ class Scale:
         # set default text_y if None
         if self.text_y is None:
             self.text_y = self.height * 0.65
-
-        # label type cleaning
-        if self.label_type in ['HIDDEN', 'hidden', 'hide', 'h']:
-            self.label_type = 'hidden'
-        elif self.label_type in ['COUNT', 'count', 'c', '']:
-            self.label_type = 'count'
-        elif self.label_type in ['DATE', 'DATES', 'date', 'dates', 'd']:
-            self.label_type = 'date'
-        else:
-            raise ValueError(self.label_type)
 
     def build_boxes(self):
 
@@ -159,7 +166,7 @@ class Scale:
             if i[3] == 0:
                 label.text = str()  # you could hide label but then you would need to reveal it again (more verbose)
             elif self.label_type == 'date':
-                label.text = dates.convert_ordinal(i[2], self.date_format, self.week_start, self.separator)
+                label.text = dates.convert_ordinal(i[2], self.date_format, self._week_start, self.separator)
             else:
                 label.text = i[3]  # references count in intervals entry
             labels += label.get_text()
