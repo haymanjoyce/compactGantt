@@ -46,13 +46,14 @@ creds = ServiceAccountCredentials.from_json_keyfile_name(client_secret, scope)
 # print(list_of_hashes)
 
 # TEMP
-today = date.toordinal(date.today())
-duration = 20
+today = date.toordinal(date.today()) - 1
+duration = 1
 end = today + duration
 
 scale_a = Scale(interval_type='DAYS', start=today, finish=end, width=800, scale_ends='pink', y=0, height=50)
 scale_b = Scale(interval_type='WEEKS', start=today, finish=end, width=800, scale_ends='pink', y=50, height=50, week_start='0')
 scale_c = Scale(interval_type='WEEKS', start=today, finish=end, width=800, scale_ends='pink', y=100, height=50, label_type='dates', week_start='6')
+scale_d = Scale(interval_type='MONTHS', start=today, finish=end, width=800, scale_ends='pink', y=150, height=50)
 
 # GET ALL TUPLES
 unsorted_items = list()
@@ -60,8 +61,9 @@ unsorted_items = list()
 item_a = Item(element=scale_a.get_scale(), layer=300).get_item()
 item_b = Item(element=scale_b.get_scale(), layer=300).get_item()
 item_c = Item(element=scale_c.get_scale(), layer=300).get_item()
+item_d = Item(element=scale_d.get_scale(), layer=300).get_item()
 
-unsorted_items.extend((item_a, item_b, item_c))
+unsorted_items.extend((item_a, item_b, item_c, item_d))
 
 # SORT TUPLES BY POSITION
 sorted_items = sorted(unsorted_items, key=itemgetter(0))

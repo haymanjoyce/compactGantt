@@ -51,7 +51,7 @@ class Scale:
     box_fill: str = 'grey'
 
     # defines non-whole interval color
-    scale_ends: str = None
+    scale_ends: str = str()
 
     # text styling
     font_fill: str = '#000'
@@ -61,8 +61,8 @@ class Scale:
     font_weight: str = str()  # normal | bold | bolder | lighter | <number>
 
     # text positioning relative to x and y
-    text_x: float = None
-    text_y: float = None
+    text_x: float = float()
+    text_y: float = float()
 
     def __post_init__(self):
 
@@ -102,28 +102,19 @@ class Scale:
         else:
             raise ValueError(self.label_type)
 
-        # calculate resolution (pixels per day) (note, this is a private variable)
-        self.resolution = self.width / (self.finish - self.start)  # // will reduce float (good) and precision (bad)
-
-        # build interval data (note, this is a private variable)
-        self.intervals = select(self.start, self.finish, self.interval_type, self.resolution, self._week_start)
-
-        # set default scale end color if None
-        if self.scale_ends is None:
+        # set default scale end color if blank
+        if self.scale_ends == str():
             self.scale_ends = self.box_fill
 
-        # set default text_x if None
-        if self.text_x is None:
-            try:
-                self.text_x = self.intervals[1][1] * 0.236  # we take second entry as first may not be a whole interval
-            except IndexError:
-                self.text_x = 0  # if no second entry available
+        # set default text_x if zero
+        if self.text_x == float():
+            self.text_x = 10  # arbitrary value
 
-        # set default text_y if None
-        if self.text_y is None:
-            self.text_y = self.height * 0.65
+        # set default text_y if zero
+        if self.text_y == float():
+            self.text_y = self.height * 0.65  # 0.65 sets text in middle
 
-        # set default date_format if none given
+        # set default date_format if blank
         if self.label_type == 'date' and self.date_format == str():
             if self.interval_type == 'DAYS':
                 self.date_format = 'a'
@@ -139,6 +130,12 @@ class Scale:
                 self.date_format = 'yyyy'
             else:
                 raise ValueError(self.interval_type)
+
+        # calculate resolution (pixels per day) (note, this is a private variable)
+        self.resolution = self.width / (self.finish - self.start)  # // will reduce float (good) and precision (bad)
+
+        # build interval data (note, this is a private variable)
+        self.intervals = select(self.start, self.finish, self.interval_type, self.resolution, self._week_start)
 
     def build_boxes(self):
 
@@ -187,7 +184,7 @@ class Scale:
         # changing variables
         for i in self.intervals:
             label.x = i[0]
-            if i[3] == 0:
+            if (i[3] == 0 and self.label_type == 'count') or i[2] < 50:  # conditions for hiding label automatically
                 label.text = str()  # you could hide label but then you would need to reveal it again (more verbose)
             elif self.label_type == 'date':
                 label.text = dates.convert_ordinal(i[2], self.date_format, self._week_start, self.separator)
@@ -204,6 +201,10 @@ class Scale:
 
 def select(start, finish, interval_type='DAYS', resolution=1.0, week_start=0):
     """Selects appropriate iterable based on interval type"""
+
+    # Iterable is a tuple of tuples
+    # Each tuple: x (pixels), width (pixels), ordinal date (00:00hrs of date), count (whole intervals)
+
     if interval_type == 'DAYS':
         return days(start, finish, resolution)
     elif interval_type == 'WEEKS':
@@ -238,6 +239,7 @@ def days(start, finish, resolution):
         ordinal += 1
         day_count += 1
 
+    print(entries)
     return entries
 
 
@@ -290,22 +292,22 @@ def weeks(start, finish, resolution, week_start):
 def months(start, finish, resolution):
     """Returns iterable showing all months in given range"""
 
-    start = date.fromordinal(start)
-    delta = timedelta(days=1)
-    d = start.day
     entries = tuple()
     total_days = finish - start
-    day_count = 0
-    month_count = 1
-    underhang = 0
-
+    d = date.fromordinal(start)
+    increment = timedelta(days=1)
     # underhang
-    while d != 1:
+
+    print("total days ", total_days)
+    print("resolution", resolution)
+
+    underhang = 0
+    while underhang < total_days:
         underhang += 1
-        d += delta
+    entry = 0, underhang * resolution, start, 0
+    entries += (entry, )
 
-    # (x, box_width, week_commencing, week_count),
-
+    print(entries)
     return entries
 
 
