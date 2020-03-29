@@ -1,23 +1,14 @@
 """Module for building scales"""
 
 # todo add MONTHS | QUARTERS | HALVES | YEARS
-# todo give more options for defining week start (0, Mon, M, etc.)
 # todo if text size not set then calculated
-
-# todo date format; use map(); mapping ordinal to function whose arg is date_format; may need an entire dates module
-# todo will need date split type as option too
-# todo going to need dates module for interpreting and cleaning dates too
-# todo limit date format types by interval type
-# todo consider limiting format types and then creating them in intervals entries
-# todo limit week start to mon or sun
-# todo clean interval type
-# todo clean separator
-
-# todo create function in utilities module for interpreting color variables
+# todo clean separator (e.g. only one or two chars or forbidden chars)
+# todo ability to create custom interval (e.g. 20 days representing 1 month)
 
 from shapes import Box, Text
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, timedelta
+from calendar import monthlen
 import dates
 
 
@@ -212,11 +203,19 @@ class Scale:
 
 
 def select(start, finish, interval_type='DAYS', resolution=1.0, week_start=0):
-    """Selects appropriate iterable based on kind"""
+    """Selects appropriate iterable based on interval type"""
     if interval_type == 'DAYS':
         return days(start, finish, resolution)
     elif interval_type == 'WEEKS':
         return weeks(start, finish, resolution, week_start)
+    elif interval_type == 'MONTHS':
+        return months(start, finish, resolution)
+    elif interval_type == 'QUARTERS':
+        return quarters(start, finish, resolution)
+    elif interval_type == 'HALVES':
+        return halves(start, finish, resolution)
+    elif interval_type == 'YEARS':
+        return years(start, finish, resolution)
     else:
         raise ValueError(interval_type)
 
@@ -245,7 +244,7 @@ def days(start, finish, resolution):
 def weeks(start, finish, resolution, week_start):
     """Returns iterable showing all weeks in a given range"""
 
-    try:  # requires a week_start to be found
+    try:  # requires a week_start to be found in range
 
         entries = tuple()
         total_days = finish - start
@@ -286,4 +285,41 @@ def weeks(start, finish, resolution, week_start):
         entries += (entry, )
 
         return entries
+
+
+def months(start, finish, resolution):
+    """Returns iterable showing all months in given range"""
+
+    start = date.fromordinal(start)
+    delta = timedelta(days=1)
+    d = start.day
+    entries = tuple()
+    total_days = finish - start
+    day_count = 0
+    month_count = 1
+    underhang = 0
+
+    # underhang
+    while d != 1:
+        underhang += 1
+        d += delta
+
+    # (x, box_width, week_commencing, week_count),
+
+    return entries
+
+
+def quarters(start, finish, resolution):
+    """Returns iterable showing all quarters in given range"""
+    pass
+
+
+def halves(start, finish, resolution):
+    """Returns iterable showing all halves in given range"""
+    pass
+
+
+def years(start, finish, resolution):
+    """Returns iterable showing all years in given range"""
+    pass
 
