@@ -4,6 +4,7 @@
 # todo restrict week start to Mon or Sun (boolean) because no week labels for other cases in Python
 # todo ability to prefix date format (e.g. Week 2)
 # todo improve speed (e.g. by making it class)
+# todo label for quarters and halves
 
 import datetime as dt
 

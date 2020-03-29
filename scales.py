@@ -41,16 +41,16 @@ class Scale:
     week_start: str = str(0)
 
     # defines interval type
-    interval_type: str = str()  # DAYS (default) | WEEKS | MONTHS | QUARTERS | HALVES | YEARS
+    interval_type: str = str()  # DAYS | WEEKS | MONTHS | QUARTERS | HALVES | YEARS
 
     # defines label type
-    label_type: str = str()  # count (default) | hidden | date
+    label_type: str = str()  # count | hidden | date
 
     # defines date format
     date_format: str = str()  # y | yyyy | m | mm | mmm | M | d | dd | a | aaa | A | n | nnn | w
 
     # defines date format separator
-    separator: str = str()
+    separator: str = " "
 
     # interval styling
     box_background_color: str = 'black'  # this fills the outer box which is revealed when using rounding
@@ -79,13 +79,29 @@ class Scale:
         if self.finish <= self.start or self.start >= self.finish:
             self.finish = self.start + 1
 
-        # cleans first day of week string and converts to integer
+        # clean first day of week string and converts to integer
         if self.week_start in ['6', '7', 'S', 'Sun', 'Sunday', 'SUN', 'SUNDAY']:
             self._week_start = 6
         else:
             self._week_start = 0
 
-        # label type cleaning
+        # clean interval type
+        if self.interval_type.lower() in [item.lower() for item in ['days', 'day', 'd', '']]:  # blank indicates default
+            self.interval_type = 'DAYS'
+        elif self.interval_type.lower() in [item.lower() for item in ['weeks', 'week', 'wk', 'w']]:
+            self.interval_type = 'WEEKS'
+        elif self.interval_type.lower() in [item.lower() for item in ['months', 'mon', 'month', 'm']]:
+            self.interval_type = 'MONTHS'
+        elif self.interval_type.lower() in [item.lower() for item in ['quarters', 'quarts', 'qts', 'q']]:
+            self.interval_type = 'QUARTERS'
+        elif self.interval_type.lower() in [item.lower() for item in ['halves', 'half', 'halfs', 'halve', 'h']]:
+            self.interval_type = 'HALVES'
+        elif self.interval_type.lower() in [item.lower() for item in ['years', 'year', 'yrs', 'yr', 'y']]:
+            self.interval_type = 'YEARS'
+        else:
+            raise ValueError(self.interval_type)
+
+        # clean label type
         if self.label_type in ['HIDDEN', 'hidden', 'hide', 'h']:
             self.label_type = 'hidden'
         elif self.label_type in ['COUNT', 'count', 'c', '']:
@@ -115,6 +131,23 @@ class Scale:
         # set default text_y if None
         if self.text_y is None:
             self.text_y = self.height * 0.65
+
+        # set default date_format if none given
+        if self.label_type == 'date' and self.date_format == str():
+            if self.interval_type == 'DAYS':
+                self.date_format = 'a'
+            elif self.interval_type == 'WEEKS':
+                self.date_format = 'w'
+            elif self.interval_type == 'MONTHS':
+                self.date_format = 'mmm'
+            elif self.interval_type == 'QUARTERS':
+                self.date_format = ''
+            elif self.interval_type == 'HALVES':
+                self.date_format = ''
+            elif self.interval_type == 'YEARS':
+                self.date_format = 'yyyy'
+            else:
+                raise ValueError(self.interval_type)
 
     def build_boxes(self):
 
@@ -180,9 +213,9 @@ class Scale:
 
 def select(start, finish, interval_type='DAYS', resolution=1.0, week_start=0):
     """Selects appropriate iterable based on kind"""
-    if interval_type in ['DAYS', 'DAY', 'days', 'day', 'd', '']:
+    if interval_type == 'DAYS':
         return days(start, finish, resolution)
-    elif interval_type in ['WEEKS', 'WEEK', 'weeks', 'week', 'wks', 'wk', 'w']:
+    elif interval_type == 'WEEKS':
         return weeks(start, finish, resolution, week_start)
     else:
         raise ValueError(interval_type)
