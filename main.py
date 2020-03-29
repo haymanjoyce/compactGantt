@@ -47,7 +47,7 @@ creds = ServiceAccountCredentials.from_json_keyfile_name(client_secret, scope)
 
 # TEMP
 today = date.toordinal(date.today()) - 1
-duration = 1
+duration = 100
 end = today + duration
 
 scale_a = Scale(interval_type='DAYS', start=today, finish=end, width=800, scale_ends='pink', y=0, height=50)

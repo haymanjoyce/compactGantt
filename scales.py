@@ -37,6 +37,9 @@ class Scale:
     # defines label type
     label_type: str = str()  # count | hidden | date
 
+    # defines minimum interval width for a label
+    min_interval_width: int = 50
+
     # defines date format
     date_format: str = str()  # y | yyyy | m | mm | mmm | M | d | dd | a | aaa | A | n | nnn | w
 
@@ -184,8 +187,10 @@ class Scale:
         # changing variables
         for i in self.intervals:
             label.x = i[0]
-            if (i[3] == 0 and self.label_type == 'count') or i[2] < 50:  # conditions for hiding label automatically
-                label.text = str()  # you could hide label but then you would need to reveal it again (more verbose)
+            if i[1] < self.min_interval_width:
+                label.text = str()  # you could set visibility to hidden but more verbose
+            elif i[3] == 0 and self.label_type == 'count':
+                label.text = str()  # you could set visibility to hidden but more verbose
             elif self.label_type == 'date':
                 label.text = dates.convert_ordinal(i[2], self.date_format, self._week_start, self.separator)
             else:
