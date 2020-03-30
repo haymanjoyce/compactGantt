@@ -50,10 +50,10 @@ today = date.toordinal(date.today()) - 2
 duration = 80
 end = today + duration
 
-scale_a = Scale(interval_type='DAYS', start=today, finish=end, width=1600, scale_ends='pink', y=0, height=50, label_type='dates', date_format='d', font_size='10', text_x=5, min_interval_width=20)
-scale_b = Scale(interval_type='WEEKS', start=today, finish=end, width=1600, scale_ends='pink', y=100, height=50, week_start='0')
-scale_c = Scale(interval_type='WEEKS', start=today, finish=end, width=1600, scale_ends='pink', y=150, height=50, label_type='dates', week_start='6')
-scale_d = Scale(interval_type='MONTHS', start=today, finish=end, width=1600, scale_ends='pink', y=50, height=50, label_type='dates', date_format='mmm')
+scale_a = Scale(interval_type='DAYS', start=today, finish=end, width=1600, scale_ends='pink', y=150, height=50, label_type='dates', date_format='d', font_size='10', text_x=5, min_interval_width=20)
+scale_b = Scale(interval_type='WEEKS', start=today, finish=end, width=1600, scale_ends='pink', y=0, height=50, week_start='0')
+scale_c = Scale(interval_type='WEEKS', start=today, finish=end, width=1600, scale_ends='pink', y=50, height=50, label_type='dates', week_start='6')
+scale_d = Scale(interval_type='MONTHS', start=today, finish=end, width=1600, scale_ends='pink', y=100, height=50, label_type='dates', date_format='mmm')
 
 # GET ALL TUPLES
 unsorted_items = list()
