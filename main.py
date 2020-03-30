@@ -50,10 +50,11 @@ today = date.toordinal(date.today()) - 2
 duration = 80
 end = today + duration
 
-scale_a = Scale(interval_type='DAYS', start=today, finish=end, width=1600, scale_ends='pink', y=150, height=50, label_type='dates', date_format='d', font_size='10', text_x=5, min_interval_width=20)
+scale_a = Scale(interval_type='DAYS', start=today, finish=end, width=1600, scale_ends='pink', y=200, height=50, label_type='dates', date_format='d', font_size='10', text_x=5, min_interval_width=20)
 scale_b = Scale(interval_type='WEEKS', start=today, finish=end, width=1600, scale_ends='pink', y=0, height=50, week_start='0')
 scale_c = Scale(interval_type='WEEKS', start=today, finish=end, width=1600, scale_ends='pink', y=50, height=50, label_type='dates', week_start='6')
 scale_d = Scale(interval_type='MONTHS', start=today, finish=end, width=1600, scale_ends='pink', y=100, height=50, label_type='dates', date_format='mmm')
+scale_e = Scale(interval_type='QUARTERS', start=today, finish=end, width=1600, scale_ends='pink', y=150, height=50)
 
 # GET ALL TUPLES
 unsorted_items = list()
@@ -62,8 +63,9 @@ item_a = Item(element=scale_a.get_scale(), layer=300).get_item()
 item_b = Item(element=scale_b.get_scale(), layer=300).get_item()
 item_c = Item(element=scale_c.get_scale(), layer=300).get_item()
 item_d = Item(element=scale_d.get_scale(), layer=300).get_item()
+item_e = Item(element=scale_e.get_scale(), layer=300).get_item()
 
-unsorted_items.extend((item_a, item_b, item_c, item_d))
+unsorted_items.extend((item_a, item_b, item_c, item_d, item_e))
 
 # SORT TUPLES BY POSITION
 sorted_items = sorted(unsorted_items, key=itemgetter(0))
@@ -96,6 +98,4 @@ window_geometry = display.Window(display_width=display_size.width(), display_hei
 svgWidget.setGeometry(*window_geometry)  # the asterisk unpacks the tuple
 svgWidget.show()
 sys.exit(app.exec_())
-
-
 

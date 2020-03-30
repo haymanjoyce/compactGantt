@@ -332,14 +332,38 @@ def months(start, finish, resolution):
     overhang_entry = overhang_x, overhang_width, overhang_ordinal, 0
     entries += (overhang_entry, )
 
-    print(entries)
-
     return entries
 
 
 def quarters(start, finish, resolution):
     """Returns iterable showing all quarters in given range"""
-    pass
+
+    entries = tuple()
+    total_days = finish - start
+    date_object = date.fromordinal(start)
+    day_count = 0
+    quarter_count = 0
+    quarter_starts = [day for day in range(start, finish) if date.fromordinal(day).month in [1, 4, 7, 10] and date.fromordinal(day).day == 1]
+    print(quarter_starts)
+
+    # underhang
+    if quarter_starts and quarter_starts[0] != start:
+        entry = 0, (quarter_starts[0] - start) * resolution, start, 0
+        entries += (entry, )
+
+    # overhang
+    if quarter_starts and quarter_starts[-1] != finish:
+        entry = (quarter_starts[-1] - start) * resolution, (finish - quarter_starts[-1]) * resolution, quarter_starts[-1], 0
+        entries += (entry, )
+
+    # whole intervals
+    if quarter_starts and len(quarter_starts) > 1:
+        for quarter in quarter_starts:
+            pass  # if quarter does not equal...
+
+    print(entries)
+
+    return entries
 
 
 def halves(start, finish, resolution):
