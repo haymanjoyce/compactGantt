@@ -4,6 +4,7 @@
 # todo if text size not set then calculated
 # todo clean separator (e.g. only one or two chars or forbidden chars)
 # todo ability to create custom interval (e.g. 20 days representing 1 month)
+# todo key or label for each scale (e.g. Months)
 
 from shapes import Box, Text
 from dataclasses import dataclass
@@ -38,7 +39,7 @@ class Scale:
     label_type: str = str()  # count | hidden | date
 
     # defines minimum interval width for a label
-    min_interval_width: int = 50
+    min_interval_width: int = 20
 
     # defines date format
     date_format: str = str()  # y | yyyy | m | mm | mmm | M | d | dd | a | aaa | A | n | nnn | w
@@ -244,7 +245,6 @@ def days(start, finish, resolution):
         ordinal += 1
         day_count += 1
 
-    print(entries)
     return entries
 
 
@@ -299,20 +299,32 @@ def months(start, finish, resolution):
 
     entries = tuple()
     total_days = finish - start
-    d = date.fromordinal(start)
-    increment = timedelta(days=1)
+    date_object = date.fromordinal(start)
+    month_length = monthlen(date_object.year, date_object.month)
+    day_delta = timedelta(days=1)
+    month_delta = None
+    day_count = 0
+    month_count = 1
+
     # underhang
-
-    print("total days ", total_days)
-    print("resolution", resolution)
-
-    underhang = 0
-    while underhang < total_days:
-        underhang += 1
-    entry = 0, underhang * resolution, start, 0
+    while day_count <= total_days and date_object.day != month_length:
+        day_count += 1
+        date_object += day_delta
+    entry = 0, day_count * resolution, start, 0
     entries += (entry, )
 
+    # whole months
+    month_length = monthlen(date_object.year, date_object.month)  # ...so that we're into next month before next loop
+    while date_object.toordinal() + month_length < finish:
+        entry = day_count * resolution, month_length * resolution, date_object.toordinal(), month_count
+        entries += (entry, )
+        day_count += month_length
+        month_count += 1
+        date_object += timedelta(days=month_length)
+        month_length = monthlen(date_object.year, date_object.month)
+
     print(entries)
+
     return entries
 
 
