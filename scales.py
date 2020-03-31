@@ -344,7 +344,7 @@ def quarters(start, finish, resolution):
     day_count = 0
     quarter_count = 0
     quarter_starts = [day for day in range(start, finish) if date.fromordinal(day).month in [1, 4, 7, 10] and date.fromordinal(day).day == 1]
-    print(quarter_starts)
+    quarter_starts = [start] + quarter_starts + [finish]
 
     # underhang
     if quarter_starts and quarter_starts[0] != start:
@@ -356,10 +356,19 @@ def quarters(start, finish, resolution):
         entry = (quarter_starts[-1] - start) * resolution, (finish - quarter_starts[-1]) * resolution, quarter_starts[-1], 0
         entries += (entry, )
 
-    # whole intervals
-    if quarter_starts and len(quarter_starts) > 1:
-        for quarter in quarter_starts:
-            pass  # if quarter does not equal...
+    count = 1
+    item = 0
+    while quarter_starts[item] != (finish):
+        x = (quarter_starts[item] - start) * resolution
+        width = (quarter_starts[item + 1] - quarter_starts[item]) * resolution
+        if quarter_starts[item] in quarter_starts[1:-1]:
+            count += 1
+            whole = count
+        else:
+            whole = 0
+        item += 1
+        entry = x, width, quarter_starts[item], whole
+        entries += (entry, )
 
     print(entries)
 
