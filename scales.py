@@ -7,6 +7,8 @@
 # todo key or label for each scale (e.g. Months)
 # todo merge label type and fate format to create label format
 # todo debug months where 1 day duration results in miscalculated overhang
+# todo rebuild all iterators with new design
+# todo redesign tuple of tuples such that is plain count and another variable indicates not whole
 
 from shapes import Box, Text
 from dataclasses import dataclass
@@ -337,7 +339,7 @@ def months(start, finish, resolution):
 
 
 def quarters(start, finish, resolution):
-    """Returns iterable showing all quarters in given range"""
+    """Returns iterable showing all halves in given range"""
 
     entries = tuple()
 
@@ -372,11 +374,71 @@ def quarters(start, finish, resolution):
 
 
 def halves(start, finish, resolution):
-    """Returns iterable showing all halves in given range"""
-    pass
+    """Returns iterable showing all quarters in given range"""
+
+    entries = tuple()
+
+    # lists half starts and finish if it is also a half start (we need this to set count)
+    half_starts = [day for day in range(start, finish + 1) if
+                      date.fromordinal(day).month in [1, 7] and date.fromordinal(day).day == 1]
+
+    # finish appears twice if finish is also a quarter end but while loop stops at first so no need to remove
+    interval_dates = [start] + half_starts + [finish]
+
+    count = 0
+    item = 0
+
+    while interval_dates[item] != finish:
+
+        x = (interval_dates[item] - start) * resolution
+        width = (interval_dates[item + 1] - interval_dates[item]) * resolution
+
+        if interval_dates[item + 1] == finish and finish not in half_starts:
+            count = 0  # sets count to 0 for overhang
+        elif interval_dates[item] not in half_starts:
+            count = 0  # sets count to 0 for underhang
+        else:
+            count += 1  # whole interval count
+
+        entry = x, width, interval_dates[item], count
+        entries += (entry, )
+
+        item += 1
+
+    return entries
 
 
 def years(start, finish, resolution):
     """Returns iterable showing all years in given range"""
-    pass
+
+    entries = tuple()
+
+    # lists half starts and finish if it is also a half start (we need this to set count)
+    year_starts = [day for day in range(start, finish + 1) if
+                   date.fromordinal(day).month in [1] and date.fromordinal(day).day == 1]
+
+    # finish appears twice if finish is also a quarter end but while loop stops at first so no need to remove
+    interval_dates = [start] + year_starts + [finish]
+
+    count = 0
+    item = 0
+
+    while interval_dates[item] != finish:
+
+        x = (interval_dates[item] - start) * resolution
+        width = (interval_dates[item + 1] - interval_dates[item]) * resolution
+
+        if interval_dates[item + 1] == finish and finish not in year_starts:
+            count = 0  # sets count to 0 for overhang
+        elif interval_dates[item] not in year_starts:
+            count = 0  # sets count to 0 for underhang
+        else:
+            count += 1  # whole interval count
+
+        entry = x, width, interval_dates[item], count
+        entries += (entry, )
+
+        item += 1
+
+    return entries
 
