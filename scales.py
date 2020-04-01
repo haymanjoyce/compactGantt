@@ -6,6 +6,7 @@
 # todo ability to create custom interval (e.g. 20 days representing 1 month)
 # todo key or label for each scale (e.g. Months)
 # todo merge label type and fate format to create label format
+# todo debug months where 1 day duration results in miscalculated overhang
 
 from shapes import Box, Text
 from dataclasses import dataclass
@@ -355,12 +356,12 @@ def quarters(start, finish, resolution):
         x = (interval_dates[item] - start) * resolution
         width = (interval_dates[item + 1] - interval_dates[item]) * resolution
 
-        if interval_dates[item + 1] == finish and finish not in quarter_starts:  # sets count to 0 for overhang
-            count = 0
-        elif interval_dates[item] not in quarter_starts:  # sets count to 0 for underhang
-            count = 0
+        if interval_dates[item + 1] == finish and finish not in quarter_starts:
+            count = 0  # sets count to 0 for overhang
+        elif interval_dates[item] not in quarter_starts:
+            count = 0  # sets count to 0 for underhang
         else:
-            count += 1
+            count += 1  # whole interval count
 
         entry = x, width, interval_dates[item], count
         entries += (entry, )
