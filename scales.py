@@ -339,38 +339,33 @@ def quarters(start, finish, resolution):
     """Returns iterable showing all quarters in given range"""
 
     entries = tuple()
-    total_days = finish - start
-    date_object = date.fromordinal(start)
-    day_count = 0
-    quarter_count = 0
-    quarter_starts = [day for day in range(start, finish) if date.fromordinal(day).month in [1, 4, 7, 10] and date.fromordinal(day).day == 1]
-    quarter_starts = [start] + quarter_starts + [finish]
 
-    # underhang
-    if quarter_starts and quarter_starts[0] != start:
-        entry = 0, (quarter_starts[0] - start) * resolution, start, 0
-        entries += (entry, )
+    # lists quarter starts and finish if it is also a quarter start (we need this to set count)
+    quarter_starts = [day for day in range(start, finish + 1) if
+                      date.fromordinal(day).month in [1, 4, 7, 10] and date.fromordinal(day).day == 1]
 
-    # overhang
-    if quarter_starts and quarter_starts[-1] != finish:
-        entry = (quarter_starts[-1] - start) * resolution, (finish - quarter_starts[-1]) * resolution, quarter_starts[-1], 0
-        entries += (entry, )
+    # finish appears twice if finish is also a quarter end but while loop stops at first so no need to remove
+    interval_dates = [start] + quarter_starts + [finish]
 
-    count = 1
+    count = 0
     item = 0
-    while quarter_starts[item] != (finish):
-        x = (quarter_starts[item] - start) * resolution
-        width = (quarter_starts[item + 1] - quarter_starts[item]) * resolution
-        if quarter_starts[item] in quarter_starts[1:-1]:
-            count += 1
-            whole = count
+
+    while interval_dates[item] != finish:
+
+        x = (interval_dates[item] - start) * resolution
+        width = (interval_dates[item + 1] - interval_dates[item]) * resolution
+
+        if interval_dates[item + 1] == finish and finish not in quarter_starts:  # sets count to 0 for overhang
+            count = 0
+        elif interval_dates[item] not in quarter_starts:  # sets count to 0 for underhang
+            count = 0
         else:
-            whole = 0
-        item += 1
-        entry = x, width, quarter_starts[item], whole
+            count += 1
+
+        entry = x, width, interval_dates[item], count
         entries += (entry, )
 
-    print(entries)
+        item += 1
 
     return entries
 
