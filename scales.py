@@ -9,6 +9,7 @@
 # todo debug months where 1 day duration results in miscalculated overhang
 # todo rebuild all iterators with new design
 # todo redesign tuple of tuples such that is plain count and another variable indicates not whole
+# todo rewrite weeks using same design as months but identifying interval starts with week_start
 
 from shapes import Box, Text
 from dataclasses import dataclass
@@ -54,7 +55,7 @@ class Scale:
     # interval styling
     box_background_color: str = 'black'  # this fills the outer box which is revealed when using rounding
     box_rounding: int = 0
-    box_border_width: float = 0
+    box_border_width: float = 0.2
     box_border_color: str = 'black'
     box_fill: str = 'grey'
 
@@ -69,8 +70,8 @@ class Scale:
     font_weight: str = str()  # normal | bold | bolder | lighter | <number>
 
     # text positioning relative to x and y
-    text_x: float = float()
-    text_y: float = float()
+    text_x: float = None
+    text_y: float = None
 
     def __post_init__(self):
 
@@ -115,11 +116,11 @@ class Scale:
             self.scale_ends = self.box_fill
 
         # set default text_x if zero
-        if self.text_x == float():
+        if self.text_x is None:
             self.text_x = 10  # arbitrary value
 
         # set default text_y if zero
-        if self.text_y == float():
+        if self.text_y is None:
             self.text_y = self.height * 0.65  # 0.65 sets text in middle
 
         # set default date_format if blank
@@ -302,38 +303,34 @@ def months(start, finish, resolution):
     """Returns iterable showing all months in given range"""
 
     entries = tuple()
-    total_days = finish - start
-    date_object = date.fromordinal(start)
-    day_delta = timedelta(days=1)
-    day_count = 0
-    month_count = 1
-    entry = tuple()
 
-    # underhang
-    while day_count <= total_days and date_object.day != 1:
-        day_count += 1
-        date_object += day_delta
-    underhang = 0, day_count * resolution, start, 0
-    entries += (underhang, )
+    intervals = [i for i in range(1, 13)]
 
-    # length of first whole month
-    month_length = monthrange(date_object.year, date_object.month)[1]
+    # lists half starts and finish if it is also a half start (we need this to set count)
+    starts = [day for day in range(start, finish + 1) if date.fromordinal(day).month in intervals and date.fromordinal(day).day == 1]
 
-    # whole months
-    while date_object.toordinal() + month_length <= finish:
-        entry = day_count * resolution, month_length * resolution, date_object.toordinal(), month_count
+    # finish appears twice if finish is also a quarter end but while loop stops at first so no need to remove
+    interval_dates = [start] + starts + [finish]
+
+    count = 0
+    item = 0
+
+    while interval_dates[item] != finish:
+
+        x = (interval_dates[item] - start) * resolution
+        width = (interval_dates[item + 1] - interval_dates[item]) * resolution
+
+        if interval_dates[item + 1] == finish and finish not in starts:
+            count = 0  # sets count to 0 for overhang
+        elif interval_dates[item] not in starts:
+            count = 0  # sets count to 0 for underhang
+        else:
+            count += 1  # whole interval count
+
+        entry = x, width, interval_dates[item], count
         entries += (entry, )
-        day_count += month_length
-        month_count += 1
-        date_object += timedelta(days=month_length)
-        month_length = monthrange(date_object.year, date_object.month)[1]
 
-    # overhang
-    overhang_x = day_count * resolution
-    overhang_ordinal = date_object.toordinal()
-    overhang_width = (finish - overhang_ordinal) * resolution
-    overhang_entry = overhang_x, overhang_width, overhang_ordinal, 0
-    entries += (overhang_entry, )
+        item += 1
 
     return entries
 
