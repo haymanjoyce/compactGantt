@@ -214,7 +214,7 @@ def select(start, finish, interval_type='DAYS', resolution=1.0, week_start=0):
     """Selects appropriate iterable based on interval type"""
 
     # Iterable is a tuple of tuples
-    # Each tuple: x (pixels), width (pixels), ordinal date (00:00hrs of date), count (whole intervals)
+    # Each tuple: x (pixels), width (pixels), ordinal date (00:00hrs of date), count, whole (boolean)
 
     if interval_type == 'DAYS':
         return days(start, finish, resolution)
@@ -238,22 +238,101 @@ def days(start, finish, resolution):
     entries = tuple()
 
     total_days = finish - start
-    box_width = 1 * resolution
+
     x = 0
-    ordinal = start
-    day_count = 1
+    width = 1 * resolution
 
     for day in range(total_days):
-        entry = x, box_width, ordinal, day_count,
+
+        entry = x, width, start + day, day + 1, True
         entries += (entry, )
-        x += box_width
-        ordinal += 1
-        day_count += 1
+        x += width
 
     return entries
 
 
 def weeks(start, finish, resolution, week_start):
+    """Returns iterable showing all weeks in a given range"""
+
+    # lists starts, as ordinals, of whole intervals in range (including finish date if it is start of whole interval)
+    wholes = [day for day in range(start, finish + 1) if date.fromordinal(day).weekday() == week_start]
+    print(wholes)
+
+    # lists starts, as ordinals, of all intervals in range
+    intervals = [day for day in range(start, finish) if date.fromordinal(day).weekday() == week_start or day == start]
+    print(intervals)
+
+    x = 0
+    count = 1
+
+    for interval in intervals:
+
+        pass
+
+
+
+    while intervals[item] != finish:
+
+        x = (intervals[item] - start) * resolution
+        width = (intervals[item + 1] - intervals[item]) * resolution
+
+        if intervals[item + 1] == finish and finish not in wholes:
+            count = 0  # sets count to 0 for overhang
+        elif intervals[item] not in wholes:
+            count = 0  # sets count to 0 for underhang
+        else:
+            count += 1  # whole interval count
+
+        entry = x, width, intervals[item], count
+
+        item += 1
+
+    ###########
+
+    try:  # requires a week_start to be found in range
+
+        entries = tuple()
+        total_days = finish - start
+        first_weekday = [date.fromordinal(day).weekday() for day in range(start, finish)[:20]].index(week_start)
+        box_width = 7 * resolution
+        week_commencing = start + first_weekday
+        week_count = 1
+
+        # create entries
+        while first_weekday < total_days:
+            x = first_weekday * resolution
+            entries += (x, box_width, week_commencing, week_count),
+            first_weekday += 7
+            week_commencing += 7
+            week_count += 1
+
+        # underhang
+        if entries[0][2] > start:
+            underhang = (entries[0][2] - start) * resolution
+            entry = 0, underhang, start, 0,  # a week number of 0 means not a whole week
+            entries = (entry,) + entries
+
+        # overhang
+        if entries[-1][2] + 7 > finish:
+            overhang = ((entries[-1][2] + 7) - finish) * resolution
+            overhang = box_width - overhang
+            entry = entries[-1][0], overhang, entries[-1][2], 0  # a week number of 0 means not a whole week
+            entries = entries[:-1] + (entry, )
+
+        return entries
+
+    except ValueError:  # if no week_start found (i.e. range too short)
+
+        entries = tuple()
+        total_days = finish - start
+        box_width = total_days * resolution
+        entry = 0, box_width, start, 0
+        entries += (entry, )
+
+        return entries
+
+
+def weeks_old(start, finish, resolution, week_start):
     """Returns iterable showing all weeks in a given range"""
 
     try:  # requires a week_start to be found in range
