@@ -2,13 +2,11 @@
 
 # todo ability to create custom interval (e.g. 20 days representing 1 month)
 # todo ability to label the scale (e.g. Months)
-# todo if text size not set then calculated
-# todo clean separator (e.g. only one or two chars or forbidden chars)
+# todo if text size not set then calculated (will need to know rendering medium and to be homed in separate module)
 
 from shapes import Box, Text
 from dataclasses import dataclass
-from datetime import date, timedelta
-from calendar import monthrange
+from datetime import date
 import dates
 
 
@@ -79,8 +77,12 @@ class Scale:
         else:
             self._week_start = 0
 
+        # clear date format separator
+        if len(self.separator) < 1 or self.separator in ['%', '#', '?', '*', '\"'] or self.separator is self.separator.isdigit():
+            self.separator = " "  # default
+
         # clean label type
-        if self.label_type in ['HIDDEN', 'hidden', 'hide', 'h']:
+        if self.label_type in ['HIDDEN', 'hidden', 'hide', 'h', None]:
             self.label_type = 'hidden'
         elif self.label_type in ['COUNT', 'count', 'c', '']:  # default if blank
             self.label_type = 'count'
