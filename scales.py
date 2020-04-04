@@ -10,6 +10,7 @@
 # todo rebuild all iterators with new design
 # todo redesign tuple of tuples such that is plain count and another variable indicates not whole
 # todo rewrite weeks using same design as months but identifying interval starts with week_start
+# todo see if you can combine some of the cleaning ops in post init
 
 from shapes import Box, Text
 from dataclasses import dataclass
@@ -218,16 +219,23 @@ def select(start, finish, interval_type='DAYS', resolution=1.0, week_start=0):
 
     if interval_type == 'DAYS':
         return days(start, finish, resolution)
+
     elif interval_type == 'WEEKS':
         return weeks(start, finish, resolution, week_start)
+
     elif interval_type == 'MONTHS':
         return months(start, finish, resolution)
+
     elif interval_type == 'QUARTERS':
         return quarters(start, finish, resolution)
+
     elif interval_type == 'HALVES':
         return halves(start, finish, resolution)
+
     elif interval_type == 'YEARS':
-        return years(start, finish, resolution)
+        wholes = [day for day in range(start, finish + 1) if date.fromordinal(day).month in [1] and date.fromordinal(day).day == 1]
+        return gregorian(start, finish, resolution, wholes)
+
     else:
         raise ValueError(interval_type)
 
@@ -385,37 +393,47 @@ def halves(start, finish, resolution):
     return entries
 
 
-def years(start, finish, resolution):
-    """Returns iterable showing all years in given range"""
+def gregorian(start, finish, resolution, wholes):
+    """Returns iterable showing all interval data in given range and for a given interval type"""
 
     entries = tuple()
 
-    # lists half starts and finish if it is also a half start (we need this to set count)
-    year_starts = [day for day in range(start, finish + 1) if
-                   date.fromordinal(day).month in [1] and date.fromordinal(day).day == 1]
+    starts = wholes.copy()
 
-    # finish appears twice if finish is also a quarter end but while loop stops at first so no need to remove
-    interval_dates = [start] + year_starts + [finish]
+    if start not in starts:
+        starts = [start] + starts
+
+    if finish not in starts:
+        starts = starts + [finish]
+
+    interval = 0
 
     count = 0
-    item = 0
 
-    while interval_dates[item] != finish:
+    while starts[interval] != finish:
 
-        x = (interval_dates[item] - start) * resolution
-        width = (interval_dates[item + 1] - interval_dates[item]) * resolution
+        current_start = starts[interval]
 
-        if interval_dates[item + 1] == finish and finish not in year_starts:
-            count = 0  # sets count to 0 for overhang
-        elif interval_dates[item] not in year_starts:
-            count = 0  # sets count to 0 for underhang
+        next_start = starts[interval + 1]
+
+        x = (current_start - start) * resolution
+
+        width = (next_start - current_start) * resolution
+
+        if current_start == start and start not in wholes:
+            count += 0
+            whole = False
+        elif next_start == finish and finish not in wholes:
+            count += 1
+            whole = False
         else:
-            count += 1  # whole interval count
+            count += 1
+            whole = True
 
-        entry = x, width, interval_dates[item], count
+        entry = x, width, current_start, count, whole
         entries += (entry, )
 
-        item += 1
+        interval += 1
 
     return entries
 
