@@ -21,7 +21,7 @@ from PySide2.QtWidgets import QApplication
 from PySide2.QtSvg import QSvgWidget
 from PySide2.QtSvg import QSvgRenderer
 from PySide2.QtCore import QByteArray
-from scales import Scale
+from scales import Scale, Grid
 from shapes import TimeBox
 from pprint import pprint
 from arrange import Item
@@ -47,7 +47,7 @@ creds = ServiceAccountCredentials.from_json_keyfile_name(client_secret, scope)
 
 # TEMP
 today = date.toordinal(date.today()) - 2
-duration = 2000
+duration = 50
 end = today + duration
 
 scale_a = Scale(interval_type='DAYS', start=today, finish=end, width=1000, scale_ends='pink', x=100, y=0, height=50, label_type='dates', date_format='a', font_size='15', min_interval_width=30)
@@ -57,6 +57,8 @@ scale_d = Scale(interval_type='MONTHS', start=today, finish=end, width=1000, sca
 scale_e = Scale(interval_type='QUARTERS', start=today, finish=end, width=1000, scale_ends='pink', x=100, y=200, height=50, label_type='dates', date_format='Q', separator="/")
 scale_f = Scale(interval_type='HALVES', start=today, finish=end, width=1000, scale_ends='pink', x=100, y=250, height=50, label_type='dates', date_format='H', separator="/")
 scale_g = Scale(interval_type='YEARS', start=today, finish=end, width=1000, scale_ends='pink', x=100, y=300, height=50, label_type='dates', date_format='Y', separator="/")
+grid_a = Grid(interval_type='WEEKS', start=today, finish=end, width=1000, x=100, y=350, height=200, week_start='0')
+
 
 # GET ALL TUPLES
 unsorted_items = list()
@@ -68,8 +70,9 @@ item_d = Item(element=scale_d.get_scale(), layer=300).get_item()
 item_e = Item(element=scale_e.get_scale(), layer=300).get_item()
 item_f = Item(element=scale_f.get_scale(), layer=300).get_item()
 item_g = Item(element=scale_g.get_scale(), layer=300).get_item()
+item_h = Item(element=grid_a.get_grid(), layer=300).get_item()
 
-unsorted_items.extend((item_a, item_b, item_c, item_d, item_e, item_f, item_g))
+unsorted_items.extend((item_a, item_b, item_c, item_d, item_e, item_f, item_g, item_h))
 
 # SORT TUPLES BY POSITION
 sorted_items = sorted(unsorted_items, key=itemgetter(0))

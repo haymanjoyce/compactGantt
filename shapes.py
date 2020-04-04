@@ -24,7 +24,7 @@ class Line(Point):
     dy: float = 100
     stroke: str = 'black'
     stroke_width: int = 5
-    stroke_line_cap: str = str()
+    stroke_line_cap: str = str('butt')  # butt | round | square
     stroke_dasharray: str = str()  # dash gap dash gap
 
     def get_line(self):

@@ -3,11 +3,98 @@
 # todo ability to create custom interval (e.g. 20 days representing 1 month)
 # todo ability to label the scale (e.g. Months)
 # todo if text size not set then calculated (will need to know rendering medium and to be homed in separate module)
+# todo vertical grid lines
+# todo Base class for Scale and Grid
 
-from shapes import Box, Text
+from shapes import Box, Text, Line
 from dataclasses import dataclass
 from datetime import date
 import dates
+
+
+@dataclass
+class Grid:
+    """Builds vertical grid lines which align with scale intervals"""
+
+    # places the grid
+    x: float = 0
+    y: float = 0
+
+    # sets grid dimensions
+    width: float = 800
+    height: float = 600
+
+    # defines time window
+    start: int = 0  # note that ordinal dates are at 00:00hrs (day start)
+    finish: int = 0  # we handle the missing 23:59 hours (you don't need to)
+
+    # defines first day of week
+    week_start: str = str(0)
+
+    # defines interval type
+    interval_type: str = str()  # DAYS | WEEKS | MONTHS | QUARTERS | HALVES | YEARS
+
+    # line styling
+    line_color: str = 'black'
+    line_width: int = 1
+    line_dashing: str = str()  # dash gap dash gap
+
+    def __post_init__(self):
+
+        # clean start and finish dates
+        if self.finish <= self.start or self.start >= self.finish:
+            self.finish = self.start + 1
+
+        # clean first day of week string and converts to integer
+        if self.week_start in ['6', '7', 'S', 'Sun', 'Sunday', 'SUN', 'SUNDAY']:
+            self._week_start = 6
+        else:
+            self._week_start = 0
+
+        # clean interval type
+        if self.interval_type.lower() in [item.lower() for item in ['days', 'day', 'd', '']]:  # blank indicates default
+            self.interval_type = 'DAYS'
+        elif self.interval_type.lower() in [item.lower() for item in ['weeks', 'week', 'wk', 'w']]:
+            self.interval_type = 'WEEKS'
+        elif self.interval_type.lower() in [item.lower() for item in ['months', 'mon', 'month', 'm']]:
+            self.interval_type = 'MONTHS'
+        elif self.interval_type.lower() in [item.lower() for item in ['quarters', 'quarts', 'qts', 'q']]:
+            self.interval_type = 'QUARTERS'
+        elif self.interval_type.lower() in [item.lower() for item in ['halves', 'half', 'halfs', 'halve', 'h']]:
+            self.interval_type = 'HALVES'
+        elif self.interval_type.lower() in [item.lower() for item in ['years', 'year', 'yrs', 'yr', 'y']]:
+            self.interval_type = 'YEARS'
+        else:
+            raise ValueError(self.interval_type)
+
+        # calculate resolution (pixels per day) (note, this is a private variable)
+        self.resolution = self.width / (self.finish - self.start)  # // will reduce float (good) and precision (bad)
+
+        # build interval data (note, this is a private variable)
+        self.intervals = select(self.x, self.start, self.finish, self.interval_type, self.resolution, self._week_start)
+
+    def build_grid(self):
+
+        lines = str()
+        line = Line()
+
+        line.stroke = self.line_color
+        line.stroke_width = self.line_width
+        line.stroke_dasharray = self.line_dashing
+
+        line.y = self.y
+        line.dy = self.y + self.height
+
+        for i in self.intervals:
+            line.x = i[0]
+            line.dx = line.x
+            lines += line.get_line()
+
+        return lines
+
+    def get_grid(self):
+        print(self.build_grid())
+        return f'{self.build_grid()}'
 
 
 @dataclass
@@ -77,7 +164,7 @@ class Scale:
         else:
             self._week_start = 0
 
-        # clear date format separator
+        # clean date format separator
         if len(self.separator) < 1 or self.separator in ['%', '#', '?', '*', '\"'] or self.separator is self.separator.isdigit():
             self.separator = " "  # default
 
@@ -261,7 +348,6 @@ def weeks(x, start, finish, resolution, week_start):
     interval = 0
     width = 0
     count = 0
-    print(x)
 
     while intervals[interval] != finish:
 
