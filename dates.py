@@ -1,6 +1,6 @@
 """Module for handling dates"""
 
-# todo ability to prefix date format (e.g. Week 2, Q2, Half 2) (replaces Q and H)
+# todo ability to prefix date format (e.g. Week 2, Q2, Half 2) (replaces Q, H, and Y)
 # todo improve speed (e.g. by making it class)
 
 import datetime as dt
@@ -10,6 +10,7 @@ def convert_ordinal(ordinal_date, date_format, week_start=0, separator=' '):
     """Converts ordinal date into custom date format"""
 
     # y - 20
+    # Y - Y20
     # yyyy - 2020
     # m - 4
     # mm - 04
@@ -45,6 +46,8 @@ def convert_ordinal(ordinal_date, date_format, week_start=0, separator=' '):
         if "y".upper() in item.upper():
             if item == "y":
                 label += date.strftime("%y")
+            elif item == "Y":
+                label += "Y" + date.strftime("%y")
             else:
                 label += date.strftime("%Y")
         elif "m".upper() in item.upper():

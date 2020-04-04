@@ -1,10 +1,9 @@
 """Module for building scales"""
 
-# todo add MONTHS | QUARTERS | HALVES | YEARS
+# todo ability to create custom interval (e.g. 20 days representing 1 month)
+# todo ability to label the scale (e.g. Months)
 # todo if text size not set then calculated
 # todo clean separator (e.g. only one or two chars or forbidden chars)
-# todo ability to create custom interval (e.g. 20 days representing 1 month)
-# todo key or label for each scale (e.g. Months)
 
 from shapes import Box, Text
 from dataclasses import dataclass
@@ -42,7 +41,7 @@ class Scale:
     label_type: str = str()  # count | hidden | date
 
     # defines date format
-    date_format: str = str()  # y | yyyy | m | mm | mmm | M | d | dd | a | aaa | A | n | nnn | w
+    date_format: str = str()  # y | yyyy | Y | m | mm | mmm | M | d | dd | a | aaa | A | n | nnn | w | q | h
 
     # defines date format separator
     separator: str = " "

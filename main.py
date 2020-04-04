@@ -56,7 +56,7 @@ scale_c = Scale(interval_type='WEEKS', start=today, finish=end, width=1600, scal
 scale_d = Scale(interval_type='MONTHS', start=today, finish=end, width=1600, scale_ends='pink', y=150, height=50, label_type='dates', date_format='mm', min_interval_width=40, text_x=10)
 scale_e = Scale(interval_type='QUARTERS', start=today, finish=end, width=1600, scale_ends='pink', y=200, height=50, label_type='dates', date_format='Q', separator="/")
 scale_f = Scale(interval_type='HALVES', start=today, finish=end, width=1600, scale_ends='pink', y=250, height=50, label_type='dates', date_format='H', separator="/")
-scale_g = Scale(interval_type='YEARS', start=today, finish=end, width=1600, scale_ends='pink', y=300, height=50, label_type='count', date_format='yyyy', separator="/")
+scale_g = Scale(interval_type='YEARS', start=today, finish=end, width=1600, scale_ends='pink', y=300, height=50, label_type='dates', date_format='Y', separator="/")
 
 # GET ALL TUPLES
 unsorted_items = list()
