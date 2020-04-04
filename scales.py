@@ -140,7 +140,7 @@ class Scale:
         self.resolution = self.width / (self.finish - self.start)  # // will reduce float (good) and precision (bad)
 
         # build interval data (note, this is a private variable)
-        self.intervals = select(self.start, self.finish, self.interval_type, self.resolution, self._week_start)
+        self.intervals = select(self.x, self.start, self.finish, self.interval_type, self.resolution, self._week_start)
 
     def build_boxes(self):
 
@@ -201,48 +201,47 @@ class Scale:
                f'{self.build_labels()}'
 
 
-def select(start, finish, interval_type='DAYS', resolution=1.0, week_start=0):
+def select(x, start, finish, interval_type='DAYS', resolution=1.0, week_start=0):
     """Selects appropriate iterable based on interval type"""
 
     # Iterable is a tuple of tuples
     # Each tuple: x (pixels), width (pixels), ordinal date (00:00hrs of date), count, whole (boolean)
 
     if interval_type == 'DAYS':
-        return days(start, finish, resolution)
+        return days(x, start, finish, resolution)
 
     elif interval_type == 'WEEKS':
-        return weeks(start, finish, resolution, week_start)
+        return weeks(x, start, finish, resolution, week_start)
 
     elif interval_type == 'MONTHS':
         start_months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
         whole_intervals = whole_periods(start, finish, start_months)
-        return gregorian_periods(start, finish, resolution, whole_intervals)
+        return gregorian_periods(x, start, finish, resolution, whole_intervals)
 
     elif interval_type == 'QUARTERS':
         start_months = [1, 4, 7, 10]
         whole_intervals = whole_periods(start, finish, start_months)
-        return gregorian_periods(start, finish, resolution, whole_intervals)
+        return gregorian_periods(x, start, finish, resolution, whole_intervals)
 
     elif interval_type == 'HALVES':
         start_months = [1, 7]
         whole_intervals = whole_periods(start, finish, start_months)
-        return gregorian_periods(start, finish, resolution, whole_intervals)
+        return gregorian_periods(x, start, finish, resolution, whole_intervals)
 
     elif interval_type == 'YEARS':
         start_months = [1]
         whole_intervals = whole_periods(start, finish, start_months)
-        return gregorian_periods(start, finish, resolution, whole_intervals)
+        return gregorian_periods(x, start, finish, resolution, whole_intervals)
 
     else:
         raise ValueError(interval_type)
 
 
-def days(start, finish, resolution):
+def days(x, start, finish, resolution):
     """Returns iterable showing all days in a given range"""
 
     entries = tuple()
     total_days = finish - start
-    x = 0
     width = 1 * resolution
 
     for day in range(total_days):
@@ -254,15 +253,15 @@ def days(start, finish, resolution):
     return entries
 
 
-def weeks(start, finish, resolution, week_start):
+def weeks(x, start, finish, resolution, week_start):
     """Returns iterable showing all weeks in a given range"""
 
     entries = tuple()
     intervals = [day for day in range(start, finish + 1) if date.fromordinal(day).weekday() == week_start or day == start or day == finish]
     interval = 0
-    x = 0
     width = 0
     count = 0
+    print(x)
 
     while intervals[interval] != finish:
 
@@ -284,7 +283,7 @@ def weeks(start, finish, resolution, week_start):
     return entries
 
 
-def gregorian_periods(start, finish, resolution, whole_intervals):
+def gregorian_periods(x, start, finish, resolution, whole_intervals):
     """Returns iterable showing all Gregorian periods (greater or equal to one month) in a given range"""
 
     entries = tuple()
@@ -307,8 +306,6 @@ def gregorian_periods(start, finish, resolution, whole_intervals):
 
         next_start = starts[interval + 1]
 
-        x = (current_start - start) * resolution
-
         width = (next_start - current_start) * resolution
 
         if current_start == start and start not in whole_intervals:
@@ -323,6 +320,8 @@ def gregorian_periods(start, finish, resolution, whole_intervals):
 
         entry = x, width, current_start, count, whole
         entries += (entry, )
+
+        x += width
 
         interval += 1
 
