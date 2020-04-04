@@ -224,17 +224,24 @@ def select(start, finish, interval_type='DAYS', resolution=1.0, week_start=0):
         return weeks(start, finish, resolution, week_start)
 
     elif interval_type == 'MONTHS':
-        return months(start, finish, resolution)
+        start_months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        whole_intervals = whole_periods(start, finish, start_months)
+        return gregorian_periods(start, finish, resolution, whole_intervals)
 
     elif interval_type == 'QUARTERS':
-        return quarters(start, finish, resolution)
+        start_months = [1, 4, 7, 10]
+        whole_intervals = whole_periods(start, finish, start_months)
+        return gregorian_periods(start, finish, resolution, whole_intervals)
 
     elif interval_type == 'HALVES':
-        return halves(start, finish, resolution)
+        start_months = [1, 7]
+        whole_intervals = whole_periods(start, finish, start_months)
+        return gregorian_periods(start, finish, resolution, whole_intervals)
 
     elif interval_type == 'YEARS':
-        wholes = [day for day in range(start, finish + 1) if date.fromordinal(day).month in [1] and date.fromordinal(day).day == 1]
-        return gregorian(start, finish, resolution, wholes)
+        start_months = [1]
+        whole_intervals = whole_periods(start, finish, start_months)
+        return gregorian_periods(start, finish, resolution, whole_intervals)
 
     else:
         raise ValueError(interval_type)
@@ -287,118 +294,12 @@ def weeks(start, finish, resolution, week_start):
     return entries
 
 
-def months(start, finish, resolution):
-    """Returns iterable showing all months in given range"""
+def gregorian_periods(start, finish, resolution, whole_intervals):
+    """Returns iterable showing all Gregorian periods (greater or equal to one month) in a given range"""
 
     entries = tuple()
 
-    intervals = [i for i in range(1, 13)]
-
-    # lists half starts and finish if it is also a half start (we need this to set count)
-    starts = [day for day in range(start, finish + 1) if date.fromordinal(day).month in intervals and date.fromordinal(day).day == 1]
-
-    # finish appears twice if finish is also a quarter end but while loop stops at first so no need to remove
-    interval_dates = [start] + starts + [finish]
-
-    count = 0
-    item = 0
-
-    while interval_dates[item] != finish:
-
-        x = (interval_dates[item] - start) * resolution
-        width = (interval_dates[item + 1] - interval_dates[item]) * resolution
-
-        if interval_dates[item + 1] == finish and finish not in starts:
-            count = 0  # sets count to 0 for overhang
-        elif interval_dates[item] not in starts:
-            count = 0  # sets count to 0 for underhang
-        else:
-            count += 1  # whole interval count
-
-        entry = x, width, interval_dates[item], count
-        entries += (entry, )
-
-        item += 1
-
-    return entries
-
-
-def quarters(start, finish, resolution):
-    """Returns iterable showing all halves in given range"""
-
-    entries = tuple()
-
-    # lists quarter starts and finish if it is also a quarter start (we need this to set count)
-    quarter_starts = [day for day in range(start, finish + 1) if
-                      date.fromordinal(day).month in [1, 4, 7, 10] and date.fromordinal(day).day == 1]
-
-    # finish appears twice if finish is also a quarter end but while loop stops at first so no need to remove
-    interval_dates = [start] + quarter_starts + [finish]
-
-    count = 0
-    item = 0
-
-    while interval_dates[item] != finish:
-
-        x = (interval_dates[item] - start) * resolution
-        width = (interval_dates[item + 1] - interval_dates[item]) * resolution
-
-        if interval_dates[item + 1] == finish and finish not in quarter_starts:
-            count = 0  # sets count to 0 for overhang
-        elif interval_dates[item] not in quarter_starts:
-            count = 0  # sets count to 0 for underhang
-        else:
-            count += 1  # whole interval count
-
-        entry = x, width, interval_dates[item], count
-        entries += (entry, )
-
-        item += 1
-
-    return entries
-
-
-def halves(start, finish, resolution):
-    """Returns iterable showing all quarters in given range"""
-
-    entries = tuple()
-
-    # lists half starts and finish if it is also a half start (we need this to set count)
-    half_starts = [day for day in range(start, finish + 1) if
-                      date.fromordinal(day).month in [1, 7] and date.fromordinal(day).day == 1]
-
-    # finish appears twice if finish is also a quarter end but while loop stops at first so no need to remove
-    interval_dates = [start] + half_starts + [finish]
-
-    count = 0
-    item = 0
-
-    while interval_dates[item] != finish:
-
-        x = (interval_dates[item] - start) * resolution
-        width = (interval_dates[item + 1] - interval_dates[item]) * resolution
-
-        if interval_dates[item + 1] == finish and finish not in half_starts:
-            count = 0  # sets count to 0 for overhang
-        elif interval_dates[item] not in half_starts:
-            count = 0  # sets count to 0 for underhang
-        else:
-            count += 1  # whole interval count
-
-        entry = x, width, interval_dates[item], count
-        entries += (entry, )
-
-        item += 1
-
-    return entries
-
-
-def gregorian(start, finish, resolution, wholes):
-    """Returns iterable showing all interval data in given range and for a given interval type"""
-
-    entries = tuple()
-
-    starts = wholes.copy()
+    starts = whole_intervals.copy()
 
     if start not in starts:
         starts = [start] + starts
@@ -420,10 +321,10 @@ def gregorian(start, finish, resolution, wholes):
 
         width = (next_start - current_start) * resolution
 
-        if current_start == start and start not in wholes:
+        if current_start == start and start not in whole_intervals:
             count += 0
             whole = False
-        elif next_start == finish and finish not in wholes:
+        elif next_start == finish and finish not in whole_intervals:
             count += 1
             whole = False
         else:
@@ -436,4 +337,10 @@ def gregorian(start, finish, resolution, wholes):
         interval += 1
 
     return entries
+
+
+def whole_periods(start, finish, start_months):
+    """Returns start dates for all Gregorian periods in given range, including last day in range"""
+
+    return [day for day in range(start, finish + 1) if date.fromordinal(day).month in start_months and date.fromordinal(day).day == 1]
 
