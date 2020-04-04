@@ -47,15 +47,15 @@ creds = ServiceAccountCredentials.from_json_keyfile_name(client_secret, scope)
 
 # TEMP
 today = date.toordinal(date.today()) - 2
-duration = 1800
+duration = 400
 end = today + duration
 
 scale_a = Scale(interval_type='DAYS', start=today, finish=end, width=1600, scale_ends='pink', y=0, height=50, label_type='dates', date_format='a', font_size='15', min_interval_width=30)
 scale_b = Scale(interval_type='WEEKS', start=today, finish=end, width=1600, scale_ends='pink', y=50, height=50, week_start='0')
 scale_c = Scale(interval_type='WEEKS', start=today, finish=end, width=1600, scale_ends='pink', y=100, height=50, week_start='6')
 scale_d = Scale(interval_type='MONTHS', start=today, finish=end, width=1600, scale_ends='pink', y=150, height=50, label_type='dates', date_format='mm', min_interval_width=40, text_x=10)
-scale_e = Scale(interval_type='QUARTERS', start=today, finish=end, width=1600, scale_ends='pink', y=200, height=50, label_type='count', date_format='d m y', separator="/")
-scale_f = Scale(interval_type='HALVES', start=today, finish=end, width=1600, scale_ends='pink', y=250, height=50, label_type='count', date_format='d m y', separator="/")
+scale_e = Scale(interval_type='QUARTERS', start=today, finish=end, width=1600, scale_ends='pink', y=200, height=50, label_type='dates', date_format='Q', separator="/")
+scale_f = Scale(interval_type='HALVES', start=today, finish=end, width=1600, scale_ends='pink', y=250, height=50, label_type='dates', date_format='H', separator="/")
 scale_g = Scale(interval_type='YEARS', start=today, finish=end, width=1600, scale_ends='pink', y=300, height=50, label_type='count', date_format='yyyy', separator="/")
 
 # GET ALL TUPLES

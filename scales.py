@@ -5,12 +5,6 @@
 # todo clean separator (e.g. only one or two chars or forbidden chars)
 # todo ability to create custom interval (e.g. 20 days representing 1 month)
 # todo key or label for each scale (e.g. Months)
-# todo merge label type and fate format to create label format
-# todo debug months where 1 day duration results in miscalculated overhang
-# todo rebuild all iterators with new design
-# todo redesign tuple of tuples such that is plain count and another variable indicates not whole
-# todo rewrite weeks using same design as months but identifying interval starts with week_start
-# todo see if you can combine some of the cleaning ops in post init
 
 from shapes import Box, Text
 from dataclasses import dataclass
@@ -35,17 +29,17 @@ class Scale:
     start: int = 0  # note that ordinal dates are at 00:00hrs (day start)
     finish: int = 0  # we handle the missing 23:59 hours (you don't need to)
 
-    # defines first day of week as a string
+    # defines first day of week
     week_start: str = str(0)
 
     # defines interval type
     interval_type: str = str()  # DAYS | WEEKS | MONTHS | QUARTERS | HALVES | YEARS
 
-    # defines label type
-    label_type: str = str()  # count | hidden | date
-
     # defines minimum interval width for a label
     min_interval_width: int = 50
+
+    # defines label type
+    label_type: str = str()  # count | hidden | date
 
     # defines date format
     date_format: str = str()  # y | yyyy | m | mm | mmm | M | d | dd | a | aaa | A | n | nnn | w
@@ -86,6 +80,16 @@ class Scale:
         else:
             self._week_start = 0
 
+        # clean label type
+        if self.label_type in ['HIDDEN', 'hidden', 'hide', 'h']:
+            self.label_type = 'hidden'
+        elif self.label_type in ['COUNT', 'count', 'c', '']:  # default if blank
+            self.label_type = 'count'
+        elif self.label_type in ['DATE', 'DATES', 'date', 'dates', 'd']:
+            self.label_type = 'date'
+        else:
+            raise ValueError(self.label_type)
+
         # clean interval type
         if self.interval_type.lower() in [item.lower() for item in ['days', 'day', 'd', '']]:  # blank indicates default
             self.interval_type = 'DAYS'
@@ -102,28 +106,6 @@ class Scale:
         else:
             raise ValueError(self.interval_type)
 
-        # clean label type
-        if self.label_type in ['HIDDEN', 'hidden', 'hide', 'h']:
-            self.label_type = 'hidden'
-        elif self.label_type in ['COUNT', 'count', 'c', '']:
-            self.label_type = 'count'
-        elif self.label_type in ['DATE', 'DATES', 'date', 'dates', 'd']:
-            self.label_type = 'date'
-        else:
-            raise ValueError(self.label_type)
-
-        # set default scale end color if blank
-        if self.scale_ends == str():
-            self.scale_ends = self.box_fill
-
-        # set default text_x if zero
-        if self.text_x is None:
-            self.text_x = 10  # arbitrary value
-
-        # set default text_y if zero
-        if self.text_y is None:
-            self.text_y = self.height * 0.65  # 0.65 sets text in middle
-
         # set default date_format if blank
         if self.label_type == 'date' and self.date_format == str():
             if self.interval_type == 'DAYS':
@@ -133,13 +115,25 @@ class Scale:
             elif self.interval_type == 'MONTHS':
                 self.date_format = 'mmm'
             elif self.interval_type == 'QUARTERS':
-                self.date_format = ''
+                self.date_format = 'q'
             elif self.interval_type == 'HALVES':
-                self.date_format = ''
+                self.date_format = 'h'
             elif self.interval_type == 'YEARS':
                 self.date_format = 'yyyy'
             else:
                 raise ValueError(self.interval_type)
+
+        # set default scale end color if blank
+        if self.scale_ends == str():
+            self.scale_ends = self.box_fill
+
+        # set default text_x if None
+        if self.text_x is None:
+            self.text_x = 10  # arbitrary value
+
+        # set default text_y if None
+        if self.text_y is None:
+            self.text_y = self.height * 0.65  # 0.65 sets text in middle
 
         # calculate resolution (pixels per day) (note, this is a private variable)
         self.resolution = self.width / (self.finish - self.start)  # // will reduce float (good) and precision (bad)
@@ -152,7 +146,6 @@ class Scale:
         box = Box()
         boxes = str()
 
-        # unchanging variables
         box.y = self.y
         box.height = self.height
         box.rounding = self.box_rounding
@@ -160,7 +153,6 @@ class Scale:
         box.border_color = self.box_border_color
         box.border_width = self.box_border_width
 
-        # changing variables
         for i in self.intervals:
             box.x = i[0]
             box.width = i[1]
@@ -177,7 +169,6 @@ class Scale:
         label = Text()
         labels = str()
 
-        # unchanging variables
         label.y = self.y
         label.translate_y = self.text_y
         label.translate_x = self.text_x
@@ -187,11 +178,9 @@ class Scale:
         label.font_family = self.font_family
         label.font_style = self.font_style
 
-        # set visibility
         if self.label_type == 'hidden':
             label.text_visibility = self.label_type
 
-        # changing variables
         for i in self.intervals:
             label.x = i[0]
             if i[1] < self.min_interval_width:
