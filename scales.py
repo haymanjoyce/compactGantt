@@ -164,7 +164,7 @@ class Scale:
         for i in self.intervals:
             box.x = i[0]
             box.width = i[1]
-            if i[3] == 0:
+            if i[4] is False:
                 box.fill = self.scale_ends
             else:
                 box.fill = self.box_fill
@@ -196,7 +196,7 @@ class Scale:
             label.x = i[0]
             if i[1] < self.min_interval_width:
                 label.text = str()  # you could set visibility to hidden but more verbose
-            elif i[3] == 0 and self.label_type == 'count':
+            elif self.label_type == 'count' and i[3] == 0:
                 label.text = str()  # you could set visibility to hidden but more verbose
             elif self.label_type == 'date':
                 label.text = dates.convert_ordinal(i[2], self.date_format, self._week_start, self.separator)
