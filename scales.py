@@ -312,17 +312,24 @@ def weeks(x, start, finish, resolution, week_start):
 
     while intervals[interval] != finish:
 
-        x += width
-        duration = intervals[interval + 1] - intervals[interval]
-        if duration == 7:
-            whole = True
+        current_start = intervals[interval]
+        next_start = intervals[interval + 1]
+
+        duration = next_start - current_start
+
+        if current_start == start and duration < 7:
+            whole = False
+        elif next_start == finish and duration < 7:
+            whole = False
             count += 1
         else:
-            whole = False
-            count = 0
+            whole = True
+            count += 1
+
+        x += width
         width = duration * resolution
 
-        entry = x, width, intervals[interval], count, whole
+        entry = x, width, current_start, count, whole
         entries += (entry, )
 
         interval += 1
