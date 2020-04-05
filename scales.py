@@ -3,7 +3,6 @@
 # todo ability to create custom interval (e.g. 20 days representing 1 month)
 # todo ability to label the scale (e.g. Months)
 # todo if text size not set then calculated (will need to know rendering medium and to be homed in separate module)
-# todo switch to Rect rather than Box to make lines align better
 
 from shapes import Box, Text, Line, Rect
 from dataclasses import dataclass
@@ -123,7 +122,6 @@ class Scale(Base):
     separator: str = " "
 
     # interval styling
-    box_background_color: str = 'black'  # this fills the outer box which is revealed when using rounding
     box_rounding: int = 0
     box_border_width: float = 0.2
     box_border_color: str = 'black'
@@ -150,20 +148,19 @@ class Scale(Base):
             self.scale_ends = self.box_fill
 
         # create Box object
-        box = Rect()
+        box = Rect()  # dropped Box class as internal bleed behaviour inconsistent with other SVG classes
 
         # create string for SVG
         boxes = str()
 
-        # unchanging variables of Box object
+        # unchanging variables of Rect object
         box.y = self.y
         box.height = self.height
         box.rounding = self.box_rounding
-        box.background_color = self.box_background_color
         box.border_color = self.box_border_color
         box.border_width = self.box_border_width
 
-        # changing variables for Box object
+        # changing variables for Rect object
         for i in self.intervals:
             box.x = i[0]
             box.width = i[1]

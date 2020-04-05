@@ -1,6 +1,6 @@
 """Module for building SVG shapes"""
 
-# todo delete TimeBox
+# todo delete Box class
 
 from dataclasses import dataclass, field
 from math import sqrt
@@ -206,47 +206,4 @@ class Text(Point):
                f'>' \
                f'{self.text}' \
                f'</text>'
-
-
-@dataclass
-class TimeBox(Box, Text):
-    """Builds Box using ordinal dates"""
-
-    # accepts ordinal dates
-    start: int = 0  # taken to be 00:00
-    finish: int = 0  # taken to be 23:59 or + 1
-
-    # defines lower and uppers limits (i.e. edges)
-    min: int = 0
-    max: int = 0
-
-    # pixels per day
-    resolution: float = 1
-
-    def update(self):
-        """Updates all variables"""
-
-        # you need to call this manually after initiation
-        # cannot use post_init to call because post_init overides subclass post_inits
-
-        if self.finish < self.min:  # don't display if finish less than min
-            self.visibility = 'hidden'
-        elif self.start > self.max:  # don't display if start more than max
-            self.visibility = 'hidden'
-        else:  # else set to visible
-            self.visibility = ''
-
-        # reset start if start less than min
-        if self.start < self.min:
-            self.start = self.min
-
-        # reset finish is finish more than max
-        if self.finish > self.max:
-            self.finish = self.max
-
-        # removes all time before min
-        self.x = (self.start - self.min) * abs(self.resolution)
-
-        # difference, in days, between start and finish
-        self.width = (self.finish - self.start) * abs(self.resolution)
 
