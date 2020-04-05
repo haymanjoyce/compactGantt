@@ -66,7 +66,6 @@ class Base:
 
         # build interval data (note, this is a private variable)
         self.intervals = select(self.x, self.start, self.finish, self.interval_type, self.resolution, self._week_start)
-        pp(self.intervals)
 
 
 @dataclass
@@ -94,6 +93,12 @@ class Grid(Base):
             line.x = i[0]
             line.dx = line.x
             lines += line.get_line()
+
+        # last line
+        last_line = self.x + ((self.finish - self.start) * self.resolution)
+        line.x = last_line
+        line.dx = last_line
+        lines += line.get_line()
 
         return lines
 
