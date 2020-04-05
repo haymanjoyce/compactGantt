@@ -4,6 +4,7 @@
 # todo ability to label the scale (e.g. Months)
 # todo if text size not set then calculated (will need to know rendering medium and to be homed in separate module)
 # todo vertical grid lines
+# todo weekly count to count last non-whole interval
 
 from shapes import Box, Text, Line
 from dataclasses import dataclass
@@ -12,8 +13,7 @@ import dates
 
 
 @dataclass
-class Grid:
-    """Builds vertical grid lines which align with scale intervals"""
+class Base:
 
     # places the image
     x: float = 0
@@ -32,11 +32,6 @@ class Grid:
 
     # defines interval type
     interval_type: str = str()  # DAYS | WEEKS | MONTHS | QUARTERS | HALVES | YEARS
-
-    # line styling
-    line_color: str = 'black'
-    line_width: int = 1
-    line_dashing: str = str()  # dash gap dash gap
 
     def __post_init__(self):
 
@@ -72,6 +67,16 @@ class Grid:
         # build interval data (note, this is a private variable)
         self.intervals = select(self.x, self.start, self.finish, self.interval_type, self.resolution, self._week_start)
 
+
+@dataclass
+class Grid(Base):
+    """Builds vertical grid lines which align with scale intervals"""
+
+    # line styling
+    line_color: str = 'black'
+    line_width: int = 1
+    line_dashing: str = str()  # dash gap dash gap
+
     def build_grid(self):
 
         lines = str()
@@ -92,31 +97,12 @@ class Grid:
         return lines
 
     def get_grid(self):
-        print(self.build_grid())
         return f'{self.build_grid()}'
 
 
 @dataclass
-class Scale:
+class Scale(Base):
     """Builds scales"""
-
-    # places the scale
-    x: float = 0
-    y: float = 0
-
-    # sets scale dimensions
-    width: float = 800
-    height: float = 50
-
-    # defines time window
-    start: int = 0  # note that ordinal dates are at 00:00hrs (day start)
-    finish: int = 0  # we handle the missing 23:59 hours (you don't need to)
-
-    # defines first day of week
-    week_start: str = str(0)
-
-    # defines interval type
-    interval_type: str = str()  # DAYS | WEEKS | MONTHS | QUARTERS | HALVES | YEARS
 
     # defines minimum interval width for a label
     min_interval_width: int = 50
@@ -151,84 +137,11 @@ class Scale:
     text_x: float = None
     text_y: float = None
 
-    def __post_init__(self):
-
-        # clean start and finish dates
-        if self.finish <= self.start or self.start >= self.finish:
-            self.finish = self.start + 1
-
-        # clean first day of week string and converts to integer
-        if self.week_start in ['6', '7', 'S', 'Sun', 'Sunday', 'SUN', 'SUNDAY']:
-            self._week_start = 6
-        else:
-            self._week_start = 0
-
-        # clean date format separator
-        if len(self.separator) < 1 or self.separator in ['%', '#', '?', '*', '\"'] or self.separator is self.separator.isdigit():
-            self.separator = " "  # default
-
-        # clean label type
-        if self.label_type in ['HIDDEN', 'hidden', 'hide', 'h', None]:
-            self.label_type = 'hidden'
-        elif self.label_type in ['COUNT', 'count', 'c', '']:  # default if blank
-            self.label_type = 'count'
-        elif self.label_type in ['DATE', 'DATES', 'date', 'dates', 'd']:
-            self.label_type = 'date'
-        else:
-            raise ValueError(self.label_type)
-
-        # clean interval type
-        if self.interval_type.lower() in [item.lower() for item in ['days', 'day', 'd', '']]:  # blank indicates default
-            self.interval_type = 'DAYS'
-        elif self.interval_type.lower() in [item.lower() for item in ['weeks', 'week', 'wk', 'w']]:
-            self.interval_type = 'WEEKS'
-        elif self.interval_type.lower() in [item.lower() for item in ['months', 'mon', 'month', 'm']]:
-            self.interval_type = 'MONTHS'
-        elif self.interval_type.lower() in [item.lower() for item in ['quarters', 'quarts', 'qts', 'q']]:
-            self.interval_type = 'QUARTERS'
-        elif self.interval_type.lower() in [item.lower() for item in ['halves', 'half', 'halfs', 'halve', 'h']]:
-            self.interval_type = 'HALVES'
-        elif self.interval_type.lower() in [item.lower() for item in ['years', 'year', 'yrs', 'yr', 'y']]:
-            self.interval_type = 'YEARS'
-        else:
-            raise ValueError(self.interval_type)
-
-        # set default date_format if blank
-        if self.label_type == 'date' and self.date_format == str():
-            if self.interval_type == 'DAYS':
-                self.date_format = 'a'
-            elif self.interval_type == 'WEEKS':
-                self.date_format = 'w'
-            elif self.interval_type == 'MONTHS':
-                self.date_format = 'mmm'
-            elif self.interval_type == 'QUARTERS':
-                self.date_format = 'q'
-            elif self.interval_type == 'HALVES':
-                self.date_format = 'h'
-            elif self.interval_type == 'YEARS':
-                self.date_format = 'yyyy'
-            else:
-                raise ValueError(self.interval_type)
+    def build_boxes(self):
 
         # set default scale end color if blank
         if self.scale_ends == str():
             self.scale_ends = self.box_fill
-
-        # set default text_x if None
-        if self.text_x is None:
-            self.text_x = 10  # arbitrary value
-
-        # set default text_y if None
-        if self.text_y is None:
-            self.text_y = self.height * 0.65  # 0.65 sets text in middle
-
-        # calculate resolution (pixels per day) (note, this is a private variable)
-        self.resolution = self.width / (self.finish - self.start)  # // will reduce float (good) and precision (bad)
-
-        # build interval data (note, this is a private variable)
-        self.intervals = select(self.x, self.start, self.finish, self.interval_type, self.resolution, self._week_start)
-
-    def build_boxes(self):
 
         box = Box()
         boxes = str()
@@ -253,6 +166,45 @@ class Scale:
 
     def build_labels(self):
 
+        # clean date format separator
+        if len(self.separator) < 1 or self.separator in ['%', '#', '?', '*', '\"'] or self.separator is self.separator.isdigit():
+            self.separator = " "  # default
+
+        # clean label type
+        if self.label_type in ['HIDDEN', 'hidden', 'hide', 'h', None]:
+            self.label_type = 'hidden'
+        elif self.label_type in ['COUNT', 'count', 'c', '']:  # default if blank
+            self.label_type = 'count'
+        elif self.label_type in ['DATE', 'DATES', 'date', 'dates', 'd']:
+            self.label_type = 'date'
+        else:
+            raise ValueError(self.label_type)
+
+        # set default date_format if blank
+        if self.label_type == 'date' and self.date_format == str():
+            if self.interval_type == 'DAYS':
+                self.date_format = 'a'
+            elif self.interval_type == 'WEEKS':
+                self.date_format = 'w'
+            elif self.interval_type == 'MONTHS':
+                self.date_format = 'mmm'
+            elif self.interval_type == 'QUARTERS':
+                self.date_format = 'q'
+            elif self.interval_type == 'HALVES':
+                self.date_format = 'h'
+            elif self.interval_type == 'YEARS':
+                self.date_format = 'yyyy'
+            else:
+                raise ValueError(self.interval_type)
+
+        # set default text_x if None
+        if self.text_x is None:
+            self.text_x = 10  # arbitrary value
+
+        # set default text_y if None
+        if self.text_y is None:
+            self.text_y = self.height * 0.65  # 0.65 sets text in middle
+
         label = Text()
         labels = str()
 
@@ -266,7 +218,7 @@ class Scale:
         label.font_style = self.font_style
 
         if self.label_type == 'hidden':
-            label.text_visibility = self.label_type
+            label.text_visibility = 'hidden'
 
         for i in self.intervals:
             label.x = i[0]
