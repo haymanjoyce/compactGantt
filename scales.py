@@ -4,12 +4,12 @@
 # todo ability to label the scale (e.g. Months)
 # todo if text size not set then calculated (will need to know rendering medium and to be homed in separate module)
 # todo vertical grid lines
-# todo weekly count to count last non-whole interval
 
 from shapes import Box, Text, Line
 from dataclasses import dataclass
 from datetime import date
 import dates
+from pprint import pprint as pp
 
 
 @dataclass
@@ -66,6 +66,7 @@ class Base:
 
         # build interval data (note, this is a private variable)
         self.intervals = select(self.x, self.start, self.finish, self.interval_type, self.resolution, self._week_start)
+        pp(self.intervals)
 
 
 @dataclass
