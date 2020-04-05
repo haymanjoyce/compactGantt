@@ -3,7 +3,7 @@
 # todo ability to create custom interval (e.g. 20 days representing 1 month)
 # todo ability to label the scale (e.g. Months)
 # todo if text size not set then calculated (will need to know rendering medium and to be homed in separate module)
-# todo vertical grid lines
+# todo switch to Rect rather than Box to make lines align better
 
 from shapes import Box, Text, Line
 from dataclasses import dataclass

@@ -57,7 +57,7 @@ scale_d = Scale(interval_type='MONTHS', start=today, finish=end, width=1000, sca
 scale_e = Scale(interval_type='QUARTERS', start=today, finish=end, width=1000, scale_ends='pink', x=100, y=200, height=50, label_type='dates', date_format='Q', separator="/")
 scale_f = Scale(interval_type='HALVES', start=today, finish=end, width=1000, scale_ends='pink', x=100, y=250, height=50, label_type='dates', date_format='H', separator="/")
 scale_g = Scale(interval_type='YEARS', start=today, finish=end, width=1000, scale_ends='pink', x=100, y=300, height=50, label_type='dates', date_format='Y', separator="/")
-grid_a = Grid(interval_type='MONTHS', start=today, finish=end, width=1000, x=100, y=350, height=200, week_start='0')
+grid_a = Grid(interval_type='HALVES', start=today, finish=end, width=1000, x=100, y=350, height=200, week_start='0', line_width=2, line_dashing='5 2 3')
 
 
 # GET ALL TUPLES
