@@ -143,9 +143,13 @@ class Scale(Base):
         if self.scale_ends == str():
             self.scale_ends = self.box_fill
 
+        # create Box object
         box = Box()
+
+        # create string for SVG
         boxes = str()
 
+        # unchanging variables of Box object
         box.y = self.y
         box.height = self.height
         box.rounding = self.box_rounding
@@ -153,6 +157,7 @@ class Scale(Base):
         box.border_color = self.box_border_color
         box.border_width = self.box_border_width
 
+        # changing variables for Box object
         for i in self.intervals:
             box.x = i[0]
             box.width = i[1]
@@ -205,9 +210,13 @@ class Scale(Base):
         if self.text_y is None:
             self.text_y = self.height * 0.65  # 0.65 sets text in middle
 
+        # create Text object
         label = Text()
+
+        # create string for SVG
         labels = str()
 
+        # unchanging variables for Text object
         label.y = self.y
         label.translate_y = self.text_y
         label.translate_x = self.text_x
@@ -220,6 +229,7 @@ class Scale(Base):
         if self.label_type == 'hidden':
             label.text_visibility = 'hidden'
 
+        # changing variables for Text object
         for i in self.intervals:
             label.x = i[0]
             if i[1] < self.min_interval_width:
