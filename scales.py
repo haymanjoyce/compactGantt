@@ -4,7 +4,6 @@
 # todo ability to label the scale (e.g. Months)
 # todo if text size not set then calculated (will need to know rendering medium and to be homed in separate module)
 # todo vertical grid lines
-# todo Base class for Scale and Grid
 
 from shapes import Box, Text, Line
 from dataclasses import dataclass
@@ -16,11 +15,11 @@ import dates
 class Grid:
     """Builds vertical grid lines which align with scale intervals"""
 
-    # places the grid
+    # places the image
     x: float = 0
     y: float = 0
 
-    # sets grid dimensions
+    # sets image dimensions
     width: float = 800
     height: float = 600
 
