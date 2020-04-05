@@ -5,7 +5,7 @@
 # todo if text size not set then calculated (will need to know rendering medium and to be homed in separate module)
 # todo switch to Rect rather than Box to make lines align better
 
-from shapes import Box, Text, Line
+from shapes import Box, Text, Line, Rect
 from dataclasses import dataclass
 from datetime import date
 import dates
@@ -150,7 +150,7 @@ class Scale(Base):
             self.scale_ends = self.box_fill
 
         # create Box object
-        box = Box()
+        box = Rect()
 
         # create string for SVG
         boxes = str()
@@ -171,7 +171,7 @@ class Scale(Base):
                 box.fill = self.scale_ends
             else:
                 box.fill = self.box_fill
-            boxes += box.get_box()
+            boxes += box.get_rect()
 
         return boxes
 

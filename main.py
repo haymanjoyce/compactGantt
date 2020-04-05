@@ -51,13 +51,13 @@ duration = 50
 end = today + duration
 
 scale_a = Scale(interval_type='DAYS', start=today, finish=end, width=1000, scale_ends='pink', x=100, y=0, height=50, label_type='dates', date_format='a', font_size='15', min_interval_width=30)
-scale_b = Scale(interval_type='WEEKS', start=today, finish=end, width=1000, scale_ends='pink', x=100, y=50, height=50, week_start='0')
+scale_b = Scale(interval_type='WEEKS', start=today, finish=end, width=1000, scale_ends='pink', x=100, y=50, height=50, week_start='0', box_border_width=10)
 scale_c = Scale(interval_type='WEEKS', start=today, finish=end, width=1000, scale_ends='pink', x=100, y=100, height=50, week_start='6')
 scale_d = Scale(interval_type='MONTHS', start=today, finish=end, width=1000, scale_ends='pink', x=100, y=150, height=50, label_type='dates', date_format='mm', min_interval_width=40, text_x=10)
 scale_e = Scale(interval_type='QUARTERS', start=today, finish=end, width=1000, scale_ends='pink', x=100, y=200, height=50, label_type='dates', date_format='Q', separator="/")
 scale_f = Scale(interval_type='HALVES', start=today, finish=end, width=1000, scale_ends='pink', x=100, y=250, height=50, label_type='dates', date_format='H', separator="/")
-scale_g = Scale(interval_type='YEARS', start=today, finish=end, width=1000, scale_ends='pink', x=100, y=300, height=50, label_type='dates', date_format='Y', separator="/")
-grid_a = Grid(interval_type='HALVES', start=today, finish=end, width=1000, x=100, y=350, height=200, week_start='0', line_width=2, line_dashing='5 2 3')
+scale_g = Scale(interval_type='YEARS', start=today, finish=end, width=1000, scale_ends='pink', x=100, y=300, height=50, label_type='dates', date_format='Y', separator="/", box_border_width=10)
+grid_a = Grid(interval_type='HALVES', start=today, finish=end, width=1000, x=100, y=350, height=200, week_start='0', line_width=10, line_dashing='5 2 3')
 
 
 # GET ALL TUPLES
