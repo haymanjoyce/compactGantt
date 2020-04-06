@@ -3,12 +3,12 @@
 # todo ability to create custom interval (e.g. 20 days representing 1 month)
 # todo ability to label the scale (e.g. Months)
 # todo if text size not set then calculated (will need to know rendering medium and to be homed in separate module)
+# todo possible Scales class for building multiple scales with one interface
 
-from shapes import Box, Text, Line, Rect
+from shapes import Rect, Text, Line
 from dataclasses import dataclass
 from datetime import date
 import dates
-from pprint import pprint as pp
 
 
 @dataclass

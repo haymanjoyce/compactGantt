@@ -4,6 +4,7 @@
 # todo GUI interface to database
 # todo week numbers from start of year option
 # todo ability to hide labels
+# todo bars (vertical), curtains, swimlanes (horizontal curtains)
 
 # REQUIREMENTS
 # oauth2client - access Google Cloud Platform
