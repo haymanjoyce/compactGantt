@@ -119,25 +119,6 @@ class Text(Point):
     font_weight: str = str()  # normal | bold | bolder | lighter | <number>
     text_visibility: str = str()
 
-    # rotate_x: float = None  # the app does not need this feature
-    # rotate_y: float = None  # the app does not need this feature
-    # scale_x: float = 1  # the app does not need this feature
-    # scale_y: float = 1  # the app does not need this feature
-    # skew_x: int = int()  # the app does not need this feature
-    # skew_y: int = int()  # the app does not need this feature
-    # text_decoration: str = field(init=False, repr=False, default=str())  # does not render on GUI
-    # font_size_adjust: float = field(init=False, repr=False, default=float())  # does not render on GUI or browser
-    # font_stretch: str = field(init=False, repr=False, default=str())  # does not render on GUI or browser
-    # font_variant: str = field(init=False, repr=False, default=str())  # does not render on GUI
-    # dx: float = field(init=False, repr=False, default=float())  # does not render on GUI
-    # dy: float = field(init=False, repr=False, default=float())  # does not render on GUI
-    # text_length: float = field(init=False, repr=False, default=float())  # does not render on GUI
-    # length_adjust: str = field(init=False, repr=False, default=str())  # does not render on GUI
-    # word_spacing: int = field(init=False, repr=False, default=int())  # does not render on GUI
-    # letter_spacing: int = field(init=False, repr=False, default=int())  # does not render on GUI
-    # dominant_baseline: str = field(init=False, repr=False, default=str())  # does not render on GUI
-    # alignment_baseline: str = field(init=False, repr=False, default=str())  # only applies to tspan element
-
     def get_text(self):
 
         return f'<text ' \
