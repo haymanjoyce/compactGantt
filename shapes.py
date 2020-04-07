@@ -26,6 +26,7 @@ class Line(Point):
     stroke_dasharray: str = str()  # dash gap dash gap
 
     def get_line(self):
+
         return f'<line ' \
                f'x1="{self.x}" y1="{self.y}" ' \
                f'x2="{self.dx}" y2="{self.dy}" ' \
@@ -44,15 +45,15 @@ class Circle(Point):
     stroke_width: int = 1
     fill: str = 'red'
 
-    def __post_init__(self):
-        self.r = self.size / 2
-        self.cx = self.x + self.r
-        self.cy = self.y + self.r
-
     def get_circle(self):
+
+        r = self.size / 2
+        cx = self.x + r
+        cy = self.y + r
+
         return f'<circle ' \
-               f'cx="{self.cx}" cy="{self.cy}" ' \
-               f'r="{self.r}" ' \
+               f'cx="{cx}" cy="{cy}" ' \
+               f'r="{r}" ' \
                f'stroke="{self.stroke}" ' \
                f'stroke-width="{self.stroke_width}" ' \
                f'fill="{self.fill}" ' \
@@ -71,6 +72,7 @@ class Rect(Point):
     visibility: str = str()
 
     def get_rect(self):
+
         return f'<rect ' \
                f'x="{self.x}" y="{self.y}" ' \
                f'rx="{self.rounding}" ry="{self.rounding}" ' \
@@ -86,17 +88,17 @@ class Diamond(Rect):
 
     size: float = 50  # replaces height and width
 
-    def __post_init__(self):
-        self.origin = self.size / 2
-        self.resized = self.size / sqrt(2)
-        self.repositioned = (self.size - self.resized) / 2
-
     def get_diamond(self):
+
+        origin = self.size / 2
+        resized = self.size / sqrt(2)
+        repositioned = (self.size - resized) / 2
+
         return f'<rect ' \
-               f'x="{self.x + self.repositioned}" y="{self.y + self.repositioned}" ' \
+               f'x="{self.x + repositioned}" y="{self.y + repositioned}" ' \
                f'rx="{self.rounding}" ry="{self.rounding}" ' \
-               f'transform="rotate(45 {self.x + self.origin} {self.y + self.origin})" ' \
-               f'width="{self.resized}" height="{self.resized}" ' \
+               f'transform="rotate(45 {self.x + origin} {self.y + origin})" ' \
+               f'width="{resized}" height="{resized}" ' \
                f'stroke="{self.border_color}" stroke-width="{self.border_width}" ' \
                f'fill="{self.fill}" ' \
                f'></rect>'
@@ -106,8 +108,6 @@ class Diamond(Rect):
 class Text(Point):
 
     rotate: int = 0
-    rotate_x: float = None
-    rotate_y: float = None
     translate_x: float = 0
     translate_y: float = 0  # add 0.35 of text size for middle align
     text: str = str()
@@ -119,6 +119,8 @@ class Text(Point):
     font_weight: str = str()  # normal | bold | bolder | lighter | <number>
     text_visibility: str = str()
 
+    # rotate_x: float = None  # the app does not need this feature
+    # rotate_y: float = None  # the app does not need this feature
     # scale_x: float = 1  # the app does not need this feature
     # scale_y: float = 1  # the app does not need this feature
     # skew_x: int = int()  # the app does not need this feature
@@ -136,19 +138,14 @@ class Text(Point):
     # dominant_baseline: str = field(init=False, repr=False, default=str())  # does not render on GUI
     # alignment_baseline: str = field(init=False, repr=False, default=str())  # only applies to tspan element
 
-    def __post_init__(self):
-        if self.rotate_x is None:
-            self.rotate_x = self.x
-        if self.rotate_y is None:
-            self.rotate_y = self.y
-
     def get_text(self):
+
         return f'<text ' \
                f'x="{self.x}" y="{self.y}" ' \
                f'fill="{self.font_fill}" ' \
                f'transform="' \
                f'translate({self.translate_x}, {self.translate_y}) ' \
-               f'rotate({self.rotate}, {self.rotate_x}, {self.rotate_y})" ' \
+               f'rotate({self.rotate} {self.x} {self.y})" ' \
                f'font-size="{self.font_size}" ' \
                f'font-family="{self.font_family}" ' \
                f'text-anchor="{self.text_anchor}" ' \

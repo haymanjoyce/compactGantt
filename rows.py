@@ -37,14 +37,11 @@ class Milestone(Circle, Diamond, Text):
 @dataclass
 class Row(Rect):
 
-    id: int = int()
+    id: int = 1
     parent: int = int()  # parent group
 
-    def build_row(self):
-        pass
-
-    def get_row(self):
-        pass
+    padding: float = float()  # reduces height of child tasks and milestones
+    margin: float = float()  # reduces height of rectangle (but not row)
 
 
 @dataclass

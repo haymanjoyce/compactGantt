@@ -52,6 +52,9 @@ today = date.toordinal(date.today()) - 2
 duration = 50
 end = today + duration
 
+shape_a = Circle()
+shape_b = Diamond(fill='green')
+shape_c = Text(text='Text', x=50, y=50, rotate=90)
 scale_a = Scale(interval_type='DAYS', start=today, finish=end, width=1000, scale_ends='pink', x=100, y=0, height=50, label_type='dates', date_format='a', font_size='15', min_interval_width=30)
 scale_b = Scale(interval_type='WEEKS', start=today, finish=end, width=1000, scale_ends='pink', x=100, y=50, height=50, week_start='0')
 scale_c = Scale(interval_type='WEEKS', start=today, finish=end, width=1000, scale_ends='pink', x=100, y=100, height=50, week_start='6')
@@ -61,11 +64,13 @@ scale_f = Scale(interval_type='HALVES', start=today, finish=end, width=1000, sca
 scale_g = Scale(interval_type='YEARS', start=today, finish=end, width=1000, scale_ends='pink', x=100, y=300, height=50, label_type='dates', date_format='Y', separator="/")
 grid_a = Grid(interval_type='HALVES', start=today, finish=end, width=1000, x=100, y=350, height=200, week_start='0', line_dashing='6 2')
 row_a = Row(x=100, y=350, height=100, width=1000, rounding=0, fill='light blue', border_width=0.2)
-print(row_a.get_rect())
 
 # GET ALL TUPLES
 unsorted_items = list()
 
+shape_a = Item(element=shape_a.get_circle(), layer=400).get_item()
+shape_b = Item(element=shape_b.get_diamond(), layer=400).get_item()
+shape_c = Item(element=shape_c.get_text(), layer=400).get_item()
 item_a = Item(element=scale_a.get_scale(), layer=300).get_item()
 item_b = Item(element=scale_b.get_scale(), layer=300).get_item()
 item_c = Item(element=scale_c.get_scale(), layer=300).get_item()
@@ -76,6 +81,7 @@ item_g = Item(element=scale_g.get_scale(), layer=300).get_item()
 item_h = Item(element=grid_a.get_grid(), layer=300).get_item()
 item_i = Item(element=row_a.get_rect(), layer=200).get_item()
 
+unsorted_items.extend((shape_a, shape_b, shape_c))
 unsorted_items.extend((item_a, item_b, item_c, item_d, item_e, item_f, item_g, item_h, item_i))
 
 # SORT TUPLES BY POSITION
