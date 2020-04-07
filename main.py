@@ -64,6 +64,7 @@ scale_f = Scale(interval_type='HALVES', start=today, finish=end, width=1000, sca
 scale_g = Scale(interval_type='YEARS', start=today, finish=end, width=1000, scale_ends='pink', x=100, y=300, height=50, label_type='dates', date_format='Y', separator="/")
 grid_a = Grid(interval_type='HALVES', start=today, finish=end, width=1000, x=100, y=350, height=200, week_start='0', line_dashing='6 2')
 row_a = Row(x=100, y=350, height=100, width=1000, rounding=0, fill='light blue', border_width=0.2)
+row_b = Row(x=100, y=350, height=100, width=1000, rounding=0, fill='blue', border_width=0, row_padding=20)
 
 # GET ALL TUPLES
 unsorted_items = list()
@@ -80,9 +81,10 @@ item_f = Item(element=scale_f.get_scale(), layer=300).get_item()
 item_g = Item(element=scale_g.get_scale(), layer=300).get_item()
 item_h = Item(element=grid_a.get_grid(), layer=300).get_item()
 item_i = Item(element=row_a.get_rect(), layer=200).get_item()
+item_j = Item(element=row_b.get_rect(), layer=201).get_item()
 
 unsorted_items.extend((shape_a, shape_b, shape_c))
-unsorted_items.extend((item_a, item_b, item_c, item_d, item_e, item_f, item_g, item_h, item_i))
+unsorted_items.extend((item_a, item_b, item_c, item_d, item_e, item_f, item_g, item_h, item_i, item_j))
 
 # SORT TUPLES BY POSITION
 sorted_items = sorted(unsorted_items, key=itemgetter(0))

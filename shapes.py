@@ -1,8 +1,5 @@
 """Module for building SVG shapes"""
 
-# todo if you need to update post init vars then declare vars in post init but move calcs to method
-# todo remove post init method; put in get
-
 from dataclasses import dataclass
 from math import sqrt
 

@@ -40,8 +40,14 @@ class Row(Rect):
     id: int = 1
     parent: int = int()  # parent group
 
-    padding: float = float()  # reduces height of child tasks and milestones
-    margin: float = float()  # reduces height of rectangle (but not row)
+    row_padding: float = float()
+    task_margin: float = float()
+
+    def __post_init__(self):
+
+        if 0 < self.row_padding < (self.height * 0.5):
+            self.y += self.row_padding
+            self.height -= self.row_padding * 2
 
 
 @dataclass
