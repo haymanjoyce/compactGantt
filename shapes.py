@@ -1,17 +1,14 @@
 """Module for building SVG shapes"""
 
-# todo delete Box class
+# todo if you need to update post init vars then declare vars in post init but move calcs to method
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from math import sqrt
 
 
 @dataclass
 class Point:
-    """Attributes common to all classes"""
-
-    # X and Y is generally treated as top left corner of shape classes
-    # This is not applicable to Line class and is bottom left for Text class
+    """Base coordinate for all shape classes"""
 
     x: float = 0
     y: float = 0
@@ -39,6 +36,29 @@ class Line(Point):
 
 
 @dataclass
+class Circle(Point):
+
+    size: float = 50
+    stroke: str = 'black'
+    stroke_width: int = 1
+    fill: str = 'red'
+
+    def __post_init__(self):
+        self.r = self.size / 2
+        self.cx = self.x + self.r
+        self.cy = self.y + self.r
+
+    def get_circle(self):
+        return f'<circle ' \
+               f'cx="{self.cx}" cy="{self.cy}" ' \
+               f'r="{self.r}" ' \
+               f'stroke="{self.stroke}" ' \
+               f'stroke-width="{self.stroke_width}" ' \
+               f'fill="{self.fill}" ' \
+               f'></circle>'
+
+
+@dataclass
 class Rect(Point):
 
     width: float = 200
@@ -61,77 +81,9 @@ class Rect(Point):
 
 
 @dataclass
-class Circle(Point):
-
-    size: float = 50
-    stroke: str = 'black'
-    stroke_width: int = 1
-    fill: str = 'red'
-    r: float = field(init=False, repr=False)
-    cx: float = field(init=False, repr=False)
-    cy: float = field(init=False, repr=False)
-
-    def __post_init__(self):
-        self.r = self.size / 2
-        self.cx = self.x + self.r
-        self.cy = self.y + self.r
-
-    def get_radius(self):
-        return self.size / 2
-
-    def get_circle(self):
-        return f'<circle ' \
-               f'cx="{self.cx}" cy="{self.cy}" ' \
-               f'r="{self.r}" ' \
-               f'stroke="{self.stroke}" ' \
-               f'stroke-width="{self.stroke_width}" ' \
-               f'fill="{self.fill}" ' \
-               f'></circle>'
-
-
-@dataclass
-class Box(Point):
-    """Rectangle where the border line does not bleed over the outer edge"""
-
-    width: float = 200
-    height: float = 100
-    fill: str = 'red'
-    background_color: str = 'white'  # define the background color if rectangle rounded
-    border_color: str = 'black'
-    border_width: float = 1
-    rounding: int = 2
-    visibility: str = str()
-
-    def get_box(self):
-        return f'<g ' \
-               f'transform="translate({self.x}, {self.y})"' \
-               f'><rect ' \
-               f'x="0" y="0" ' \
-               f'width="{self.width}" height="{self.height}" ' \
-               f'fill="{self.background_color}" ' \
-               f'visibility="{self.visibility}" ' \
-               f'></rect><rect ' \
-               f'x="{self.border_width / 2}" y="{self.border_width / 2}" ' \
-               f'rx="{self.rounding}" ry="{self.rounding}" ' \
-               f'width="{self.width - self.border_width}" height="{self.height - self.border_width}" ' \
-               f'stroke="{self.border_color}" stroke-width="{self.border_width}" ' \
-               f'fill="{self.fill}" ' \
-               f'visibility="{self.visibility}" ' \
-               f'></rect>' \
-               f'</g>'
-
-
-@dataclass
 class Diamond(Rect):
-    """Rotates and shrink-fits a square"""
 
-    size: float = 100  # replaces height and width
-    height: float = field(init=False, repr=False)
-    width: float = field(init=False, repr=False)
-    rotate: int = field(default=45, repr=False)
-    origin: float = field(init=False, repr=False)
-    resized: float = field(init=False, repr=False)
-    repositioned: float = field(init=False, repr=False)
+    size: float = 50  # replaces height and width
 
     def __post_init__(self):
         self.origin = self.size / 2
@@ -142,7 +94,7 @@ class Diamond(Rect):
         return f'<rect ' \
                f'x="{self.x + self.repositioned}" y="{self.y + self.repositioned}" ' \
                f'rx="{self.rounding}" ry="{self.rounding}" ' \
-               f'transform="rotate({self.rotate} {self.x + self.origin} {self.y + self.origin})" ' \
+               f'transform="rotate(45 {self.x + self.origin} {self.y + self.origin})" ' \
                f'width="{self.resized}" height="{self.resized}" ' \
                f'stroke="{self.border_color}" stroke-width="{self.border_width}" ' \
                f'fill="{self.fill}" ' \
@@ -184,7 +136,6 @@ class Text(Point):
     # alignment_baseline: str = field(init=False, repr=False, default=str())  # only applies to tspan element
 
     def __post_init__(self):
-
         if self.rotate_x is None:
             self.rotate_x = self.x
         if self.rotate_y is None:

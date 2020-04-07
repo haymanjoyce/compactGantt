@@ -10,28 +10,34 @@ from shapes import Rect, Text
 
 
 @dataclass
-class Row:
+class Task(Rect):
 
     id: int = int()
-
-    width: float = float()
-    height: float = float()
-
-    fill: str = 'red'
-    border_color: str = 'black'
-    border_width: int = 1
-    rounding: int = 2
-    visibility: str = str()
-
     parent: int = int()  # parent group
 
     def __post_init__(self):
         pass
 
-    def build_group(self):
+    def build_row(self):
         pass
 
-    def get_group(self):
+    def get_row(self):
+        pass
+
+
+@dataclass
+class Row(Rect):
+
+    id: int = int()
+    parent: int = int()  # parent group
+
+    def __post_init__(self):
+        pass
+
+    def build_row(self):
+        pass
+
+    def get_row(self):
         pass
 
 
