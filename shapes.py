@@ -1,6 +1,7 @@
 """Module for building SVG shapes"""
 
 # todo if you need to update post init vars then declare vars in post init but move calcs to method
+# todo remove post init method; put in get
 
 from dataclasses import dataclass
 from math import sqrt
@@ -65,7 +66,7 @@ class Rect(Point):
     height: float = 100
     fill: str = 'red'
     border_color: str = 'black'
-    border_width: int = 1
+    border_width: float = 1
     rounding: int = 2
     visibility: str = str()
 

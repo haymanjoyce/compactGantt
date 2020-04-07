@@ -1,27 +1,36 @@
 """Module for rows, groups, and swimlanes"""
 
-# todo swimlanes
-# todo ability to style SVG elements
-# todo possible Rows class for building multiple rows with one interface
-
+# todo possible swimlane class
+# todo possible data column class
+# todo possible renaming of this module
 
 from dataclasses import dataclass
-from shapes import Rect, Text
+from shapes import Rect, Circle, Diamond, Text
 
 
 @dataclass
-class Task(Rect):
+class Task(Rect, Text):
 
     id: int = int()
-    parent: int = int()  # parent group
+    parent: int = int()  # parent row
 
-    def __post_init__(self):
+    def build_task(self):
         pass
 
-    def build_row(self):
+    def get_task(self):
         pass
 
-    def get_row(self):
+
+@dataclass
+class Milestone(Circle, Diamond, Text):
+
+    id: int = int()
+    parent: int = int()  # parent row
+
+    def build_milestone(self):
+        pass
+
+    def get_milestone(self):
         pass
 
 
@@ -31,9 +40,6 @@ class Row(Rect):
     id: int = int()
     parent: int = int()  # parent group
 
-    def __post_init__(self):
-        pass
-
     def build_row(self):
         pass
 
@@ -42,18 +48,10 @@ class Row(Rect):
 
 
 @dataclass
-class Group:
+class Group(Text):
 
-    # it gets its height from sum of child rows or sum of child groups
-    # it gets its width from group with greatest width in that level
-    # if no children then height is 0
-
-    name: str = 'Test'
+    id: int = int()
     parent: int = int()
-    width: float = float()
-
-    def __post_init__(self):
-        pass
 
     def build_group(self):
         pass

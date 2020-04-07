@@ -4,6 +4,7 @@
 # todo ability to label the scale (e.g. Months)
 # todo if text size not set then calculated (will need to know rendering medium and to be homed in separate module)
 # todo possible Scales class for building multiple scales with one interface
+# todo possible renaming of this module such that incorporates all columnar features (inc. curtains and bars)
 
 from shapes import Rect, Text, Line
 from dataclasses import dataclass
