@@ -2,8 +2,6 @@
 
 # todo hold data in database not spreadsheets
 # todo GUI interface to database
-# todo week numbers from start of year option
-# todo ability to hide labels
 # todo annotations, relationships
 # todo possible wizard module (e.g. with class such as Rows) for building many shapes at once
 
@@ -28,7 +26,7 @@ from pprint import pprint
 from arrange import Item
 import display
 from datetime import date, timedelta, datetime
-from rows import *
+from containers import *
 
 # EXTRACT DATA FROM GOOGLE SHEETS
 # https://www.twilio.com/blog/2017/02/an-easy-way-to-read-and-write-to-a-google-spreadsheet-in-python.html
@@ -64,7 +62,7 @@ scale_f = Scale(interval_type='HALVES', start=today, finish=end, width=1000, sca
 scale_g = Scale(interval_type='YEARS', start=today, finish=end, width=1000, scale_ends='pink', x=100, y=300, height=50, label_type='dates', date_format='Y', separator="/")
 grid_a = Grid(interval_type='HALVES', start=today, finish=end, width=1000, x=100, y=350, height=200, week_start='0', line_dashing='6 2')
 row_a = Row(x=100, y=350, height=100, width=1000, rounding=0, fill='light blue', border_width=0.2)
-row_b = Row(x=100, y=350, height=100, width=1000, rounding=0, fill='blue', border_width=0, row_padding=20)
+row_b = Row(x=100, y=350, height=100, width=1000, rounding=0, fill='blue', border_width=0)
 
 # GET ALL TUPLES
 unsorted_items = list()
