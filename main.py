@@ -4,6 +4,7 @@
 # todo GUI interface to database
 # todo annotations, relationships
 # todo possible wizard module (e.g. with class such as Rows) for building many shapes at once
+# todo make display layer an object property
 
 # REQUIREMENTS
 # oauth2client - access Google Cloud Platform
