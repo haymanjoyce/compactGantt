@@ -1,107 +1,32 @@
-"""Module for building chart features"""
+"""Module for building simple chart features"""
 
-# todo possible renaming and redefining of this module
-# todo each feature needs to be placement ready
 # todo add display layer to Base
+# todo same line for {} things
 
 from dataclasses import dataclass
 from shapes import Rect, Circle, Diamond, Line, Text
 from dates import select_scale, convert_ordinal
 
 
+# BASE CLASSES
+
 @dataclass
-class Base:
-
-    id: int = int()
-
-    parent: int = int()
+class Chart:
+    """Base class for all features"""
 
     layer: int = int()
 
 
 @dataclass
-class Row(Base, Rect):
+class Relationship(Chart):
+    """Base class for all relational features"""
 
-    def get_row(self):
-
-        return f'{self.get_rect()}'
-
-
-@dataclass
-class TimeLine(Base, Rect):
-
-    def get_timeline(self):
-
-        return f'{self.get_rect()}'
+    id: int = int()
+    parent: int = int()
 
 
 @dataclass
-class SwimLane(Base, Rect):
-
-    def get_swimlane(self):
-
-        return f'{self.get_rect()}'
-
-
-@dataclass
-class Task(Base, Rect, Text):
-
-    def get_task(self):
-
-        return f'{self.get_rect()} ' \
-               f'{self.get_text()}'
-
-
-@dataclass
-class Milestone(Base, Circle, Diamond, Text):
-
-    diamond: bool = True
-
-    def get_milestone(self):
-
-        if self.diamond:
-            pass
-        else:
-            pass
-
-        return f'{self.get_diamond()} ' \
-               f'{self.get_text()}'
-
-
-@dataclass
-class Group(Base, Rect, Text):
-
-    def get_group(self):
-
-        return f'{self.get_rect()} ' \
-               f'{self.get_text()}'
-
-
-@dataclass
-class Cell(Base, Rect, Text):
-
-    def get_cell(self):
-        return f'{self.get_rect()} ' \
-               f'{self.get_text()}'
-
-
-@dataclass
-class Annotation:
-    pass
-
-
-@dataclass
-class Curtain:
-    pass
-
-
-@dataclass
-class Bar:
-    pass
-
-
-@dataclass
-class Scaly:
+class Scaly(Chart):
     """Base class for scale related features"""
 
     # places the image
@@ -175,8 +100,92 @@ class Scaly:
         return select_scale(self.x, self.start, self.finish, self.interval_type, self._pixels_per_day, self.week_start_num)
 
 
+# SIMPLE FEATURES
+
 @dataclass
-class Grid(Scaly):
+class Annotation(Chart):
+    pass
+
+
+@dataclass
+class Curtain(Chart):
+    pass
+
+
+@dataclass
+class Bar(Chart):
+    pass
+
+
+# FEATURES WITH CONTAINER RELATIONSHIPS
+
+@dataclass
+class TimeLine(Relationship, Rect):
+
+    def get_timeline(self):
+        return f'{self.get_rect()}'
+
+
+@dataclass
+class Task(Relationship, Rect, Text):
+
+    def get_task(self):
+        return f'{self.get_rect()} ' \
+               f'{self.get_text()}'
+
+
+@dataclass
+class Milestone(Relationship, Circle, Diamond, Text):
+
+    diamond: bool = True
+
+    def get_milestone(self):
+
+        if self.diamond:
+            pass
+        else:
+            pass
+
+        return f'{self.get_diamond()} ' \
+               f'{self.get_text()}'
+
+
+@dataclass
+class Cell(Relationship, Rect, Text):
+
+    def get_cell(self):
+        return f'{self.get_rect()} ' \
+               f'{self.get_text()}'
+
+
+@dataclass
+class Row(Relationship, Rect):
+
+    def get_row(self):
+
+        return f'{self.get_rect()}'
+
+
+@dataclass
+class SwimLane(Relationship, Rect):
+
+    def get_swimlane(self):
+        return f'{self.get_rect()}'
+
+
+@dataclass
+class Group(Relationship, Rect, Text):
+
+    def get_group(self):
+
+        return f'{self.get_rect()} ' \
+               f'{self.get_text()}'
+
+
+# SCALE RELATED FEATURES
+
+@dataclass
+class GridLines(Scaly):
     """Builds vertical grid line feature"""
 
     # line styling
@@ -184,7 +193,7 @@ class Grid(Scaly):
     line_width: int = 1
     line_dashing: str = str()  # dash gap dash gap
 
-    def get_grid(self):
+    def build_grid_lines(self):
 
         lines = str()
         line = Line()
@@ -207,7 +216,10 @@ class Grid(Scaly):
         line.dx = last_line
         lines += line.get_line()
 
-        return f'{lines}'
+        return lines
+
+    def get_grid_lines(self):
+        return f'{self.build_grid_lines()}'
 
 
 @dataclass
@@ -361,5 +373,5 @@ class Scale(Scaly):
 
         self.clean_scale_data()
 
-        return f'{self.build_boxes()}{self.build_labels()}'
+        return f'{self.build_boxes()} {self.build_labels()}'
 
