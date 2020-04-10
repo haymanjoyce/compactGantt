@@ -2,44 +2,48 @@
 
 # todo add display layer to Base
 # todo same line for {} things
+# todo need window x and y
+# todo pass objects to classes
+# todo create layout classes in another module then pass their objects to features; features may need less of own vars
+# todo rename TW variables such that tw.height
 
 from dataclasses import dataclass
 from shapes import Rect, Circle, Diamond, Line, Text
 from dates import select_scale, convert_ordinal
 
 
-# BASE CLASSES
+@dataclass
+class TimeWindow:
+    """Calculates and holds time window variables"""
+
+    # time window dimensions
+    window_width: float = 800
+    window_height: float = 600
+
+    # time window start and finish in ordinals
+    window_start: int = 0  # note that ordinal dates are at 00:00hrs (day start)
+    window_finish: int = 0  # we handle the missing 23:59 hours (you don't need to)
+
+    # time window resolution (pixels per day)
+    window_resolution: float = float()
+
+    def clean_chart_data(self):
+
+        # clean start and finish dates
+        if self.window_finish <= self.window_start or self.window_start >= self.window_finish:
+            self.window_finish = self.window_start + 1
+
+    def get_window_resolution(self):
+        return self.window_width / (self.window_finish - self.window_start)
+
 
 @dataclass
-class Chart:
-    """Base class for all features"""
-
-    layer: int = int()
-
-
-@dataclass
-class Relationship(Chart):
-    """Base class for all relational features"""
-
-    id: int = int()
-    parent: int = int()
-
-
-@dataclass
-class Scaly(Chart):
+class Scaly(TimeWindow):
     """Base class for scale related features"""
 
     # places the image
-    x: float = 0
-    y: float = 0
-
-    # sets image dimensions
-    width: float = 800
-    height: float = 600
-
-    # defines time window
-    start: int = 0  # note that ordinal dates are at 00:00hrs (day start)
-    finish: int = 0  # we handle the missing 23:59 hours (you don't need to)
+    scale_x: float = 0
+    scale_y: float = 0
 
     # defines first day of week as string
     week_start_text: str = str(0)
@@ -51,24 +55,18 @@ class Scaly(Chart):
     interval_type: str = str()  # DAYS | WEEKS | MONTHS | QUARTERS | HALVES | YEARS
 
     # private variable
-    _pixels_per_day: float = float()
-
-    # private variable
-    _interval_data: tuple = tuple()
+    interval_data: tuple = tuple()
 
     def __post_init__(self):
 
         # if subclass overrides post_init then subclass will need to call these methods manually
 
+        self.clean_chart_data()
         self.clean_scaly_data()
-        self._pixels_per_day = self.get_pixels_per_day()
-        self._interval_data = self.get_interval_data()
+        self._pixels_per_day = self.get_window_resolution()
+        self.interval_data = self.get_interval_data()
 
     def clean_scaly_data(self):
-
-        # clean start and finish dates
-        if self.finish <= self.start or self.start >= self.finish:
-            self.finish = self.start + 1
 
         # clean first day of week string, if given, and converts to integer
         if self.week_start_text in ['6', '7', 'S', 'Sun', 'Sunday', 'SUN', 'SUNDAY']:
@@ -93,96 +91,9 @@ class Scaly(Chart):
         else:
             raise ValueError(self.interval_type)
 
-    def get_pixels_per_day(self):
-        return self.width / (self.finish - self.start)  # // will reduce float (good) and precision (bad)
-
     def get_interval_data(self):
-        return select_scale(self.x, self.start, self.finish, self.interval_type, self._pixels_per_day, self.week_start_num)
+        return select_scale(self.scale_x, self.window_start, self.window_finish, self.interval_type, self._pixels_per_day, self.week_start_num)
 
-
-# SIMPLE FEATURES
-
-@dataclass
-class Annotation(Chart):
-    pass
-
-
-@dataclass
-class Curtain(Chart):
-    pass
-
-
-@dataclass
-class Bar(Chart):
-    pass
-
-
-# FEATURES WITH CONTAINER RELATIONSHIPS
-
-@dataclass
-class TimeLine(Relationship, Rect):
-
-    def get_timeline(self):
-        return f'{self.get_rect()}'
-
-
-@dataclass
-class Task(Relationship, Rect, Text):
-
-    def get_task(self):
-        return f'{self.get_rect()} ' \
-               f'{self.get_text()}'
-
-
-@dataclass
-class Milestone(Relationship, Circle, Diamond, Text):
-
-    diamond: bool = True
-
-    def get_milestone(self):
-
-        if self.diamond:
-            pass
-        else:
-            pass
-
-        return f'{self.get_diamond()} ' \
-               f'{self.get_text()}'
-
-
-@dataclass
-class Cell(Relationship, Rect, Text):
-
-    def get_cell(self):
-        return f'{self.get_rect()} ' \
-               f'{self.get_text()}'
-
-
-@dataclass
-class Row(Relationship, Rect):
-
-    def get_row(self):
-
-        return f'{self.get_rect()}'
-
-
-@dataclass
-class SwimLane(Relationship, Rect):
-
-    def get_swimlane(self):
-        return f'{self.get_rect()}'
-
-
-@dataclass
-class Group(Relationship, Rect, Text):
-
-    def get_group(self):
-
-        return f'{self.get_rect()} ' \
-               f'{self.get_text()}'
-
-
-# SCALE RELATED FEATURES
 
 @dataclass
 class GridLines(Scaly):
@@ -202,16 +113,17 @@ class GridLines(Scaly):
         line.stroke_width = self.line_width
         line.stroke_dasharray = self.line_dashing
 
-        line.y = self.y
-        line.dy = self.y + self.height
+        # todo we pass TW object to this method and point to its vars so no need for self.scale_y
+        line.y = self.scale_y
+        line.dy = self.scale_y + self.window_height
 
-        for i in self._interval_data:
+        for i in self.interval_data:
             line.x = i[0]
             line.dx = line.x
             lines += line.get_line()
 
         # last line
-        last_line = self.x + ((self.finish - self.start) * self._pixels_per_day)
+        last_line = self.scale_x + ((self.window_finish - self.window_start) * self._pixels_per_day)
         line.x = last_line
         line.dx = last_line
         lines += line.get_line()
@@ -300,7 +212,7 @@ class Scale(Scaly):
 
         # set default text_y if None
         if self.text_y is None:
-            self.text_y = self.height * 0.65  # 0.65 sets text in middle
+            self.text_y = self.window_height * 0.65  # 0.65 sets text in middle
 
     def build_boxes(self):
 
@@ -315,14 +227,14 @@ class Scale(Scaly):
         boxes = str()
 
         # unchanging variables of Rect object
-        box.y = self.y
-        box.height = self.height
+        box.y = self.scale_y
+        box.height = self.window_height
         box.rounding = self.box_rounding
         box.border_color = self.box_border_color
         box.border_width = self.box_border_width
 
         # changing variables for Rect object
-        for i in self._interval_data:
+        for i in self.interval_data:
             box.x = i[0]
             box.width = i[1]
             if i[4] is False:
@@ -342,7 +254,7 @@ class Scale(Scaly):
         labels = str()
 
         # unchanging variables for Text object
-        label.y = self.y
+        label.y = self.scale_y
         label.translate_y = self.text_y
         label.translate_x = self.text_x
         label.font_fill = self.font_fill
@@ -355,7 +267,7 @@ class Scale(Scaly):
             label.text_visibility = 'hidden'
 
         # changing variables for Text object
-        for i in self._interval_data:
+        for i in self.interval_data:
             label.x = i[0]
             if i[1] < self.min_interval_width:
                 label.text = str()  # you could set visibility to hidden but more verbose
@@ -374,4 +286,96 @@ class Scale(Scaly):
         self.clean_scale_data()
 
         return f'{self.build_boxes()} {self.build_labels()}'
+
+
+@dataclass
+class Feature:
+    """Feature variables used by many features"""
+
+    # defines order in which feature is rendered
+    layer: int = int()
+
+    # identity field for feature (not all features need it)
+    id: int = int()
+
+    # used for container relationships
+    parent: int = int()
+
+
+@dataclass
+class Annotation(Feature):
+    pass
+
+
+@dataclass
+class Curtain(Feature):
+    pass
+
+
+@dataclass
+class Bar(Feature):
+    pass
+
+
+@dataclass
+class TimeLine(Feature, Rect):
+
+    def get_timeline(self):
+        return f'{self.get_rect()}'
+
+
+@dataclass
+class Task(Feature, Rect, Text):
+
+    def get_task(self):
+        return f'{self.get_rect()} ' \
+               f'{self.get_text()}'
+
+
+@dataclass
+class Milestone(Feature, Circle, Diamond, Text):
+
+    diamond: bool = True
+
+    def get_milestone(self):
+
+        if self.diamond:
+            pass
+        else:
+            pass
+
+        return f'{self.get_diamond()} ' \
+               f'{self.get_text()}'
+
+
+@dataclass
+class Cell(Feature, Rect, Text):
+
+    def get_cell(self):
+        return f'{self.get_rect()} ' \
+               f'{self.get_text()}'
+
+
+@dataclass
+class Row(Feature, Rect):
+
+    def get_row(self):
+
+        return f'{self.get_rect()}'
+
+
+@dataclass
+class SwimLane(Feature, Rect):
+
+    def get_swimlane(self):
+        return f'{self.get_rect()}'
+
+
+@dataclass
+class Group(Feature, Rect, Text):
+
+    def get_group(self):
+
+        return f'{self.get_rect()} ' \
+               f'{self.get_text()}'
 
