@@ -1,4 +1,6 @@
-"""Module for arranging shapes"""
+"""Module for assembling chart features"""
+
+# todo possible Scales class for building multiple scales with one interface
 
 from dataclasses import dataclass
 
