@@ -1,6 +1,5 @@
-"""Module for assembling chart features"""
-
-# todo possible Scales class for building multiple scales with one interface
+# todo this module handles objects and, when ready, pulls SVG from them
+# todo drop Item; display layer in objects that can generate SVG
 
 from dataclasses import dataclass
 
