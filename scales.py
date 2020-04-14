@@ -2,6 +2,7 @@
 # todo drop post_init
 # todo add placement and order to Scale
 # todo lift work from Base and children to Layout
+# todo create interval object
 
 from dataclasses import dataclass
 from shapes import Rectangle, Line, Text
@@ -10,24 +11,61 @@ from dates import select_scale, convert_ordinal
 
 @dataclass
 class Layout:
-    """Arranges features"""
+    """Represents the area where all scale related features are displayed"""
 
-    # equivalent to sum of column widths on left of chart
-    layout_x: float = 100  # we get value from Columns.Layout object
+    # equivalent to chart x
+    layout_x: float = 100  # we get value from chart.Layout object
 
     # equivalent to header height
-    layout_y: float = 50  # we get value from Header.Layout object
+    layout_y: float = 50  # we get value from banners.Layout object
 
-    # time window dimensions
-    layout_width: float = 800
-    layout_height: float = 600
+    # equivalent to chart width
+    layout_width: float = 1000  # we get value from chart.Layout object
 
-    # time window start and finish in ordinals
+    # equivalent to chart height less sum of banner heights
+    layout_height: float = 600  # we  calculate based on data from banners.Layout and chart.Layout
+
+    def clean_layout_data(self):
+        pass
+
+    def build_layout(self):
+        pass
+
+    def get_layout_object(self):
+        return self
+
+    def get_layout_svg(self):
+        pass
+
+
+@dataclass
+class Window:
+    """Represents the area where tasks and milestones are displayed"""
+
+    # equivalent to chart width less sum of column widths
+    window_width: float = 800  # we get value from Columns.layout
+
+    # equivalent to layout height less sum of scale heights
+    window_height: float = 400
+
+    # window start and finish in ordinals
     window_start: int = 0  # note that ordinal dates are at 00:00hrs (day start)
     window_finish: int = 0  # we handle the missing 23:59 hours (you don't need to)
 
-    # time window resolution (pixels per day)
+    # equivalent to window width divided by total days (i.e. pixels per day)
     window_resolution: float = float()
+
+    def clean_window_data(self):
+        pass
+
+    def build_window(self):
+        pass
+
+    def get_window_object(self):
+        return self
+
+    def get_window_svg(self):
+        pass
 
 
 @dataclass
