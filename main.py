@@ -24,11 +24,10 @@ from PySide2.QtSvg import QSvgWidget
 from PySide2.QtSvg import QSvgRenderer
 from PySide2.QtCore import QByteArray
 from pprint import pprint
-from assembly import Item
 import display
 from datetime import date, timedelta, datetime
 from scales import Scale, Grid
-from features import Circle, Row
+from mixins import *
 from shapes import Diamond, Text
 
 # EXTRACT DATA FROM GOOGLE SHEETS
@@ -39,69 +38,37 @@ module_path = str(__file__)  # os.getcwd() was getting to wrong place
 cwd = os.path.dirname(module_path)
 client_secret = os.path.join(cwd, "client_secret.json")
 creds = ServiceAccountCredentials.from_json_keyfile_name(client_secret, scope)
-# client = gspread.authorize(creds)
+client = gspread.authorize(creds)
 # Find a workbook by name and open the first sheet
 # Make sure you use the right name here.
-# sheet = client.open("data").sheet1
-# print(client.list_spreadsheet_files())
+sheet = client.open("data").sheet1
+print(client.list_spreadsheet_files())
 # Extract and print all of the values
-# list_of_hashes = sheet.get_all_records()
-# print(list_of_hashes)
+list_of_hashes = sheet.get_all_records()
+print(list_of_hashes)
 
 # TEMP
 today = date.toordinal(date.today()) - 2
 duration = 50
 end = today + duration
 
-shape_a = Circle()
-shape_b = Diamond(fill_color='green')
-shape_c = Text(text='Text', text_x=50, text_y=50, text_rotate=90)
+scale_a = Scale(interval_type='DAYS', window_start=today, window_finish=end, window_width=1000, scale_ends='pink', scale_x=100, scale_y=0, window_height=50, label_type='dates', date_format='a', font_size='15', min_interval_width=30).get_bar()
+scale_b = Scale(interval_type='WEEKS', window_start=today, window_finish=end, window_width=1000, scale_ends='pink', scale_x=100, scale_y=50, window_height=50, week_start_text='0').get_bar()
+scale_c = Scale(interval_type='WEEKS', window_start=today, window_finish=end, window_width=1000, scale_ends='pink', scale_x=100, scale_y=100, window_height=50, week_start_text='6').get_bar()
+scale_d = Scale(interval_type='MONTHS', window_start=today, window_finish=end, window_width=1000, scale_ends='pink', scale_x=100, scale_y=150, window_height=50, label_type='dates', date_format='mm', min_interval_width=40, text_x=10).get_bar()
+scale_e = Scale(interval_type='QUARTERS', window_start=today, window_finish=end, window_width=1000, scale_ends='pink', scale_x=100, scale_y=200, window_height=50, label_type='dates', date_format='Q', separator="/").get_bar()
+scale_f = Scale(interval_type='HALVES', window_start=today, window_finish=end, window_width=1000, scale_ends='pink', scale_x=100, scale_y=250, window_height=50, label_type='dates', date_format='H', separator="/").get_bar()
+scale_g = Scale(interval_type='YEARS', window_start=today, window_finish=end, window_width=1000, scale_ends='pink', scale_x=100, scale_y=300, window_height=50, label_type='dates', date_format='Y', separator="/").get_bar()
+grid_a = Grid(interval_type='HALVES', window_start=today, window_finish=end, window_width=1000, scale_x=100, scale_y=350, window_height=200, week_start_text='0', line_dashing='6 2').get_grid_lines()
 
-scale_a = Scale(interval_type='DAYS', window_start=today, window_finish=end, window_width=1000, scale_ends='pink', scale_x=100, scale_y=0, window_height=50, label_type='dates', date_format='a', font_size='15', min_interval_width=30)
-scale_b = Scale(interval_type='WEEKS', window_start=today, window_finish=end, window_width=1000, scale_ends='pink', scale_x=100, scale_y=50, window_height=50, week_start_text='0')
-scale_c = Scale(interval_type='WEEKS', window_start=today, window_finish=end, window_width=1000, scale_ends='pink', scale_x=100, scale_y=100, window_height=50, week_start_text='6')
-scale_d = Scale(interval_type='MONTHS', window_start=today, window_finish=end, window_width=1000, scale_ends='pink', scale_x=100, scale_y=150, window_height=50, label_type='dates', date_format='mm', min_interval_width=40, text_x=10)
-scale_e = Scale(interval_type='QUARTERS', window_start=today, window_finish=end, window_width=1000, scale_ends='pink', scale_x=100, scale_y=200, window_height=50, label_type='dates', date_format='Q', separator="/")
-scale_f = Scale(interval_type='HALVES', window_start=today, window_finish=end, window_width=1000, scale_ends='pink', scale_x=100, scale_y=250, window_height=50, label_type='dates', date_format='H', separator="/")
-scale_g = Scale(interval_type='YEARS', window_start=today, window_finish=end, window_width=1000, scale_ends='pink', scale_x=100, scale_y=300, window_height=50, label_type='dates', date_format='Y', separator="/")
-grid_a = Grid(interval_type='HALVES', window_start=today, window_finish=end, window_width=1000, scale_x=100, scale_y=350, window_height=200, week_start_text='0', line_dashing='6 2')
-
-row_a = Row(x=100, y=350, height=100, width=1000, border_rounding=0, fill_color='light blue', border_width=0.2)
-row_b = Row(x=100, y=350, height=100, width=1000, border_rounding=0, fill_color='blue', border_width=0)
-
-# GET ALL TUPLES
-unsorted_items = list()
-
-shape_a = Item(element=shape_a.svg, layer=400).get_item()
-shape_b = Item(element=shape_b.svg, layer=400).get_item()
-shape_c = Item(element=shape_c.svg, layer=400).get_item()
-item_a = Item(element=scale_a.get_bar(), layer=300).get_item()
-item_b = Item(element=scale_b.get_bar(), layer=300).get_item()
-item_c = Item(element=scale_c.get_bar(), layer=300).get_item()
-item_d = Item(element=scale_d.get_bar(), layer=300).get_item()
-item_e = Item(element=scale_e.get_bar(), layer=300).get_item()
-item_f = Item(element=scale_f.get_bar(), layer=300).get_item()
-item_g = Item(element=scale_g.get_bar(), layer=300).get_item()
-item_h = Item(element=grid_a.get_grid_lines(), layer=300).get_item()
-item_i = Item(element=row_a.svg, layer=200).get_item()
-item_j = Item(element=row_b.svg, layer=201).get_item()
-
-unsorted_items.extend((shape_a, shape_b, shape_c))
-unsorted_items.extend((item_a, item_b, item_c, item_d, item_e, item_f, item_g, item_h, item_i, item_j))
-
-# SORT TUPLES BY POSITION
-sorted_items = sorted(unsorted_items, key=itemgetter(0))
-
-# BUILD SINGLE SVG STRING OF ELEMENTS
-svg_elements = ''
-for item in sorted_items:
-    svg_elements += item[1]
+svg_elements = scale_a, scale_b, scale_c, scale_d, scale_e, scale_f, scale_g, grid_a
+svg_elements = "".join(svg_elements)
 
 # BUILD IMAGE FILE CONTENT AND WRITE TO IMAGE FILE
 template_file = os.path.join(cwd, "template.html")
 template_handler = Template(filename=template_file)
 template_output = template_handler.render(myvar=svg_elements)
-image_file = os.path.join(cwd, "image.html")
+image_file = os.path.join(cwd, "page.html")
 image_write = open(image_file, "w")
 image_write.write(template_output)
 image_write.close()

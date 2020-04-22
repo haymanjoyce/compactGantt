@@ -1,8 +1,9 @@
+# todo get rid of base class; switch from inheritance to composition
+# todo switch to attrs; get rid of post_init; use attrs features like validation
+# todo develop Scales with interface: placement, number of scales, grids to show
+# todo make Interval class
+# todo add order in as mixin to Scales
 # todo add ability to label a scale to Scale
-# todo drop post_init
-# todo add placement and order to Scale
-# todo lift work from Base and children to Layout
-# todo create interval object
 
 from dataclasses import dataclass
 from shapes import Rectangle, Line, Text
@@ -10,62 +11,10 @@ from dates import select_scale, convert_ordinal
 
 
 @dataclass
-class Layout:
-    """Represents the area where all scale related features are displayed"""
-
-    # equivalent to chart x
-    layout_x: float = 100  # we get value from chart.Layout object
-
-    # equivalent to header height
-    layout_y: float = 50  # we get value from banners.Layout object
-
-    # equivalent to chart width
-    layout_width: float = 1000  # we get value from chart.Layout object
-
-    # equivalent to chart height less sum of banner heights
-    layout_height: float = 600  # we  calculate based on data from banners.Layout and chart.Layout
-
-    def clean_layout_data(self):
-        pass
-
-    def build_layout(self):
-        pass
-
-    def get_layout_object(self):
-        return self
-
-    def get_layout_svg(self):
-        pass
-
-
-@dataclass
-class Window:
-    """Represents the area where tasks and milestones are displayed"""
-
-    # equivalent to chart width less sum of column widths
-    window_width: float = 800  # we get value from Columns.layout
-
-    # equivalent to layout height less sum of scale heights
-    window_height: float = 400
-
-    # window start and finish in ordinals
-    window_start: int = 0  # note that ordinal dates are at 00:00hrs (day start)
-    window_finish: int = 0  # we handle the missing 23:59 hours (you don't need to)
-
-    # equivalent to window width divided by total days (i.e. pixels per day)
-    window_resolution: float = float()
-
-    def clean_window_data(self):
-        pass
-
-    def build_window(self):
-        pass
-
-    def get_window_object(self):
-        return self
-
-    def get_window_svg(self):
-        pass
+class Scales:
+    # show grid for given scale
+    # show labels
+    pass
 
 
 @dataclass
