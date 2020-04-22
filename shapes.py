@@ -1,3 +1,8 @@
+# todo switch to attrs
+# todo add property decorator
+# todo rewrite diamond
+# todo drop inheritance
+
 from dataclasses import dataclass
 from math import sqrt
 
