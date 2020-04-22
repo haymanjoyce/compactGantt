@@ -157,23 +157,23 @@ class Grid(Base):
         lines = str()
         line = Line()
 
-        line.line_stroke_color = self.line_color
-        line.line_stroke_width = self.line_width
-        line.line_stroke_dasharray = self.line_dashing
+        line.stroke_color = self.line_color
+        line.stroke_width = self.line_width
+        line.stroke_dasharray = self.line_dashing
 
         line.y = self.scale_y
-        line.line_dy = self.scale_y + self.window_height
+        line.dy = self.scale_y + self.window_height
 
         for i in self.interval_data:
             line.x = i[0]
-            line.line_dx = line.x
-            lines += line.get_line()
+            line.dx = line.x
+            lines += line.svg
 
         # last line
         last_line = self.scale_x + ((self.window_finish - self.window_start) * self._pixels_per_day)
         line.x = last_line
-        line.line_dx = last_line
-        lines += line.get_line()
+        line.dx = last_line
+        lines += line.svg
 
         return lines
 
@@ -272,20 +272,20 @@ class Scale(Base):
 
         # unchanging variables of Rect object
         box.y = self.scale_y
-        box.rectangle_height = self.window_height
-        box.rectangle_border_rounding = self.box_rounding
-        box.rectangle_border_color = self.box_border_color
-        box.rectangle_border_width = self.box_border_width
+        box.height = self.window_height
+        box.border_rounding = self.box_rounding
+        box.border_color = self.box_border_color
+        box.border_width = self.box_border_width
 
         # changing variables for Rect object
         for i in self.interval_data:
             box.x = i[0]
-            box.rectangle_width = i[1]
+            box.width = i[1]
             if i[4] is False:
-                box.rectangle_fill_color = self.scale_ends
+                box.fill_color = self.scale_ends
             else:
-                box.rectangle_fill_color = self.box_fill
-            boxes += box.get_rect()
+                box.fill_color = self.box_fill
+            boxes += box.svg
 
         return boxes
 
@@ -298,7 +298,7 @@ class Scale(Base):
         labels = str()
 
         # unchanging variables for Text object
-        label.y = self.scale_y
+        label.text_y = self.scale_y
         label.text_translate_y = self.text_y
         label.text_translate_x = self.text_x
         label.font_fill_color = self.font_fill
@@ -312,7 +312,7 @@ class Scale(Base):
 
         # changing variables for Text object
         for i in self.interval_data:
-            label.x = i[0]
+            label.text_x = i[0]
             if i[1] < self.min_interval_width:
                 label.text = str()  # you could set visibility to hidden but more verbose
             elif self.label_type == 'count' and i[3] == 0:
@@ -321,7 +321,7 @@ class Scale(Base):
                 label.text = convert_ordinal(i[2], self.date_format, self.week_start_num, self.separator)
             else:
                 label.text = i[3]  # references count in intervals entry
-            labels += label.get_text()
+            labels += label.svg
 
         return labels
 

@@ -1,134 +1,139 @@
-# todo switch to attrs
-# todo add property decorator
-# todo rewrite diamond
-# todo drop inheritance
-
-from dataclasses import dataclass
+from attr import attrs
 from math import sqrt
 
 
-@dataclass
-class Point:
-    """Base coordinate for all shape classes"""
+@attrs(auto_attribs=True)
+class Line:
 
     x: float = 0
     y: float = 0
+    dx: float = 200
+    dy: float = 100
+    stroke_color: str = 'black'
+    stroke_width: int = 5
+    stroke_line_cap: str = str('butt')  # butt | round | square
+    stroke_dasharray: str = str()  # dash gap dash gap
 
-
-@dataclass
-class Line(Point):
-
-    line_dx: float = 200
-    line_dy: float = 100
-    line_stroke_color: str = 'black'
-    line_stroke_width: int = 5
-    line_stroke_line_cap: str = str('butt')  # butt | round | square
-    line_stroke_dasharray: str = str()  # dash gap dash gap
-
-    def get_line(self):
+    @property
+    def svg(self):
 
         return f'<line ' \
                f'x1="{self.x}" y1="{self.y}" ' \
-               f'x2="{self.line_dx}" y2="{self.line_dy}" ' \
-               f'stroke="{self.line_stroke_color}" ' \
-               f'stroke-width="{self.line_stroke_width}" ' \
-               f'stroke-line-cap="{self.line_stroke_line_cap}" ' \
-               f'stroke-dasharray="{self.line_stroke_dasharray}" ' \
+               f'x2="{self.dx}" y2="{self.dy}" ' \
+               f'stroke="{self.stroke_color}" ' \
+               f'stroke-width="{self.stroke_width}" ' \
+               f'stroke-line-cap="{self.stroke_line_cap}" ' \
+               f'stroke-dasharray="{self.stroke_dasharray}" ' \
                f'></line>'
 
 
-@dataclass
-class Circle(Point):
+@attrs(auto_attribs=True)
+class Circle:
 
-    circle_size: float = 50
-    circle_stroke_color: str = 'black'
-    circle_stroke_width: int = 1
-    circle_fill_color: str = 'red'
+    x: float = 0
+    y: float = 0
+    size: float = 50
+    stroke_color: str = 'black'
+    stroke_width: int = 1
+    fill_color: str = 'red'
 
-    def get_circle(self):
+    @property
+    def svg(self):
 
-        r = self.circle_size / 2
+        r = self.size / 2
         cx = self.x + r
         cy = self.y + r
 
         return f'<circle ' \
                f'cx="{cx}" cy="{cy}" ' \
                f'r="{r}" ' \
-               f'stroke="{self.circle_stroke_color}" ' \
-               f'stroke-width="{self.circle_stroke_width}" ' \
-               f'fill="{self.circle_fill_color}" ' \
+               f'stroke="{self.stroke_color}" ' \
+               f'stroke-width="{self.stroke_width}" ' \
+               f'fill="{self.fill_color}" ' \
                f'></circle>'
 
 
-@dataclass
-class Rectangle(Point):
+@attrs(auto_attribs=True)
+class Rectangle:
 
-    rectangle_width: float = 200
-    rectangle_height: float = 100
-    rectangle_fill_color: str = 'red'
-    rectangle_border_color: str = 'black'
-    rectangle_border_width: float = 1
-    rectangle_border_rounding: int = 2
-    rectangle_visibility: str = str()
+    x: float = 0
+    y: float = 0
+    width: float = 200
+    height: float = 100
+    fill_color: str = 'red'
+    border_color: str = 'black'
+    border_width: float = 1
+    border_rounding: int = 2
+    visibility: str = str()
 
-    def get_rect(self):
+    @property
+    def svg(self):
 
         return f'<rect ' \
                f'x="{self.x}" y="{self.y}" ' \
-               f'rx="{self.rectangle_border_rounding}" ry="{self.rectangle_border_rounding}" ' \
-               f'width="{self.rectangle_width}" height="{self.rectangle_height}" ' \
-               f'stroke="{self.rectangle_border_color}" stroke-width="{self.rectangle_border_width}" ' \
-               f'fill="{self.rectangle_fill_color}" ' \
-               f'visibility="{self.rectangle_visibility}" ' \
+               f'rx="{self.border_rounding}" ry="{self.border_rounding}" ' \
+               f'width="{self.width}" height="{self.height}" ' \
+               f'stroke="{self.border_color}" stroke-width="{self.border_width}" ' \
+               f'fill="{self.fill_color}" ' \
+               f'visibility="{self.visibility}" ' \
                f'></rect>'
 
 
-@dataclass
-class Diamond(Rectangle):
+@attrs(auto_attribs=True)
+class Diamond:
 
-    diamond_size: float = 50  # replaces height and width
+    x: float = 0
+    y: float = 0
+    size: float = 50
+    fill_color: str = 'red'
+    border_color: str = 'black'
+    border_width: float = 1
+    border_rounding: int = 2
+    visibility: str = str()
 
-    def get_diamond(self):
+    @ property
+    def svg(self):
 
-        origin = self.diamond_size / 2
-        resized = self.diamond_size / sqrt(2)
-        repositioned = (self.diamond_size - resized) / 2
+        origin = self.size / 2
+        resized = self.size / sqrt(2)
+        repositioned = (self.size - resized) / 2
 
         return f'<rect ' \
                f'x="{self.x + repositioned}" y="{self.y + repositioned}" ' \
-               f'rx="{self.rectangle_border_rounding}" ry="{self.rectangle_border_rounding}" ' \
+               f'rx="{self.border_rounding}" ry="{self.border_rounding}" ' \
                f'transform="rotate(45 {self.x + origin} {self.y + origin})" ' \
                f'width="{resized}" height="{resized}" ' \
-               f'stroke="{self.rectangle_border_color}" stroke-width="{self.rectangle_border_width}" ' \
-               f'fill="{self.rectangle_fill_color}" ' \
+               f'stroke="{self.border_color}" stroke-width="{self.border_width}" ' \
+               f'fill="{self.fill_color}" ' \
                f'></rect>'
 
 
-@dataclass
-class Text(Point):
+@attrs(auto_attribs=True)
+class Text:
 
     text: str = str()
-
-    text_rotate: int = 0
+    text_x: float = 0
+    text_y: float = 0
     text_translate_x: float = 0
     text_translate_y: float = 0  # add 0.35 of text size for middle align
     text_anchor: str = str()  # start | middle | end
+    text_rotate: int = 0
     text_visibility: str = str()
-
     font_fill_color: str = 'black'
     font_size: str = str(20)  # 2em | smaller | etc.
     font_family: str = str()  # "Arial, Helvetica, sans-serif"
     font_style: str = str()  # normal | italic | oblique
     font_weight: str = str()  # normal | bold | bolder | lighter | <number>
 
-    def get_text(self):
+    @property
+    def svg(self):
 
         return f'<text ' \
-               f'x="{self.x}" y="{self.y}" ' \
+               f'x="{self.text_x}" y="{self.text_y}" ' \
                f'fill="{self.font_fill_color}" ' \
                f'transform="' \
                f'translate({self.text_translate_x}, {self.text_translate_y}) ' \
-               f'rotate({self.text_rotate} {self.x} {self.y})" ' \
+               f'rotate({self.text_rotate} {self.text_x} {self.text_y})" ' \
                f'font-size="{self.font_size}" ' \
                f'font-family="{self.font_family}" ' \
                f'text-anchor="{self.text_anchor}" ' \

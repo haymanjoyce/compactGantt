@@ -11,6 +11,7 @@
 # gspread - access Google Sheets
 # Mako - templating engine
 # PySide2 - GUI under LGPL license
+# attrs
 
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
@@ -53,8 +54,8 @@ duration = 50
 end = today + duration
 
 shape_a = Circle()
-shape_b = Diamond(rectangle_fill_color='green')
-shape_c = Text(text='Text', x=50, y=50, text_rotate=90)
+shape_b = Diamond(fill_color='green')
+shape_c = Text(text='Text', text_x=50, text_y=50, text_rotate=90)
 
 scale_a = Scale(interval_type='DAYS', window_start=today, window_finish=end, window_width=1000, scale_ends='pink', scale_x=100, scale_y=0, window_height=50, label_type='dates', date_format='a', font_size='15', min_interval_width=30)
 scale_b = Scale(interval_type='WEEKS', window_start=today, window_finish=end, window_width=1000, scale_ends='pink', scale_x=100, scale_y=50, window_height=50, week_start_text='0')
@@ -65,15 +66,15 @@ scale_f = Scale(interval_type='HALVES', window_start=today, window_finish=end, w
 scale_g = Scale(interval_type='YEARS', window_start=today, window_finish=end, window_width=1000, scale_ends='pink', scale_x=100, scale_y=300, window_height=50, label_type='dates', date_format='Y', separator="/")
 grid_a = Grid(interval_type='HALVES', window_start=today, window_finish=end, window_width=1000, scale_x=100, scale_y=350, window_height=200, week_start_text='0', line_dashing='6 2')
 
-row_a = Row(x=100, y=350, rectangle_height=100, rectangle_width=1000, rectangle_border_rounding=0, rectangle_fill_color='light blue', rectangle_border_width=0.2)
-row_b = Row(x=100, y=350, rectangle_height=100, rectangle_width=1000, rectangle_border_rounding=0, rectangle_fill_color='blue', rectangle_border_width=0)
+row_a = Row(x=100, y=350, height=100, width=1000, border_rounding=0, fill_color='light blue', border_width=0.2)
+row_b = Row(x=100, y=350, height=100, width=1000, border_rounding=0, fill_color='blue', border_width=0)
 
 # GET ALL TUPLES
 unsorted_items = list()
 
-shape_a = Item(element=shape_a.get_circle(), layer=400).get_item()
-shape_b = Item(element=shape_b.get_diamond(), layer=400).get_item()
-shape_c = Item(element=shape_c.get_text(), layer=400).get_item()
+shape_a = Item(element=shape_a.svg, layer=400).get_item()
+shape_b = Item(element=shape_b.svg, layer=400).get_item()
+shape_c = Item(element=shape_c.svg, layer=400).get_item()
 item_a = Item(element=scale_a.get_bar(), layer=300).get_item()
 item_b = Item(element=scale_b.get_bar(), layer=300).get_item()
 item_c = Item(element=scale_c.get_bar(), layer=300).get_item()
@@ -82,8 +83,8 @@ item_e = Item(element=scale_e.get_bar(), layer=300).get_item()
 item_f = Item(element=scale_f.get_bar(), layer=300).get_item()
 item_g = Item(element=scale_g.get_bar(), layer=300).get_item()
 item_h = Item(element=grid_a.get_grid_lines(), layer=300).get_item()
-item_i = Item(element=row_a.get_rect(), layer=200).get_item()
-item_j = Item(element=row_b.get_rect(), layer=201).get_item()
+item_i = Item(element=row_a.svg, layer=200).get_item()
+item_j = Item(element=row_b.svg, layer=201).get_item()
 
 unsorted_items.extend((shape_a, shape_b, shape_c))
 unsorted_items.extend((item_a, item_b, item_c, item_d, item_e, item_f, item_g, item_h, item_i, item_j))
