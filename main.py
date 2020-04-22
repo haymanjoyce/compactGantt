@@ -30,6 +30,7 @@ from scales import Scale, Grid
 from mixins import *
 from shapes import Diamond, Text
 
+
 # TEMP
 today = date.toordinal(date.today()) - 2
 duration = 50
@@ -47,7 +48,9 @@ grid_a = Grid(interval_type='HALVES', window_start=today, window_finish=end, win
 svg_elements = scale_a, scale_b, scale_c, scale_d, scale_e, scale_f, scale_g, grid_a
 svg_elements = "".join(svg_elements)
 
-# BUILD IMAGE FILE CONTENT AND WRITE TO IMAGE FILE
+# PAGE.HTML
+module_path = str(__file__)  # os.getcwd() was getting to wrong place
+cwd = os.path.dirname(module_path)
 template_file = os.path.join(cwd, "template.html")
 template_handler = Template(filename=template_file)
 template_output = template_handler.render(myvar=svg_elements)
@@ -56,10 +59,7 @@ image_write = open(image_file, "w")
 image_write.write(template_output)
 image_write.close()
 
-# REFRESH THE WEB PAGE
-# use LivePage extension for Chrome
-
-# RENDER TO GUI DISPLAY
+# GUI
 app = QApplication(sys.argv)
 svgWidget = QSvgWidget()
 image = display.Image(svg_elements)
