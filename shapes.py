@@ -1,3 +1,5 @@
+# todo check SVG code standards (e.g. no blank strings as attribute values)
+
 from attr import attrs
 from math import sqrt
 
@@ -64,7 +66,7 @@ class Rectangle:
     border_color: str = 'black'
     border_width: float = 1
     border_rounding: int = 2
-    visibility: str = str()
+    visibility: str = 'none'
 
     @property
     def svg(self):

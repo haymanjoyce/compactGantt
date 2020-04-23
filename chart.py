@@ -1,4 +1,10 @@
-class Layout:
+"""Is the main chart features"""
+
+# todo develop Layout and features
+# todo render main boxes which other modules render in more detail
+
+
+class Chart:
     """Represents the area where all scale related features are displayed"""
 
     # equivalent to chart x
