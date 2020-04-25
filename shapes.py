@@ -13,7 +13,7 @@ class Line:
     dy: float = 100
     stroke_color: str = 'black'
     stroke_width: int = 5
-    stroke_line_cap: str = str('butt')  # butt | round | square
+    stroke_line_cap: str = 'butt'  # butt | round | square
     stroke_dasharray: str = str()  # dash gap dash gap
 
     @property
@@ -24,7 +24,7 @@ class Line:
                f'x2="{self.dx}" y2="{self.dy}" ' \
                f'stroke="{self.stroke_color}" ' \
                f'stroke-width="{self.stroke_width}" ' \
-               f'stroke-line-cap="{self.stroke_line_cap}" ' \
+               f'stroke-linecap="{self.stroke_line_cap}" ' \
                f'stroke-dasharray="{self.stroke_dasharray}" ' \
                f'></line>'
 
@@ -66,7 +66,7 @@ class Rectangle:
     border_color: str = 'black'
     border_width: float = 1
     border_rounding: int = 2
-    visibility: str = 'none'
+    visibility: str = 'visible'
 
     @property
     def svg(self):
@@ -91,7 +91,7 @@ class Diamond:
     border_color: str = 'black'
     border_width: float = 1
     border_rounding: int = 2
-    visibility: str = str()
+    visibility: str = 'visible'
 
     @ property
     def svg(self):
@@ -118,14 +118,14 @@ class Text:
     text_y: float = 0
     text_translate_x: float = 0
     text_translate_y: float = 0  # add 0.35 of text size for middle align
-    text_anchor: str = str()  # start | middle | end
+    text_anchor: str = 'start'  # start | middle | end
     text_rotate: int = 0
-    text_visibility: str = str()
+    text_visibility: str = 'visible'  # visible | hidden
     font_fill_color: str = 'black'
     font_size: str = str(20)  # 2em | smaller | etc.
     font_family: str = str()  # "Arial, Helvetica, sans-serif"
-    font_style: str = str()  # normal | italic | oblique
-    font_weight: str = str()  # normal | bold | bolder | lighter | <number>
+    font_style: str = 'normal'  # normal | italic | oblique
+    font_weight: str = 'normal'  # normal | bold | bolder | lighter | <number>
 
     @property
     def svg(self):

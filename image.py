@@ -1,11 +1,12 @@
-"""Module creates and displays the final SVG image"""
+"""Classes for handling the image"""
 
 from dataclasses import dataclass, field
+from PySide2.QtCore import QByteArray
 
 
 @dataclass
 class Image:
-    """Wraps the SVG shapes and text in a root SVG element"""
+    """Handles image and creates images of chart in various formats"""
 
     # the SVG image to be rendered
     image: str = str()
@@ -51,10 +52,13 @@ class Image:
         self.viewBox_x = offset
         self.viewBox_y = offset
 
-    def get_image(self):
+    def get_svg(self):
         return f'<svg width="{self.viewPort_width}" height="{self.viewPort_height}" ' \
                f'viewBox="{self.viewBox_x} {self.viewBox_y} {self.viewBox_width} {self.viewBox_height}" ' \
                f'id="" version="1.1" overflow="auto"> ' \
                f'{self.image}' \
                f'</svg>'
+
+    def get_byte_array(self):
+        return QByteArray(bytearray(self.get_svg(), encoding='utf-8'))
 

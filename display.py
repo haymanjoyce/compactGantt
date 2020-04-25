@@ -1,16 +1,31 @@
-"""Renders SVG image in on different display types"""
+"""Renders image onto various display mediums"""
 
 from dataclasses import dataclass, field
 
 
 @dataclass
-class Window:
-    """Sets up the GUI window in which the SVG image is displayed"""
+class Screen:
+    """Represents the device screen"""
+
+    # screen dimensions
+    screen_width: int = 800
+    screen_height: int = 600
+
+    def get_screen_dimensions(self):
+        pass
+
+
+screen = Screen()
+
+
+@dataclass
+class Qt:
+    """Uses Qt to display image on screen"""
 
     # display dimensions (system should provide this data)
     # display is the display area available on screen
-    display_width: int = 800
-    display_height: int = 600
+    screen_width: int = screen.screen_width
+    screen_height: int = screen.screen_height
 
     # sets top left corner of window relative to display
     window_x: int = field(init=False, default=10, repr=False)
@@ -23,10 +38,11 @@ class Window:
 
     def __post_init__(self):
         # todo change proportions are for production
-        self.window_x = int(0 * self.display_width)
-        self.window_y = int(0.2 * self.display_height)
-        self.window_width = int(0.4 * self.display_width)
-        self.window_height = int(0.6 * self.display_height)
+        self.window_x = int(0 * screen.screen_width)
+        self.window_y = int(0.2 * screen.screen_height)
+        self.window_width = int(0.4 * self.screen_width)
+        self.window_height = int(0.6 * self.screen_height)
 
     def get_geometry(self):
         return self.window_x, self.window_y, self.window_width, self.window_height
+

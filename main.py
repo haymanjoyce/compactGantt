@@ -20,7 +20,7 @@ from PySide2.QtCore import QByteArray
 import image
 from datetime import date
 from scales import Scale, Grid
-from display import Window
+from display import Qt
 
 # TEMP
 today = date.toordinal(date.today()) - 2
@@ -45,7 +45,7 @@ module_path = str(__file__)  # os.getcwd() was getting to wrong place
 cwd = os.path.dirname(module_path)
 template_file = os.path.join(cwd, "template.html")
 template_handler = Template(filename=template_file)
-template_output = template_handler.render(image=image.get_image())
+template_output = template_handler.render(image=image.get_svg())
 image_file = os.path.join(cwd, "page.html")
 image_write = open(image_file, "w")
 image_write.write(template_output)
@@ -54,10 +54,9 @@ image_write.close()
 # QT
 app = QApplication(sys.argv)
 svgWidget = QSvgWidget()
-image_in_bytes = QByteArray(bytearray(image.get_image(), encoding='utf-8'))
-svgWidget.renderer().load(image_in_bytes)
+svgWidget.renderer().load(image.get_byte_array())
 display_size = svgWidget.screen().availableSize()
-window_geometry = Window(display_width=display_size.width(), display_height=display_size.height()).get_geometry()
+window_geometry = Qt(screen_width=display_size.width(), screen_height=display_size.height()).get_geometry()
 svgWidget.setGeometry(*window_geometry)  # the asterisk unpacks the tuple
 svgWidget.show()
 sys.exit(app.exec_())

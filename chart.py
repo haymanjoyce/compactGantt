@@ -1,4 +1,4 @@
-"""Is the main chart features"""
+"""Marshals chart features"""
 
 # todo develop Layout and features
 # todo render main boxes which other modules render in more detail
