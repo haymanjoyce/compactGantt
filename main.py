@@ -17,10 +17,12 @@ import sys
 from PySide2.QtWidgets import QApplication
 from PySide2.QtSvg import QSvgWidget
 from PySide2.QtCore import QByteArray
-import image
+from image import ByteArray
 from datetime import date
 from scales import Scale, Grid
-from display import Qt
+from client import Screen
+from gui import Display
+from chart import Image
 
 # TEMP
 today = date.toordinal(date.today()) - 2
@@ -38,7 +40,7 @@ svg_elements = scale_a, scale_b, scale_c, scale_d, scale_e, scale_f, scale_g, gr
 svg_elements = "".join(svg_elements)
 
 # IMAGE
-image = image.Image(svg_elements)
+image = Image(svg_elements)
 
 # BROWSER
 module_path = str(__file__)  # os.getcwd() was getting to wrong place
@@ -51,13 +53,12 @@ image_write = open(image_file, "w")
 image_write.write(template_output)
 image_write.close()
 
-# QT
-app = QApplication(sys.argv)
-svgWidget = QSvgWidget()
-svgWidget.renderer().load(image.get_byte_array())
-display_size = svgWidget.screen().availableSize()
-window_geometry = Qt(screen_width=display_size.width(), screen_height=display_size.height()).get_geometry()
-svgWidget.setGeometry(*window_geometry)  # the asterisk unpacks the tuple
-svgWidget.show()
-sys.exit(app.exec_())
+# GUI
+gui = QApplication(sys.argv)
+display = Display()
+display.set_renderer(ByteArray.get_byte_array(image.get_svg()))
+display.set_screen_size(Screen.get_screen_size(display))
+display.set_geometry()
+display.show()
+sys.exit(gui.exec_())
 
