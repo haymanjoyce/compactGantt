@@ -56,7 +56,7 @@ image_write.close()
 # GUI
 gui = QApplication(sys.argv)
 display = Display()
-display.set_renderer(ByteArray.get_byte_array(image.get_svg()))
+display.load_renderer(ByteArray.get_byte_array(image.get_svg()))
 display.set_screen_size(Screen.get_screen_size(display))
 display.set_geometry()
 display.show()

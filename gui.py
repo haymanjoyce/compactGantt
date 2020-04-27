@@ -13,7 +13,7 @@ class Display(QSvgWidget):
     screen_width: int = 0
     screen_height: int = 0
 
-    def set_renderer(self, byte_array):
+    def load_renderer(self, byte_array):
         self.renderer().load(byte_array)
 
     def set_screen_size(self, screen_size):
