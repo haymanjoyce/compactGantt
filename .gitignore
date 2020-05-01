@@ -2,7 +2,7 @@
 
 *secret*
 .DS_Store
-__pycache___/*
+__pycache___/
 *.html
 
 # STANDARD

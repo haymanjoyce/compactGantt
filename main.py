@@ -7,24 +7,18 @@
 # todo redo scales module
 
 # REQUIREMENTS
-# Mako - templating engine
 # PySide2 - GUI under LGPL license
 # attrs
 
-import os
-from mako.template import Template
 import sys
 from PySide2.QtWidgets import QApplication
-from PySide2.QtSvg import QSvgWidget
-from PySide2.QtCore import QByteArray
-from image import ByteArray
 from datetime import date
 from scales import Scale, Grid
-from client import Screen
-from gui import Display
-from chart import Image
+from gui import Display, ByteArray, Screen
+from chart import Chart
+from browser import update_web_page
 
-# TEMP
+# CHART
 today = date.toordinal(date.today()) - 2
 duration = 50
 end = today + duration
@@ -40,18 +34,7 @@ svg_elements = scale_a, scale_b, scale_c, scale_d, scale_e, scale_f, scale_g, gr
 svg_elements = "".join(svg_elements)
 
 # IMAGE
-image = Image(svg_elements)
-
-# BROWSER
-module_path = str(__file__)  # os.getcwd() was getting to wrong place
-cwd = os.path.dirname(module_path)
-template_file = os.path.join(cwd, "template.html")
-template_handler = Template(filename=template_file)
-template_output = template_handler.render(image=image.get_svg())
-image_file = os.path.join(cwd, "page.html")
-image_write = open(image_file, "w")
-image_write.write(template_output)
-image_write.close()
+image = Chart(svg_elements)
 
 # GUI
 gui = QApplication(sys.argv)

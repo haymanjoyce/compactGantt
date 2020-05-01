@@ -2,6 +2,30 @@
 
 from dataclasses import dataclass, field
 from PySide2.QtSvg import QSvgWidget
+from PySide2.QtCore import QByteArray
+from collections import namedtuple
+
+
+@dataclass
+class Screen:
+    """Represents the device screen"""
+
+    screen_width: int = 800
+    screen_height: int = 600
+
+    @staticmethod
+    def get_screen_size(widget):
+        Size = namedtuple('Size', ['width', 'height'])
+        size = Size(widget.screen().availableSize().width(), widget.screen().availableSize().height())
+        return size
+
+
+@dataclass
+class ByteArray:
+
+    @staticmethod
+    def get_byte_array(svg):
+        return QByteArray(bytearray(svg, encoding='utf-8'))
 
 
 @dataclass

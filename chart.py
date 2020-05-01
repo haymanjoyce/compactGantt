@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 
 
 @dataclass
-class Image:
+class Chart:
     """Handles image and creates images of chart in various formats"""
 
     # the SVG image to be rendered
@@ -60,34 +60,6 @@ class Image:
                f'id="" version="1.1" overflow="auto"> ' \
                f'{self.image}' \
                f'</svg>'
-
-
-class Chart:
-    """Represents the area where all scale related features are displayed"""
-
-    # equivalent to chart x
-    layout_x: float = 100  # we get value from chart.Layout object
-
-    # equivalent to header height
-    layout_y: float = 50  # we get value from banners.Layout object
-
-    # equivalent to chart width
-    layout_width: float = 1000  # we get value from chart.Layout object
-
-    # equivalent to chart height less sum of banner heights
-    layout_height: float = 600  # we  calculate based on data from banners.Layout and chart.Layout
-
-    def clean_layout_data(self):
-        pass
-
-    def build_layout(self):
-        pass
-
-    def get_layout_object(self):
-        return self
-
-    def get_layout_svg(self):
-        pass
 
 
 class TimeWindow:
