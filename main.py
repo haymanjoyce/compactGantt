@@ -6,6 +6,7 @@
 # todo chart module
 # todo redo scales module
 # todo drop mixins
+# todo try gui using another framework
 
 # REQUIREMENTS
 # PySide2
@@ -33,6 +34,6 @@ svg_elements = scale_a, scale_b, scale_c, scale_d, scale_e, scale_f, scale_g, gr
 svg_elements = "".join(svg_elements)
 
 # IMAGE
-chart = Chart(svg_elements).get_svg()
+chart = Chart(chart=svg_elements).get_svg()
 update_web_page(chart)
 update_gui(chart)
