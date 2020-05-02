@@ -5,18 +5,17 @@
 # todo page module
 # todo chart module
 # todo redo scales module
+# todo drop mixins
 
 # REQUIREMENTS
-# PySide2 - GUI under LGPL license
+# PySide2
 # attrs
 
-import sys
-from PySide2.QtWidgets import QApplication
 from datetime import date
 from scales import Scale, Grid
-from gui import Display, ByteArray, Screen
 from chart import Chart
 from browser import update_web_page
+from gui import update_gui
 
 # CHART
 today = date.toordinal(date.today()) - 2
@@ -34,14 +33,6 @@ svg_elements = scale_a, scale_b, scale_c, scale_d, scale_e, scale_f, scale_g, gr
 svg_elements = "".join(svg_elements)
 
 # IMAGE
-image = Chart(svg_elements)
-
-# GUI
-gui = QApplication(sys.argv)
-display = Display()
-display.load_renderer(ByteArray.get_byte_array(image.get_svg()))
-display.set_screen_size(Screen.get_screen_size(display))
-display.set_geometry()
-display.show()
-sys.exit(gui.exec_())
-
+chart = Chart(svg_elements).get_svg()
+update_web_page(chart)
+update_gui(chart)

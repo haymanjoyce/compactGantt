@@ -2,6 +2,7 @@
 
 # todo develop Layout and features
 # todo render main boxes which other modules render in more detail
+# todo remove viewbox attributes from svg element
 
 from dataclasses import dataclass, field
 
@@ -57,36 +58,7 @@ class Chart:
     def get_svg(self):
         return f'<svg width="{self.viewPort_width}" height="{self.viewPort_height}" ' \
                f'viewBox="{self.viewBox_x} {self.viewBox_y} {self.viewBox_width} {self.viewBox_height}" ' \
-               f'id="" version="1.1" overflow="auto"> ' \
+               f'id="" overflow="auto"> ' \
                f'{self.image}' \
                f'</svg>'
-
-
-class TimeWindow:
-    """Represents the area where tasks and milestones are displayed"""
-
-    # equivalent to chart width less sum of column widths
-    window_width: float = 800  # we get value from Columns.layout
-
-    # equivalent to layout height less sum of scale heights
-    window_height: float = 400
-
-    # window start and finish in ordinals
-    window_start: int = 0  # note that ordinal dates are at 00:00hrs (day start)
-    window_finish: int = 0  # we handle the missing 23:59 hours (you don't need to)
-
-    # equivalent to window width divided by total days (i.e. pixels per day)
-    window_resolution: float = float()
-
-    def clean_window_data(self):
-        pass
-
-    def build_window(self):
-        pass
-
-    def get_window_object(self):
-        return self
-
-    def get_window_svg(self):
-        pass
 

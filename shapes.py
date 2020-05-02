@@ -1,5 +1,3 @@
-# todo check SVG code standards (e.g. no blank strings as attribute values)
-
 from attr import attrs
 from math import sqrt
 
