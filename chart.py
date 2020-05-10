@@ -2,19 +2,18 @@
 
 from attr import attrs, attrib
 from shapes import Rectangle
-from asyncio import coroutine
 
 
 @attrs
 class Chart:
 
-    svg_elements = attrib()
+    svg_elements = attrib(default=str())
 
     # this defines dimensions of root node in DOM
     chart_width = attrib(default=800)
     chart_height = attrib(default=600)
 
-    # viewPort pretty much always the same as chart dimensions
+    # viewPort pretty much always the same as chart dimensions but make distinction anyway
     viewPort_width = attrib()
     viewPort_height = attrib()
 
