@@ -1,28 +1,29 @@
-"""Classes for building the SVG"""
+# todo render layout
 
-# todo develop Layout and features
-# todo render main boxes which other modules render in more detail
-# todo remove viewbox attributes from svg element
-
-from dataclasses import dataclass
+from attr import attrs, attrib
 
 
-@dataclass
+@attrs
 class Chart:
 
-    chart: str = str()
+    svg_elements = attrib()
+    chart_width = attrib(default=800)
+    chart_height = attrib(default=600)
+    viewPort_width = attrib()
+    viewPort_height = attrib()
 
-    viewPort_width: int = 800
-    viewPort_height: int = 600
-    viewBox_x: int = -100
-    viewBox_y: int = -100
-    viewBox_width: int = 1600
-    viewBox_height: int = 1200
+    @viewPort_width.default
+    def get_height(self):
+        return self.chart_width
 
-    def get_svg(self):
+    @viewPort_height.default
+    def get_height(self):
+        return self.chart_height
+
+    @property
+    def svg(self):
         return f'<svg width="{self.viewPort_width}" height="{self.viewPort_height}" ' \
-               f'viewBox="{self.viewBox_x} {self.viewBox_y} {self.viewBox_width} {self.viewBox_height}" ' \
                f'id="chart" overflow="auto"> ' \
-               f'{self.chart}' \
+               f'{self.svg_elements}' \
                f'</svg>'
 

@@ -15,25 +15,25 @@
 from datetime import date
 from scales import Scale, Grid
 from chart import Chart
-from browser import update_web_page
-from gui import update_gui
+import browser
+import gui
+from shapes import Rectangle
 
 # CHART
 today = date.toordinal(date.today()) - 2
-duration = 50
+duration = 100
 end = today + duration
-scale_a = Scale(interval_type='DAYS', window_start=today, window_finish=end, window_width=1000, scale_ends='pink', scale_x=100, scale_y=0, window_height=50, label_type='dates', date_format='a', font_size='15', min_interval_width=30).get_bar()
-scale_b = Scale(interval_type='WEEKS', window_start=today, window_finish=end, window_width=1000, scale_ends='pink', scale_x=100, scale_y=50, window_height=50, week_start_text='0').get_bar()
-scale_c = Scale(interval_type='WEEKS', window_start=today, window_finish=end, window_width=1000, scale_ends='pink', scale_x=100, scale_y=100, window_height=50, week_start_text='6').get_bar()
-scale_d = Scale(interval_type='MONTHS', window_start=today, window_finish=end, window_width=1000, scale_ends='pink', scale_x=100, scale_y=150, window_height=50, label_type='dates', date_format='mm', min_interval_width=40, text_x=10).get_bar()
-scale_e = Scale(interval_type='QUARTERS', window_start=today, window_finish=end, window_width=1000, scale_ends='pink', scale_x=100, scale_y=200, window_height=50, label_type='dates', date_format='Q', separator="/").get_bar()
-scale_f = Scale(interval_type='HALVES', window_start=today, window_finish=end, window_width=1000, scale_ends='pink', scale_x=100, scale_y=250, window_height=50, label_type='dates', date_format='H', separator="/").get_bar()
-scale_g = Scale(interval_type='YEARS', window_start=today, window_finish=end, window_width=1000, scale_ends='pink', scale_x=100, scale_y=300, window_height=50, label_type='dates', date_format='Y', separator="/").get_bar()
-grid_a = Grid(interval_type='WEEKS', window_start=today, window_finish=end, window_width=1000, scale_x=100, scale_y=350, window_height=200, week_start_text='0', line_dashing='6 2').get_grid_lines()
-svg_elements = scale_a, scale_b, scale_c, scale_d, scale_e, scale_f, scale_g, grid_a
+
+chart_area = Rectangle(x=0, y=0, width=1000, height=500, fill_color='green', border_width=0).svg
+rect_a = Rectangle(x=0, y=0, width=1000, height=50, fill_color='orange', border_width=0).svg
+rect_b = Rectangle(x=0, y=50, width=1000, height=50, fill_color='blue', border_width=0).svg
+scale_a = Scale(window_width=1000, window_height=50, window_start=today, window_finish=end, scale_y=100).get_bar()
+rect_c = Rectangle(x=0, y=0, width=50, height=600, fill_color='purple', border_width=0).svg
+
+svg_elements = chart_area, rect_a, rect_b, scale_a, rect_c
 svg_elements = "".join(svg_elements)
 
 # IMAGE
-chart = Chart(chart=svg_elements).get_svg()
-update_web_page(chart)
-update_gui(chart)
+chart = Chart(svg_elements=svg_elements, chart_width=1000, chart_height=600).svg
+browser.display_chart(chart)
+gui.display_chart(chart)

@@ -4,6 +4,7 @@
 # todo make Interval class
 # todo add order in as mixin to Scales
 # todo add ability to label a scale to Scale
+# todo use @property to render svg
 
 from dataclasses import dataclass
 from shapes import Rectangle, Line, Text

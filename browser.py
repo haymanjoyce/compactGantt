@@ -26,7 +26,7 @@ class Browser:
 browser = Browser()
 
 
-def update_web_page(svg='<p>No SVG code found.</p>'):
+def display_chart(svg='<p>No SVG code found.</p>'):
     browser.image = svg
     browser.update_page()
 
