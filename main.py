@@ -34,6 +34,6 @@ svg_elements = chart_area, rect_a, rect_b, scale_a, rect_c
 svg_elements = "".join(svg_elements)
 
 # IMAGE
-chart = Chart(svg_elements=svg_elements, chart_width=1000, chart_height=600).svg
-browser.display_chart(chart)
-gui.display_chart(chart)
+chart = Chart(svg_elements=svg_elements, chart_width=1000, chart_height=600)
+browser.display_chart(chart.svg)
+gui.display_chart(chart.svg)
