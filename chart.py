@@ -2,6 +2,7 @@
 
 from attr import attrs, attrib
 from shapes import Rectangle
+from asyncio import coroutine
 
 
 @attrs
@@ -18,7 +19,7 @@ class Chart:
     viewPort_height = attrib()
 
     # chart node is abstract but option to render as rectangle
-    rect = attrib()
+    rect = Rectangle()
 
     @viewPort_width.default
     def get_height(self):
@@ -28,14 +29,11 @@ class Chart:
     def get_height(self):
         return self.chart_height
 
-    @rect.default
-    def build_shape(self):
-        rect = Rectangle()
-        rect.width = self.chart_width
-        rect.height = self.chart_height
-        rect.border_width = 0
-        rect.fill_color = 'black'
-        return rect
+    def __attrs_post_init__(self):
+        self.rect.width = self.chart_width
+        self.rect.height = self.chart_height
+        self.rect.border_width = 0
+        self.rect.fill_color = 'black'
 
     @property
     def svg(self):
