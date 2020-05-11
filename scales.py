@@ -5,6 +5,7 @@
 # todo add order in as mixin to Scales
 # todo add ability to label a scale to Scale
 # todo use @property to render svg
+# todo test other datetime libraries
 
 from dataclasses import dataclass
 from shapes import Rectangle, Line, Text
