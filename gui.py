@@ -12,7 +12,7 @@ def display_chart(svg='No SVG code found.'):
     window = QSvgWidget()
     contents = QByteArray(bytearray(svg, encoding='utf-8'))
     window.renderer().load(contents)  # will also accept SVG file
-    window.setGeometry(0, 0, window.sizeHint().width(), window.sizeHint().height())  # sizeHint from viewPort
+    window.setGeometry(0, 0, window.sizeHint().width(), window.sizeHint().height())  # sizeHint reads viewPort
     window.renderer().setViewBox(QRect(-10, -10, window.sizeHint().width() + 20, window.sizeHint().height() + 20))
     # window.heightForWidth(True)  # does not fix aspect ratio
     window.setWindowTitle('CompactGantt')
