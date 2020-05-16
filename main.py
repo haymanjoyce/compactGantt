@@ -33,16 +33,16 @@ rect_b = Rectangle(x=0, y=50, width=1000, height=50, fill_color='blue', border_w
 # scale_a = Scale(window_width=1000, window_height=50, window_start=today, window_finish=end, scale_y=100).get_bar()
 rect_c = Rectangle(x=0, y=0, width=50, height=600, fill_color='purple', border_width=0)
 
-chart_objects = [chart_area, rect_a, rect_b, rect_c]
+svg_objects = [chart_area, rect_a, rect_b, rect_c]
 
 # BUILD CHART
 chart = Chart()
-chart.viewPort_width = 1000  # will come from layout
-chart.viewPort_height = 600  # will come from layout
-chart.chart_objects = chart_objects
+chart.width = 1000  # will come from layout
+chart.height = 600  # will come from layout
+chart.fill_color = '#888'
+chart.svg_objects = svg_objects
 chart.render_objects()
-chart.wrap_string()
 
 # DISPLAY
-browser.display_chart(chart.svg_string)
-gui.display_chart(chart.svg_string)
+browser.display_chart(chart.svg)
+gui.display_chart(chart.svg)

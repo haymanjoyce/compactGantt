@@ -7,24 +7,43 @@ from shapes import Rectangle
 @attrs
 class Chart:
 
-    chart_objects = attrib(default=list())
-    svg_string = attrib(default=str())
+    svg_objects = attrib(default=list())
+    svg_elements = attrib(default=str())
 
-    viewPort_width = 800
-    viewPort_height = 600
+    # we assume the chart (the root rectangle) and the viewPort (the SVG element) are the same size
+    width = 800
+    height = 600
+
+    # style options
+    fill_color = '#fff'
+    border_color = '#000'
+    border_width = 0
+
+    def _paint_chart(self):
+        chart = Rectangle()
+        chart.width = self.width
+        chart.height = self.height
+        chart.fill_color = self.fill_color
+        chart.border_color = self.border_color
+        chart.border_width = self.border_width
+        return chart.svg
 
     def order_objects(self):
         pass
 
     def render_objects(self):
-        for chart_object in self.chart_objects:
-            self.svg_string += chart_object.svg
+        for svg_object in self.svg_objects:
+            self.svg_elements += svg_object.svg
 
     def wrap_string(self):
-        self.svg_string = f'<svg width="{self.viewPort_width}" height="{self.viewPort_height}" ' \
-                          f'id="chart" overflow="auto"> ' \
-                          f'{self.svg_string}' \
-                          f'</svg>'
+        return f'<svg width="{self.width}" height="{self.height}" ' \
+               f'id="chart" overflow="auto">' \
+               f'{self._paint_chart()}{self.svg_elements}' \
+               f'</svg>'
+
+    @property
+    def svg(self):
+        return self.wrap_string()
 
 
 @attrs
