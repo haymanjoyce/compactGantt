@@ -14,13 +14,22 @@
 
 from datetime import date
 from scales import Scale, Grid
-from chart import Chart, Layout
+from viewport import ViewPort
 import browser
 import gui
 from shapes import Rectangle
+from layout import Layout
 
-# CREATE CHART LAYOUT
-# layout = Layout()
+# CREATE VIEWPORT
+viewport = ViewPort()
+viewport.width = 1000
+viewport.height = 600
+viewport.fill_color = '#ddd'
+
+# CREATE LAYOUT
+layout = Layout()
+layout.parent = viewport
+print(layout.parent.width)
 
 # CREATE CHART FEATURES
 today = date.toordinal(date.today())
@@ -35,14 +44,11 @@ rect_c = Rectangle(x=0, y=0, width=50, height=600, fill_color='purple', border_w
 
 svg_objects = [chart_area, rect_a, rect_b, rect_c]
 
-# BUILD CHART
-chart = Chart()
-chart.width = 1000  # will come from layout
-chart.height = 600  # will come from layout
-chart.fill_color = '#888'
-chart.svg_objects = svg_objects
-chart.render_objects()
+# PAINT VIEWPORT
+viewport.svg_objects = svg_objects
+viewport.order_objects()
+viewport.render_objects()
 
-# DISPLAY
-browser.display_chart(chart.svg)
-gui.display_chart(chart.svg)
+# DISPLAY CHART
+browser.display_chart(viewport.svg)
+gui.display_chart(viewport.svg)
