@@ -1,7 +1,6 @@
-# todo add chart
-# todo give everything x, y, width, height
-# todo add columns
+# todo calculate layout
 # todo paint layout
+# todo make each layout component a rectangle object
 
 from attr import attrs, attrib
 from shapes import Rectangle
@@ -11,17 +10,21 @@ from viewport import ViewPort
 @attrs
 class Layout:
 
-    parent = ViewPort
+    parent = ViewPort.root_element
 
-    banner_top_height = parent.height * 0.1
-    banner_bottom_height = parent.height * 0.1
+    chart = Rectangle()
+    header = Rectangle()
+    footer = Rectangle()
+    columns_left = Rectangle()
+    columns_right = Rectangle()
+    scales_top = Rectangle()
+    scales_bottom = Rectangle()
+    labels_top_left = Rectangle()
+    labels_top_right = Rectangle()
+    labels_bottom_left = Rectangle()
+    labels_bottom_right = Rectangle()
+    plot_area = Rectangle()
 
-    scales_top_height = parent.height * 0.2
-    _sales_top_y = banner_top_height
-
-    scales_bottom_height = parent.height * 0.2
-    _scales_bottom_y = parent.height - (scales_bottom_height + banner_bottom_height)
-
-    _plot_y = banner_top_height + scales_top_height
-    _plot_height = _scales_bottom_y - (banner_top_height + scales_top_height)
+    def configure_elements(self):
+        pass
 
