@@ -30,6 +30,7 @@ viewport.root_element.fill_color = '#ddd'
 layout = Layout()
 layout.parent = viewport.root_element
 layout.configure_elements()
+layout.render_elements()
 
 # CREATE CHART FEATURES
 today = date.toordinal(date.today())
@@ -42,7 +43,7 @@ rect_b = Rectangle(x=0, y=50, width=1000, height=50, fill_color='blue', border_w
 # scale_a = Scale(window_width=1000, window_height=50, window_start=today, window_finish=end, scale_y=100).get_bar()
 rect_c = Rectangle(x=0, y=0, width=50, height=600, fill_color='purple', border_width=0)
 
-elements = [chart_area, rect_a, rect_b, rect_c]
+elements = [layout]
 
 # POPULATE SVG ELEMENT
 viewport.child_elements = elements

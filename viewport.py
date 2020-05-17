@@ -10,6 +10,8 @@ class ViewPort:
     svg_string = attrib(default=str())
 
     def __attrs_post_init__(self):
+        self.root_element.x = 0
+        self.root_element.y = 0
         self.root_element.width = 800
         self.root_element.height = 600
         self.root_element.fill_color = '#fff'
