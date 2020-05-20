@@ -29,7 +29,8 @@ viewport.root_element.fill_color = '#ddd'
 # CREATE LAYOUT
 layout = Layout()
 layout.parent = viewport.root_element
-layout.configure_elements()
+layout.chart.width = 1000
+layout.update_elements()
 layout.render_elements()
 
 # CREATE CHART FEATURES

@@ -5,17 +5,9 @@ from shapes import Rectangle
 @attrs
 class ViewPort:
 
-    root_element = Rectangle()
+    root_element = Rectangle(x=0, y=0, width=800, height=600, fill_color='#fff', border_width=0)
     child_elements = attrib(default=list())
     svg_string = attrib(default=str())
-
-    def __attrs_post_init__(self):
-        self.root_element.x = 0
-        self.root_element.y = 0
-        self.root_element.width = 800
-        self.root_element.height = 600
-        self.root_element.fill_color = '#fff'
-        self.root_element.border_width = 0
 
     def order_child_elements(self):
         pass
