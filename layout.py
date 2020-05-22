@@ -91,7 +91,8 @@ class Layout:
         self.labels_bottom_right.width = columns_right_width
         self.labels_bottom_right.height = scales_bottom_height
 
-    def render(self):
+    @property
+    def svg(self):
         self.svg_string += self.chart.svg
         self.svg_string += self.header.svg
         self.svg_string += self.footer.svg
@@ -104,8 +105,5 @@ class Layout:
         self.svg_string += self.labels_bottom_left.svg
         self.svg_string += self.labels_bottom_right.svg
         self.svg_string += self.plot_area.svg
-
-    @property
-    def svg(self):
         return self.svg_string
 

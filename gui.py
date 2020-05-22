@@ -3,12 +3,12 @@
 
 import sys
 from PySide2.QtWidgets import QApplication
-from PySide2.QtSvg import QSvgWidget, QSvgRenderer
+from PySide2.QtSvg import QSvgWidget
 from PySide2.QtCore import QByteArray, QRect
-from PySide2.QtGui import QPalette, QColor
+from PySide2.QtGui import QColor
 
 
-def display_chart(svg='No SVG code found.'):
+def display(svg='No SVG code found.'):
     gui = QApplication(sys.argv)
     window = QSvgWidget()
     contents = QByteArray(bytearray(svg, encoding='utf-8'))

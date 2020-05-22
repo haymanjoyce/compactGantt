@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-# todo hold data in database
-# todo GUI interface to database
-# todo page module
-# todo chart module
-# todo redo scales module
-# todo drop mixins
-# todo try gui using another framework
+# todo refactor scales module
+# todo banners module
+# todo columns module
+# todo labels module
+# todo plot module
+# todo database module
+# todo add controls to gui module
 
 # REQUIREMENTS
 # PySide2
@@ -23,7 +23,6 @@ from layout import Layout
 # LAYOUT
 layout = Layout()
 layout.configure(plot_width=600)
-layout.render()
 
 # FEATURES
 today = date.toordinal(date.today())
@@ -36,7 +35,7 @@ rect_b = Rectangle(x=0, y=50, width=1000, height=50, fill_color='blue', border_w
 # scale_a = Scale(window_width=1000, window_height=50, window_start=today, window_finish=end, scale_y=100).get_bar()
 rect_c = Rectangle(x=0, y=0, width=50, height=600, fill_color='purple', border_width=0)
 
-elements = []
+features = []
 
 # VIEWPORT
 viewport = ViewPort()
@@ -48,4 +47,4 @@ viewport.render_child_elements()
 
 # DISPLAY
 browser.display_chart(viewport.svg)
-gui.display_chart(viewport.svg)
+gui.display(viewport.svg)
