@@ -1,98 +1,97 @@
-# todo calculate layout
-# todo paint layout
-# todo make each layout component a rectangle object
-# todo there must be a better way of doing this
-# todo make it a singleton where function only allows change to user vars
-
 from attr import attrs, attrib
 from shapes import Rectangle
-from viewport import ViewPort
 
 
 @attrs
 class Layout:
 
-    parent = ViewPort.root_element
-
-    elements = []
-
-    chart = Rectangle(border_width=0, x=parent.x, y=parent.y, width=parent.width, height=parent.height)
-    header = Rectangle(border_width=0)
-    footer = Rectangle(border_width=0)
-    columns_left = Rectangle(border_width=0)
-    columns_right = Rectangle(border_width=0)
-    scales_top = Rectangle(border_width=0)
-    scales_bottom = Rectangle(border_width=0)
-    labels_top_left = Rectangle(border_width=0)
-    labels_top_right = Rectangle(border_width=0)
-    labels_bottom_left = Rectangle(border_width=0)
-    labels_bottom_right = Rectangle(border_width=0)
-    plot_area = Rectangle(border_width=0)
+    chart = Rectangle(x=0, y=0, width=0, height=0, border_width=0, border_rounding=0, fill_color='#ccc')
+    header = Rectangle(x=0, y=0, width=0, height=0, border_width=0, border_rounding=0, fill_color='#ddd')
+    footer = Rectangle(x=0, y=0, width=0, height=0, border_width=0, border_rounding=0, fill_color='#ddd')
+    columns_left = Rectangle(x=0, y=0, width=0, height=0, border_width=0, border_rounding=0, fill_color='#eee')
+    columns_right = Rectangle(x=0, y=0, width=0, height=0, border_width=0, border_rounding=0, fill_color='#eee')
+    scales_top = Rectangle(x=0, y=0, width=0, height=0, border_width=0, border_rounding=0, fill_color='#eee')
+    scales_bottom = Rectangle(x=0, y=0, width=0, height=0, border_width=0, border_rounding=0, fill_color='#eee')
+    labels_top_left = Rectangle(x=0, y=0, width=0, height=0, border_width=0, border_rounding=0, fill_color='#fff')
+    labels_top_right = Rectangle(x=0, y=0, width=0, height=0, border_width=0, border_rounding=0, fill_color='#fff')
+    labels_bottom_left = Rectangle(x=0, y=0, width=0, height=0, border_width=0, border_rounding=0, fill_color='#fff')
+    labels_bottom_right = Rectangle(x=0, y=0, width=0, height=0, border_width=0, border_rounding=0, fill_color='#fff')
+    plot_area = Rectangle(x=0, y=0, width=0, height=0, border_width=0, border_rounding=0, fill_color='#fff')
 
     svg_string = attrib(default=str())
 
-    def update_elements(self):
+    def configure(self,
+                  header_height=50,
+                  scales_top_height=150,
+                  plot_height=200,
+                  scales_bottom_height=150,
+                  footer_height=50,
+                  columns_left_width=200,
+                  plot_width=400,
+                  columns_right_width=200,
+                  ):
 
-        self.chart.fill_color = '#333'
-        self.header.fill_color = 'violet'
-        self.footer.fill_color = 'violet'
-        self.scales_top.fill_color = 'pink'
-        self.labels_top_left.fill_color = 'blue'
-        self.labels_top_right.fill_color = 'orange'
-        self.scales_bottom.fill_color = 'pink'
-        self.labels_bottom_left.fill_color = 'yellow'
-        self.labels_bottom_right.fill_color = 'purple'
-        self.plot_area.fill_color = '#eee'
-        self.columns_left.fill_color = 'indigo'
-        self.columns_right.fill_color = 'indigo'
+        self.chart.x = 0
+        self.chart.y = 0
+        self.chart.width = columns_left_width + plot_width + columns_right_width
+        self.chart.height = header_height + scales_top_height + plot_height + scales_bottom_height + footer_height
 
-        self.header.height = self.chart.height * 0.1
-        self.footer.height = self.chart.height * 0.1
-        self.columns_left.width = self.chart.width * 0.2
-        self.columns_right.width = self.chart.width * 0.2
-        self.scales_top.height = self.chart.height * 0.2
-        self.scales_bottom.height = self.chart.height * 0.2
+        self.header.x = 0
+        self.header.y = 0
+        self.header.width = columns_left_width + plot_width + columns_right_width
+        self.header.height = header_height
 
-        self.header.x = self.chart.x
-        self.header.y = self.chart.y
-        self.header.width = self.chart.width
-        self.footer.x = self.chart.x
-        self.footer.width = self.chart.width
-        self.footer.y = self.chart.height - self.footer.height
-        self.columns_left.x = self.chart.x
-        self.columns_right.x = self.chart.width - self.columns_right.width
-        self.scales_top.x = self.columns_left.x + self.columns_left.width
-        self.scales_top.y = self.header.y + self.header.height
-        self.scales_top.width = self.columns_right.x - self.columns_left.width
-        self.labels_top_left.x = self.chart.x
-        self.labels_top_left.y = self.chart.y + self.header.height
-        self.labels_top_left.width = self.columns_left.width
-        self.labels_top_left.height = self.scales_top.height
-        self.labels_top_right.x = self.columns_right.x
-        self.labels_top_right.y = self.labels_top_left.y
-        self.labels_top_right.width = self.columns_right.width
-        self.labels_top_right.height = self.scales_top.height
-        self.scales_bottom.x = self.scales_top.x
-        self.scales_bottom.width = self.scales_top.width
-        self.scales_bottom.y = self.footer.y - self.scales_bottom.height
-        self.labels_bottom_left.x = self.labels_top_left
-        self.labels_bottom_left.y = self.scales_bottom.y
-        self.labels_bottom_left.width = self.labels_top_left.width
-        self.labels_bottom_left.height = self.scales_bottom.height
-        self.labels_bottom_right.x = self.labels_top_right.x
-        self.labels_bottom_right.y = self.scales_bottom.y
-        self.labels_bottom_right.width = self.labels_bottom_left.width
-        self.labels_bottom_right.height = self.scales_bottom.height
-        self.plot_area.x = self.scales_top.x
-        self.plot_area.y = self.scales_top.y + self.scales_top.height
-        self.plot_area.width = self.scales_top.width
-        self.plot_area.height = self.scales_bottom.y - (self.scales_top.y + self.scales_top.height)
-        self.columns_left.y = self.plot_area.y
-        self.columns_left.height = self.plot_area.height
-        self.columns_right.y = self.plot_area.y
-        self.columns_right.height = self.plot_area.height
+        self.footer.x = 0
+        self.footer.y = header_height + scales_top_height + plot_height + scales_bottom_height
+        self.footer.width = columns_left_width + plot_width + columns_right_width
+        self.footer.height = footer_height
 
-    def render_elements(self):
+        self.scales_top.x = columns_left_width
+        self.scales_top.y = header_height
+        self.scales_top.width = plot_width
+        self.scales_top.height = scales_top_height
+
+        self.scales_bottom.x = columns_left_width
+        self.scales_bottom.y = header_height + scales_top_height + plot_height
+        self.scales_bottom.width = plot_width
+        self.scales_bottom.height = scales_bottom_height
+
+        self.columns_left.x = 0
+        self.columns_left.y = header_height + scales_top_height
+        self.columns_left.width = columns_left_width
+        self.columns_left.height = plot_height
+
+        self.columns_right.x = columns_left_width + plot_width
+        self.columns_right.y = header_height + scales_top_height
+        self.columns_right.width = columns_right_width
+        self.columns_right.height = plot_height
+
+        self.plot_area.x = columns_left_width
+        self.plot_area.y = header_height + scales_top_height
+        self.plot_area.width = plot_width
+        self.plot_area.height = plot_height
+
+        self.labels_top_left.x = 0
+        self.labels_top_left.y = header_height
+        self.labels_top_left.width = columns_left_width
+        self.labels_top_left.height = scales_top_height
+
+        self.labels_top_right.x = columns_left_width + plot_width
+        self.labels_top_right.y = header_height
+        self.labels_top_right.width = columns_right_width
+        self.labels_top_right.height = scales_top_height
+
+        self.labels_bottom_left.x = 0
+        self.labels_bottom_left.y = header_height + scales_top_height + plot_height
+        self.labels_bottom_left.width = columns_left_width
+        self.labels_bottom_left.height = scales_bottom_height
+
+        self.labels_bottom_right.x = columns_left_width + plot_width
+        self.labels_bottom_right.y = header_height + scales_top_height + plot_height
+        self.labels_bottom_right.width = columns_right_width
+        self.labels_bottom_right.height = scales_bottom_height
+
+    def render(self):
         self.svg_string += self.chart.svg
         self.svg_string += self.header.svg
         self.svg_string += self.footer.svg

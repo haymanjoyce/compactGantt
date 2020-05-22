@@ -1,11 +1,11 @@
 from attr import attrs, attrib
-from shapes import Rectangle
 
 
 @attrs
 class ViewPort:
 
-    root_element = Rectangle(x=0, y=0, width=800, height=600, fill_color='#fff', border_width=0)
+    width = 800
+    height = 600
     child_elements = attrib(default=list())
     svg_string = attrib(default=str())
 
@@ -17,9 +17,9 @@ class ViewPort:
             self.svg_string += child_element.svg
 
     def wrap_svg_string(self):
-        return f'<svg width="{self.root_element.width}" height="{self.root_element.height}" ' \
+        return f'<svg width="{self.width}" height="{self.height}" ' \
                f'id="chart" overflow="auto">' \
-               f'{self.root_element.svg}{self.svg_string}' \
+               f'{self.svg_string}' \
                f'</svg>'
 
     @property

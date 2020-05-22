@@ -20,20 +20,12 @@ import gui
 from shapes import Rectangle
 from layout import Layout
 
-# CREATE VIEWPORT
-viewport = ViewPort()
-viewport.root_element.width = 1000
-viewport.root_element.height = 600
-viewport.root_element.fill_color = '#ddd'
-
-# CREATE LAYOUT
+# LAYOUT
 layout = Layout()
-layout.parent = viewport.root_element
-layout.chart.width = 1000
-layout.update_elements()
-layout.render_elements()
+layout.configure(plot_width=600)
+layout.render()
 
-# CREATE CHART FEATURES
+# FEATURES
 today = date.toordinal(date.today())
 duration = 100
 end = today + duration
@@ -44,13 +36,16 @@ rect_b = Rectangle(x=0, y=50, width=1000, height=50, fill_color='blue', border_w
 # scale_a = Scale(window_width=1000, window_height=50, window_start=today, window_finish=end, scale_y=100).get_bar()
 rect_c = Rectangle(x=0, y=0, width=50, height=600, fill_color='purple', border_width=0)
 
-elements = [layout]
+elements = []
 
-# POPULATE SVG ELEMENT
-viewport.child_elements = elements
+# VIEWPORT
+viewport = ViewPort()
+viewport.width = layout.chart.width
+viewport.height = layout.chart.height
+viewport.child_elements = [layout]
 viewport.order_child_elements()
 viewport.render_child_elements()
 
-# DISPLAY CHART
+# DISPLAY
 browser.display_chart(viewport.svg)
 gui.display_chart(viewport.svg)
