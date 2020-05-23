@@ -9,6 +9,7 @@ from PySide2.QtGui import QColor
 
 
 def display(svg='No SVG code found.'):
+    """Objects represent the GUI display window, which can be loaded with the SVG image"""
     gui = QApplication(sys.argv)
     window = QSvgWidget()
     contents = QByteArray(bytearray(svg, encoding='utf-8'))

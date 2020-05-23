@@ -1,3 +1,5 @@
+"""Classes whose objects represent shapes, which can return shapes as SVG elements"""
+
 from attr import attrs
 from math import sqrt
 

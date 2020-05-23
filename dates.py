@@ -1,5 +1,3 @@
-"""Module for date related operations"""
-
 from datetime import date
 
 

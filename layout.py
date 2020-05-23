@@ -1,9 +1,12 @@
+# todo this module may become redundant if dimensions set at feature level
+
 from attr import attrs, attrib
 from shapes import Rectangle
 
 
 @attrs
 class Layout:
+    """Objects represent chart layout, which can be rendered as SVG elements"""
 
     chart = Rectangle(x=0, y=0, width=0, height=0, border_width=0, border_rounding=0, fill_color='#ccc')
     header = Rectangle(x=0, y=0, width=0, height=0, border_width=0, border_rounding=0, fill_color='#ddd')
