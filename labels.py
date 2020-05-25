@@ -4,14 +4,13 @@
 from datetime import date
 
 
-def clean(func):
-    def inner(ordinal_date, date_format, week_start, separator):
-        print(ordinal_date, date_format, week_start, separator)
-        return func(ordinal_date, date_format, week_start, separator)
-    return inner
+# def clean(func):
+#     def inner(ordinal_date, date_format, week_start, separator):
+#         print(ordinal_date, date_format, week_start, separator)
+#         return func(ordinal_date, date_format, week_start, separator)
+#     return inner
 
 
-@clean
 def date_label(ordinal_date, date_format, week_start=0, separator=' '):
     """Converts ordinal date into custom date format"""
 

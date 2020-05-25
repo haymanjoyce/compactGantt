@@ -4,15 +4,30 @@
 from datetime import date
 
 
-def clean(func):
+def clean_interval_type(func):
     def inner(*args, **kwargs):
-        print(*args)
-        # print(**kwargs)
+        args = list(args)
+        interval_type = args[3].lower()
+        if interval_type in ['days', 'day', 'd', '']:
+            args[3] = 'DAYS'
+        elif interval_type in ['weeks', 'week', 'wk', 'w']:
+            args[3] = 'WEEKS'
+        elif interval_type in ['months', 'mon', 'month', 'm']:
+            args[3] = 'MONTHS'
+        elif interval_type in ['quarters', 'quarts', 'qts', 'q']:
+            args[3] = 'QUARTERS'
+        elif interval_type in ['halves', 'half', 'halfs', 'halve', 'h']:
+            args[3] = 'HALVES'
+        elif interval_type in ['years', 'year', 'yrs', 'yr', 'y']:
+            args[3] = 'YEARS'
+        else:
+            raise ValueError(args[3])
+        args = tuple(args)
         return func(*args, **kwargs)
     return inner
 
 
-@clean
+@clean_interval_type
 def select_intervals(x, start, finish, interval_type='DAYS', resolution=1.0, week_start=0):
     """Returns iterable containing data for building Scale or Grid intervals"""
 
