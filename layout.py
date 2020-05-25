@@ -1,4 +1,5 @@
 # todo this module may become redundant if dimensions set at feature level
+# todo improve attribute management
 
 from attr import attrs, attrib
 from shapes import Rectangle
@@ -15,11 +16,11 @@ class Layout:
     columns_right = Rectangle(x=0, y=0, width=0, height=0, border_width=0, border_rounding=0, fill_color='#eee')
     scales_top = Rectangle(x=0, y=0, width=0, height=0, border_width=0, border_rounding=0, fill_color='#eee')
     scales_bottom = Rectangle(x=0, y=0, width=0, height=0, border_width=0, border_rounding=0, fill_color='#eee')
-    labels_top_left = Rectangle(x=0, y=0, width=0, height=0, border_width=0, border_rounding=0, fill_color='#fff')
-    labels_top_right = Rectangle(x=0, y=0, width=0, height=0, border_width=0, border_rounding=0, fill_color='#fff')
-    labels_bottom_left = Rectangle(x=0, y=0, width=0, height=0, border_width=0, border_rounding=0, fill_color='#fff')
-    labels_bottom_right = Rectangle(x=0, y=0, width=0, height=0, border_width=0, border_rounding=0, fill_color='#fff')
-    plot_area = Rectangle(x=0, y=0, width=0, height=0, border_width=0, border_rounding=0, fill_color='#fff')
+    titles_top_left = Rectangle(x=0, y=0, width=0, height=0, border_width=0, border_rounding=0, fill_color='#fff')
+    titles_top_right = Rectangle(x=0, y=0, width=0, height=0, border_width=0, border_rounding=0, fill_color='#fff')
+    titles_bottom_left = Rectangle(x=0, y=0, width=0, height=0, border_width=0, border_rounding=0, fill_color='#fff')
+    titles_bottom_right = Rectangle(x=0, y=0, width=0, height=0, border_width=0, border_rounding=0, fill_color='#fff')
+    plot = Rectangle(x=0, y=0, width=0, height=0, border_width=0, border_rounding=0, fill_color='#fff')
 
     svg_string = attrib(default=str())
 
@@ -69,30 +70,30 @@ class Layout:
         self.columns_right.width = columns_right_width
         self.columns_right.height = plot_height
 
-        self.plot_area.x = columns_left_width
-        self.plot_area.y = header_height + scales_top_height
-        self.plot_area.width = plot_width
-        self.plot_area.height = plot_height
+        self.plot.x = columns_left_width
+        self.plot.y = header_height + scales_top_height
+        self.plot.width = plot_width
+        self.plot.height = plot_height
 
-        self.labels_top_left.x = 0
-        self.labels_top_left.y = header_height
-        self.labels_top_left.width = columns_left_width
-        self.labels_top_left.height = scales_top_height
+        self.titles_top_left.x = 0
+        self.titles_top_left.y = header_height
+        self.titles_top_left.width = columns_left_width
+        self.titles_top_left.height = scales_top_height
 
-        self.labels_top_right.x = columns_left_width + plot_width
-        self.labels_top_right.y = header_height
-        self.labels_top_right.width = columns_right_width
-        self.labels_top_right.height = scales_top_height
+        self.titles_top_right.x = columns_left_width + plot_width
+        self.titles_top_right.y = header_height
+        self.titles_top_right.width = columns_right_width
+        self.titles_top_right.height = scales_top_height
 
-        self.labels_bottom_left.x = 0
-        self.labels_bottom_left.y = header_height + scales_top_height + plot_height
-        self.labels_bottom_left.width = columns_left_width
-        self.labels_bottom_left.height = scales_bottom_height
+        self.titles_bottom_left.x = 0
+        self.titles_bottom_left.y = header_height + scales_top_height + plot_height
+        self.titles_bottom_left.width = columns_left_width
+        self.titles_bottom_left.height = scales_bottom_height
 
-        self.labels_bottom_right.x = columns_left_width + plot_width
-        self.labels_bottom_right.y = header_height + scales_top_height + plot_height
-        self.labels_bottom_right.width = columns_right_width
-        self.labels_bottom_right.height = scales_bottom_height
+        self.titles_bottom_right.x = columns_left_width + plot_width
+        self.titles_bottom_right.y = header_height + scales_top_height + plot_height
+        self.titles_bottom_right.width = columns_right_width
+        self.titles_bottom_right.height = scales_bottom_height
 
     @property
     def svg(self):
@@ -103,10 +104,10 @@ class Layout:
         self.svg_string += self.columns_right.svg
         self.svg_string += self.scales_top.svg
         self.svg_string += self.scales_bottom.svg
-        self.svg_string += self.labels_top_left.svg
-        self.svg_string += self.labels_top_right.svg
-        self.svg_string += self.labels_bottom_left.svg
-        self.svg_string += self.labels_bottom_right.svg
-        self.svg_string += self.plot_area.svg
+        self.svg_string += self.titles_top_left.svg
+        self.svg_string += self.titles_top_right.svg
+        self.svg_string += self.titles_bottom_left.svg
+        self.svg_string += self.titles_bottom_right.svg
+        self.svg_string += self.plot.svg
         return self.svg_string
 

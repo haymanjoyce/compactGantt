@@ -1,47 +1,153 @@
-from attr import attrs, attrib
+# todo ability to create custom interval (e.g. 20 days representing 1 month)
+# todo rewrite as a class
+
+from datetime import date
 
 
-@attrs
-class Interval:
-    pass
+def clean(func):
+    def inner(*args, **kwargs):
+        print(*args)
+        # print(**kwargs)
+        return func(*args, **kwargs)
+    return inner
 
 
-# SOME OF THIS STUFF BELONGS HERE, SOME IN SCALES MODULE
+@clean
+def select_intervals(x, start, finish, interval_type='DAYS', resolution=1.0, week_start=0):
+    """Returns iterable containing data for building Scale or Grid intervals"""
 
-# scale_x: float = 0
-# scale_y: float = 0
+    # Returned iterable is a tuple of tuples
+    # Each tuple: x (pixels), width (pixels), ordinal date (00:00hrs of date), count (starting at 1), whole (boolean)
 
-# week_start_text: str = str(0)
+    if interval_type == 'DAYS':
+        return days(x, start, finish, resolution)
 
-# week_start_num: int = 0
+    elif interval_type == 'WEEKS':
+        return weeks(x, start, finish, resolution, week_start)
 
-# interval_type: str = str()  # DAYS | WEEKS | MONTHS | QUARTERS | HALVES | YEARS
+    elif interval_type == 'MONTHS':
+        start_months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        wholes = whole_starts(start, finish, start_months)
+        return gregorian_periods(x, start, finish, resolution, wholes)
 
-# interval_data: tuple = tuple()
+    elif interval_type == 'QUARTERS':
+        start_months = [1, 4, 7, 10]
+        wholes = whole_starts(start, finish, start_months)
+        return gregorian_periods(x, start, finish, resolution, wholes)
 
-# def get_interval_data(self):
-#     return select_scale(self.scale_x, self.window_start, self.window_finish, self.interval_type, self._pixels_per_day, self.week_start_num)
+    elif interval_type == 'HALVES':
+        start_months = [1, 7]
+        wholes = whole_starts(start, finish, start_months)
+        return gregorian_periods(x, start, finish, resolution, wholes)
 
-# clean interval type
-# if self.interval_type.lower() in [item.lower() for item in
-#                                   ['days', 'day', 'd', '']]:  # blank indicates default
-#     self.interval_type = 'DAYS'
-# elif self.interval_type.lower() in [item.lower() for item in ['weeks', 'week', 'wk', 'w']]:
-#     self.interval_type = 'WEEKS'
-# elif self.interval_type.lower() in [item.lower() for item in ['months', 'mon', 'month', 'm']]:
-#     self.interval_type = 'MONTHS'
-# elif self.interval_type.lower() in [item.lower() for item in ['quarters', 'quarts', 'qts', 'q']]:
-#     self.interval_type = 'QUARTERS'
-# elif self.interval_type.lower() in [item.lower() for item in ['halves', 'half', 'halfs', 'halve', 'h']]:
-#     self.interval_type = 'HALVES'
-# elif self.interval_type.lower() in [item.lower() for item in ['years', 'year', 'yrs', 'yr', 'y']]:
-#     self.interval_type = 'YEARS'
-# else:
-#     raise ValueError(self.interval_type)
+    elif interval_type == 'YEARS':
+        start_months = [1]
+        wholes = whole_starts(start, finish, start_months)
+        return gregorian_periods(x, start, finish, resolution, wholes)
 
-# clean first day of week string, if given, and converts to integer
-# if self.week_start_text in ['6', '7', 'S', 'Sun', 'Sunday', 'SUN', 'SUNDAY']:
-#     self.week_start_num = 6
-# else:
-#     self.week_start_num = 0
+    else:
+        raise ValueError(interval_type)
+
+
+def days(x, start, finish, resolution):
+    """Returns iterable showing all days in a given range"""
+
+    entries = tuple()
+    total_days = finish - start
+    width = 1 * resolution
+
+    for day in range(total_days):
+
+        entry = x, width, start + day, day + 1, True
+        entries += (entry, )
+        x += width
+
+    return entries
+
+
+def weeks(x, start, finish, resolution, week_start):
+    """Returns iterable showing all weeks in a given range"""
+
+    entries = tuple()
+    intervals = [day for day in range(start, finish + 1) if date.fromordinal(day).weekday() == week_start or day == start or day == finish]
+    interval = 0
+    width = 0
+    count = 0
+
+    while intervals[interval] != finish:
+
+        current_start = intervals[interval]
+        next_start = intervals[interval + 1]
+
+        duration = next_start - current_start
+
+        if current_start == start and duration < 7:
+            whole = False
+        elif next_start == finish and duration < 7:
+            whole = False
+            count += 1
+        else:
+            whole = True
+            count += 1
+
+        x += width
+        width = duration * resolution
+
+        entry = x, width, current_start, count, whole
+        entries += (entry, )
+
+        interval += 1
+
+    return entries
+
+
+def whole_starts(start, finish, start_months):
+    """Returns start dates for all Gregorian periods in given range, including last day in range"""
+
+    return [day for day in range(start, finish + 1) if date.fromordinal(day).month in start_months and date.fromordinal(day).day == 1]
+
+
+def gregorian_periods(x, start, finish, resolution, whole_intervals):
+    """Returns iterable showing all Gregorian periods (greater or equal to one month) in a given range"""
+
+    entries = tuple()
+
+    starts = whole_intervals.copy()
+
+    if start not in starts:
+        starts = [start] + starts
+
+    if finish not in starts:
+        starts = starts + [finish]
+
+    interval = 0
+
+    count = 0
+
+    while starts[interval] != finish:
+
+        current_start = starts[interval]
+
+        next_start = starts[interval + 1]
+
+        width = (next_start - current_start) * resolution
+
+        if current_start == start and start not in whole_intervals:
+            count += 0
+            whole = False
+        elif next_start == finish and finish not in whole_intervals:
+            count += 1
+            whole = False
+        else:
+            count += 1
+            whole = True
+
+        entry = x, width, current_start, count, whole
+        entries += (entry, )
+
+        x += width
+
+        interval += 1
+
+    return entries
 
