@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 # todo refactor scales module
+# todo use attribute.setter to update state
 # todo banners module
 # todo columns module
 # todo titles module

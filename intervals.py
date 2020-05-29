@@ -1,5 +1,7 @@
 # todo ability to create custom interval (e.g. 20 days representing 1 month)
 # todo rewrite as a class
+# todo pass arg index to decorator
+# todo switch print statements to log entries
 
 from datetime import date
 
@@ -7,18 +9,18 @@ from datetime import date
 def clean_interval_type(func):
     def inner(*args, **kwargs):
         args = list(args)
-        interval_type = args[3].lower()
-        if interval_type in ['days', 'day', 'd', '']:
+        argument = args[3].lower()
+        if argument in ['days', 'day', 'd', '']:
             args[3] = 'DAYS'
-        elif interval_type in ['weeks', 'week', 'wk', 'w']:
+        elif argument in ['weeks', 'week', 'wk', 'w']:
             args[3] = 'WEEKS'
-        elif interval_type in ['months', 'mon', 'month', 'm']:
+        elif argument in ['months', 'mon', 'month', 'm']:
             args[3] = 'MONTHS'
-        elif interval_type in ['quarters', 'quarts', 'qts', 'q']:
+        elif argument in ['quarters', 'quarts', 'qts', 'q']:
             args[3] = 'QUARTERS'
-        elif interval_type in ['halves', 'half', 'halfs', 'halve', 'h']:
+        elif argument in ['halves', 'half', 'halfs', 'halve', 'h']:
             args[3] = 'HALVES'
-        elif interval_type in ['years', 'year', 'yrs', 'yr', 'y']:
+        elif argument in ['years', 'year', 'yrs', 'yr', 'y']:
             args[3] = 'YEARS'
         else:
             raise ValueError(args[3])
@@ -27,7 +29,26 @@ def clean_interval_type(func):
     return inner
 
 
+def clean_first_day_of_week(func):
+    def inner(*args, **kwargs):
+        args = list(args)
+        position = 5  # make this decorator argument
+        try:
+            argument = args[position]
+            if argument in ['6', '7', 'S', 'Sun', 'Sunday', 'SUN', 'SUNDAY']:
+                args[position] = 6
+                print("First day of week is Sunday")
+            else:
+                args[position] = 0
+                print("First day of week is Monday")
+        except IndexError:
+            print("First day of week not given.")
+        return func(*args, **kwargs)
+    return inner
+
+
 @clean_interval_type
+@clean_first_day_of_week
 def select_intervals(x, start, finish, interval_type='DAYS', resolution=1.0, week_start=0):
     """Returns iterable containing data for building Scale or Grid intervals"""
 

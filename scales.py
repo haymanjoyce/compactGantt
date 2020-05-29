@@ -84,12 +84,6 @@ class Scale:
 
     def clean_scale_data(self):
 
-        # clean first day of week string, if given, and converts to integer
-        if self.week_start_text in ['6', '7', 'S', 'Sun', 'Sunday', 'SUN', 'SUNDAY']:
-            self.week_start_num = 6
-        else:
-            self.week_start_num = 0
-
         # clean interval type
         if self.interval_type.lower() in [item.lower() for item in
                                           ['days', 'day', 'd', '']]:  # blank indicates default
