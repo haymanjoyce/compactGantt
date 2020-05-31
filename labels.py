@@ -1,14 +1,9 @@
 # todo ability to prefix date format (e.g. Week 2, Q2, Half 2) (replaces Q, H, and Y)
 # todo rewrite as a class
+# todo decorate date_label with cleaners
+# todo switch to attrs
 
 from datetime import date
-
-
-# def clean(func):
-#     def inner(ordinal_date, date_format, week_start, separator):
-#         print(ordinal_date, date_format, week_start, separator)
-#         return func(ordinal_date, date_format, week_start, separator)
-#     return inner
 
 
 def date_label(ordinal_date, date_format, week_start=0, separator=' '):

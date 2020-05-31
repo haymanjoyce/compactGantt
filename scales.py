@@ -6,100 +6,77 @@
 # todo add ability to label a scale to Scale
 # todo use @property to render svg
 # todo test other datetime libraries
+# todo new mechanism for setting default date_format if blank
+# todo add in attrs validator and default decorators
+# todo use setters to change attributes that require other attributes to be updated
 
-from dataclasses import dataclass
-from shapes import Rectangle, Line, Text
+from attr import attrs, attrib
+from shapes import Rectangle, Text
 from labels import date_label
-from intervals import select_intervals
 
 
-@dataclass
+@attrs
 class Scale:
     """Builds a scale feature"""
 
     # places the scale
-    x: float = 0
-    y: float = 0
+    x = attrib(default=0)
+    y = attrib(default=0)
 
     # time window dimensions
-    width: float = 800
-    height: float = 600
+    width = attrib(default=800)
+    height = attrib(default=600)
 
     # time window start and finish in ordinals
-    start: int = 0  # note that ordinal dates are at 00:00hrs (day start)
-    finish: int = 0  # we handle the missing 23:59 hours (you don't need to)
+    start = attrib(default=0)  # note that ordinal dates are at 00:00hrs (day start)
+    finish = attrib(default=0)  # we handle the missing 23:59 hours (you don't need to)
 
     # time window resolution (pixels per day)
-    window_resolution: float = float()
+    window_resolution = attrib(default=float())
 
     # defines first day of week as string
-    week_start_text: str = str(0)
+    week_start_text = attrib(default=str(0))
 
     # defines first day of week as integer
-    week_start_num: int = 0
+    week_start_num = attrib(default=0)
 
     # defines interval type
-    interval_type: str = str()  # DAYS | WEEKS | MONTHS | QUARTERS | HALVES | YEARS
+    interval_type = attrib(default=str())  # DAYS | WEEKS | MONTHS | QUARTERS | HALVES | YEARS
 
     # private variable
-    interval_data: tuple = tuple()
+    interval_data = attrib(default=tuple())
 
     # defines minimum interval width for a label
-    min_interval_width: int = 50
+    min_interval_width = attrib(default=50)
 
     # defines label type
-    label_type: str = str()  # count | hidden | date
+    label_type = attrib(default=str())  # count | hidden | date
 
     # defines date format
-    date_format: str = str()  # y | yyyy | Y | m | mm | mmm | M | d | dd | a | aaa | A | n | nnn | w | q | h
+    date_format = attrib(default=str())  # y | yyyy | Y | m | mm | mmm | M | d | dd | a | aaa | A | n | nnn | w | q | h
 
     # defines date format separator
-    separator: str = " "
+    separator = attrib(default=" ")
 
     # interval styling
-    box_rounding: int = 0
-    box_border_width: float = 0.2
-    box_border_color: str = 'black'
-    box_fill: str = 'grey'
+    box_rounding = attrib(default=0)
+    box_border_width = attrib(default=0.2)
+    box_border_color = attrib(default='black')
+    box_fill = attrib(default='grey')
 
     # defines non-whole interval color
-    scale_ends: str = str()
+    scale_ends = attrib(default=str())
 
     # text styling
-    font_fill: str = '#000'
-    font_size: str = str(20)  # 2em | smaller | etc.
-    font_family: str = str()  # "Arial, Helvetica, sans-serif"
-    font_style: str = str()  # normal | italic | oblique
-    font_weight: str = str()  # normal | bold | bolder | lighter | <number>
+    font_fill = attrib(default='#000')
+    font_size = attrib(default='20')  # 2em | smaller | etc.
+    font_family = attrib(default=str())  # "Arial, Helvetica, sans-serif"
+    font_style = attrib(default=str())  # normal | italic | oblique
+    font_weight = attrib(default=str())  # normal | bold | bolder | lighter | <number>
 
     # text positioning relative to x and y
-    text_x: float = None
-    text_y: float = None
-
-    def __post_init__(self):
-
-        # if subclass overrides post_init then subclass will need to call these methods manually
-
-        self.clean_scale_data()
-
-    def clean_scale_data(self):
-
-        # clean interval type
-        if self.interval_type.lower() in [item.lower() for item in
-                                          ['days', 'day', 'd', '']]:  # blank indicates default
-            self.interval_type = 'DAYS'
-        elif self.interval_type.lower() in [item.lower() for item in ['weeks', 'week', 'wk', 'w']]:
-            self.interval_type = 'WEEKS'
-        elif self.interval_type.lower() in [item.lower() for item in ['months', 'mon', 'month', 'm']]:
-            self.interval_type = 'MONTHS'
-        elif self.interval_type.lower() in [item.lower() for item in ['quarters', 'quarts', 'qts', 'q']]:
-            self.interval_type = 'QUARTERS'
-        elif self.interval_type.lower() in [item.lower() for item in ['halves', 'half', 'halfs', 'halve', 'h']]:
-            self.interval_type = 'HALVES'
-        elif self.interval_type.lower() in [item.lower() for item in ['years', 'year', 'yrs', 'yr', 'y']]:
-            self.interval_type = 'YEARS'
-        else:
-            raise ValueError(self.interval_type)
+    text_x = attrib(default=None)
+    text_y = attrib(default=None)
 
     def clean_bar_data(self):
 
@@ -117,22 +94,22 @@ class Scale:
         else:
             raise ValueError(self.label_type)
 
-        # set default date_format if blank
-        if self.label_type == 'date' and self.date_format == str():
-            if self.interval_type == 'DAYS':
-                self.date_format = 'a'
-            elif self.interval_type == 'WEEKS':
-                self.date_format = 'w'
-            elif self.interval_type == 'MONTHS':
-                self.date_format = 'mmm'
-            elif self.interval_type == 'QUARTERS':
-                self.date_format = 'q'
-            elif self.interval_type == 'HALVES':
-                self.date_format = 'h'
-            elif self.interval_type == 'YEARS':
-                self.date_format = 'yyyy'
-            else:
-                raise ValueError(self.interval_type)
+        # # set default date_format if blank
+        # if self.label_type == 'date' and self.date_format == str():
+        #     if self.interval_type == 'DAYS':
+        #         self.date_format = 'a'
+        #     elif self.interval_type == 'WEEKS':
+        #         self.date_format = 'w'
+        #     elif self.interval_type == 'MONTHS':
+        #         self.date_format = 'mmm'
+        #     elif self.interval_type == 'QUARTERS':
+        #         self.date_format = 'q'
+        #     elif self.interval_type == 'HALVES':
+        #         self.date_format = 'h'
+        #     elif self.interval_type == 'YEARS':
+        #         self.date_format = 'yyyy'
+        #     else:
+        #         raise ValueError(self.interval_type)
 
         # set default text_x if None
         if self.text_x is None:

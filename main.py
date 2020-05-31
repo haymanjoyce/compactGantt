@@ -59,6 +59,7 @@ scale.box_fill = 'pink'
 scale.height = layout.scales_top.height / 4
 scale.interval_data = days
 scale.label_type = 'date'
+scale.date_format = 'd'
 
 # GRIDS
 
