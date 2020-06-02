@@ -4,51 +4,11 @@
 # todo switch print statements to log entries
 
 from datetime import date
+from cleaners import WeekStart, IntervalType
 
 
-def clean_interval_type(func):
-    def inner(*args, **kwargs):
-        args = list(args)
-        argument = args[3].lower()
-        if argument in ['days', 'day', 'd', '']:
-            args[3] = 'DAYS'
-        elif argument in ['weeks', 'week', 'wk', 'w']:
-            args[3] = 'WEEKS'
-        elif argument in ['months', 'mon', 'month', 'm']:
-            args[3] = 'MONTHS'
-        elif argument in ['quarters', 'quarts', 'qts', 'q']:
-            args[3] = 'QUARTERS'
-        elif argument in ['halves', 'half', 'halfs', 'halve', 'h']:
-            args[3] = 'HALVES'
-        elif argument in ['years', 'year', 'yrs', 'yr', 'y']:
-            args[3] = 'YEARS'
-        else:
-            raise ValueError(args[3])
-        args = tuple(args)
-        return func(*args, **kwargs)
-    return inner
-
-
-def clean_first_day_of_week(func):
-    def inner(*args, **kwargs):
-        args = list(args)
-        position = 5  # make this decorator argument
-        try:
-            argument = args[position]
-            if argument in ['6', '7', 'S', 'Sun', 'Sunday', 'SUN', 'SUNDAY']:
-                args[position] = 6
-                print("First day of week is Sunday")
-            else:
-                args[position] = 0
-                print("First day of week is Monday")
-        except IndexError:
-            print("First day of week not given.")
-        return func(*args, **kwargs)
-    return inner
-
-
-@clean_interval_type
-@clean_first_day_of_week
+@WeekStart(position=5)
+@IntervalType(position=3)
 def select_intervals(x, start, finish, interval_type='DAYS', resolution=1.0, week_start=0):
     """Returns iterable containing data for building Scale or Grid intervals"""
 

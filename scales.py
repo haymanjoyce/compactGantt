@@ -38,7 +38,7 @@ class Scale:
     week_start_text = attrib(default=str(0))
 
     # defines first day of week as integer
-    week_start_num = attrib(default=0)
+    week_start = attrib(default=0)
 
     # defines interval type
     interval_type = attrib(default=str())  # DAYS | WEEKS | MONTHS | QUARTERS | HALVES | YEARS
@@ -80,10 +80,6 @@ class Scale:
 
     def clean_bar_data(self):
 
-        # clean date format separator
-        if len(self.separator) < 1 or self.separator in ['%', '#', '?', '*', '\"'] or self.separator is self.separator.isdigit():
-            self.separator = " "  # default
-
         # clean label type
         if self.label_type in ['HIDDEN', 'hidden', 'hide', 'h', None]:
             self.label_type = 'hidden'
@@ -93,23 +89,6 @@ class Scale:
             self.label_type = 'date'
         else:
             raise ValueError(self.label_type)
-
-        # # set default date_format if blank
-        # if self.label_type == 'date' and self.date_format == str():
-        #     if self.interval_type == 'DAYS':
-        #         self.date_format = 'a'
-        #     elif self.interval_type == 'WEEKS':
-        #         self.date_format = 'w'
-        #     elif self.interval_type == 'MONTHS':
-        #         self.date_format = 'mmm'
-        #     elif self.interval_type == 'QUARTERS':
-        #         self.date_format = 'q'
-        #     elif self.interval_type == 'HALVES':
-        #         self.date_format = 'h'
-        #     elif self.interval_type == 'YEARS':
-        #         self.date_format = 'yyyy'
-        #     else:
-        #         raise ValueError(self.interval_type)
 
         # set default text_x if None
         if self.text_x is None:
@@ -179,7 +158,7 @@ class Scale:
             elif self.label_type == 'count' and i[3] == 0:
                 label.text = str()  # you could set visibility to hidden but more verbose
             elif self.label_type == 'date':
-                label.text = date_label(i[2], self.date_format, self.week_start_num, self.separator)
+                label.text = date_label(i[2], self.date_format, self.week_start, self.separator)
             else:
                 label.text = i[3]  # references count in intervals entry
             labels += label.svg

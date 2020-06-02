@@ -59,7 +59,10 @@ scale.box_fill = 'pink'
 scale.height = layout.scales_top.height / 4
 scale.interval_data = days
 scale.label_type = 'date'
-scale.date_format = 'd'
+scale.date_format = 'a d mmm'
+scale.separator = '#'
+scale.font_size = 10
+scale.week_start = 'sun'
 
 # GRIDS
 

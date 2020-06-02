@@ -2,10 +2,14 @@
 # todo rewrite as a class
 # todo decorate date_label with cleaners
 # todo switch to attrs
+# todo ability to select default label based on interval being used
 
 from datetime import date
+from cleaners import Separator, WeekStart
 
 
+@WeekStart(position=2)
+@Separator(position=3)
 def date_label(ordinal_date, date_format, week_start=0, separator=' '):
     """Converts ordinal date into custom date format"""
 
