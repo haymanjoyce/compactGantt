@@ -13,7 +13,7 @@ class Base:
             try:
                 argument = str(args[self.position]).lower()
                 # clean argument here
-            except IndexError:
+            except IndexError("List index out of range"):
                 pass  # log no argument passed
             args = tuple(args)
             return func(*args, **kwargs)
@@ -29,6 +29,8 @@ class Separator(Base):
                 argument = str(args[self.position]).lower()
                 if len(argument) > 1 or argument in ['%', '#', '?', '*', '\"'] or argument.isdigit():
                     args[self.position] = '-'  # default
+                else:
+                    raise ValueError(argument)
             except IndexError:
                 pass
             args = tuple(args)
@@ -43,12 +45,12 @@ class WeekStart(Base):
             args = list(args)
             try:
                 argument = str(args[self.position]).lower()
-                if argument in ['6', '7', 'S', 'Sun', 'Sunday', 'SUN', 'SUNDAY']:
+                if argument in ['6', '7', 'S', 'Sun', 'Sunday']:
                     args[self.position] = 6
                 else:
                     args[self.position] = 0
             except IndexError:
-                pass  # log first day of week not passed
+                pass
             args = tuple(args)
             return func(*args, **kwargs)
         return new_func
@@ -74,9 +76,9 @@ class IntervalType(Base):
                 elif argument in ['years', 'year', 'yrs', 'yr', 'y']:
                     args[self.position] = 'YEARS'
                 else:
-                    raise ValueError(args[self.position])
+                    raise ValueError(argument)
             except IndexError:
-                pass  # log no argument passed
+                pass
             args = tuple(args)
             return func(*args, **kwargs)
         return new_func

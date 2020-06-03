@@ -9,7 +9,7 @@
 
 from dataclasses import dataclass
 from shapes import Rectangle, Line, Text
-from labels import date_label
+from dates import date_label
 from intervals import select_intervals
 
 

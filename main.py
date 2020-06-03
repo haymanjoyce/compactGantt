@@ -49,20 +49,27 @@ weeks = intervals.select_intervals(plot.x, today, end, 'WEEKS', resolution=plot.
 
 # SCALES
 
-scale = Scale(x=layout.scales_top.x, y=layout.scales_top.y,
-              width=layout.scales_top.width, height=layout.scales_top.height,
-              start=plot.start, finish=plot.finish, interval_type='days', window_resolution=plot.resolution)
+scale = Scale()
 
-scale.min_interval_width = 20
-scale.text_x = 10
-scale.box_fill = 'pink'
+scale.x = layout.scales_top.x
+scale.y = layout.scales_top.y
+scale.width = layout.scales_top.width
 scale.height = layout.scales_top.height / 4
+scale.start = plot.start
+scale.finish = plot.finish
+scale.resolution = plot.resolution
+scale.interval_type = 'days'
+scale.week_start = 'sun'
 scale.interval_data = days
-scale.label_type = 'date'
+scale.min_label_width = 20
+scale.box_fill = 'pink'
+scale.ends = 'yellow'
+scale.label_type = 'd'
 scale.date_format = 'a d mmm'
 scale.separator = '#'
 scale.font_size = 10
-scale.week_start = 'sun'
+scale.text_x = 10
+scale.text_y = scale.height * 0.65
 
 # GRIDS
 
