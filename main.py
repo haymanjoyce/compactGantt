@@ -27,7 +27,7 @@ from viewport import ViewPort
 import browser
 import gui
 from layout import Layout
-import intervals
+from intervals import Intervals, select_intervals
 from dates import Date
 
 # LAYOUT
@@ -51,8 +51,8 @@ plot.clean_dates()
 plot.calculate_resolution()
 
 # INTERVALS
-days = intervals.select_intervals(plot.x, today, end, 'DAYS', resolution=plot.resolution)
-weeks = intervals.select_intervals(plot.x, today, end, 'WEEKS', resolution=plot.resolution, week_start=6)
+days = Intervals(plot.x, today, end, 'DAYS', resolution=plot.resolution, week_start=6).get_intervals()
+weeks = Intervals(plot.x, today, end, 'WEEKS', resolution=plot.resolution, week_start=6).get_intervals()
 
 # SCALES
 scale = Scale()

@@ -1,4 +1,4 @@
-# todo refactor
+# todo make box, text, interval and date objects components
 
 from attr import attrs, attrib
 from shapes import Rectangle, Text
@@ -22,22 +22,20 @@ class Scale:
 
     interval_data = attrib(default=tuple())
 
-    _label_type = attrib(default='date')  # count | hidden | date
-
-    week_start = attrib(default=0)
-
     min_label_width = attrib(default=50)
 
-    date_format = attrib(default=str())  # y | yyyy | Y | m | mm | mmm | M | d | dd | a | aaa | A | n | nnn | w | q | h
+    _label_type = attrib(default='date')  # count | hidden | date
 
+    _ends = attrib(default=str())
+
+    date_format = attrib(default=str())  # y | yyyy | Y | m | mm | mmm | M | d | dd | a | aaa | A | n | nnn | w | q | h
     separator = attrib(default=" ")
+    week_start = attrib(default=0)
 
     box_rounding = attrib(default=0)
     box_border_width = attrib(default=0.2)
     box_border_color = attrib(default='black')
     box_fill = attrib(default='grey')
-
-    _ends = attrib(default=str())
 
     font_fill = attrib(default='#000')
     font_size = attrib(default='20')  # 2em | smaller | etc.

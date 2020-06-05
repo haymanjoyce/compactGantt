@@ -1,4 +1,5 @@
 # todo fix week start; not being cleaned
+# todo kill this module
 
 from abc import abstractmethod
 

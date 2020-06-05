@@ -2,47 +2,60 @@
 # todo rewrite as a class
 # todo pass arg index to decorator
 # todo switch print statements to log entries
+# todo use setters to clean week start and interval type
 
 from datetime import date
-from cleaners import WeekStart, IntervalType
+from attr import attrs, attrib
 
 
-@WeekStart(position=5)
-@IntervalType(position=3)
-def select_intervals(x, start, finish, interval_type='DAYS', resolution=1.0, week_start=0):
-    """Returns iterable containing data for building Scale or Grid intervals"""
+@attrs
+class Intervals:
 
-    # Returned iterable is a tuple of tuples
-    # Each tuple: x (pixels), width (pixels), ordinal date (00:00hrs of date), count (starting at 1), whole (boolean)
+    x = attrib()
+    start = attrib()
+    finish = attrib()
+    interval_type = attrib(default='DAYS')
+    resolution = attrib(default=1.0)
+    week_start = attrib(default=0)
 
-    if interval_type == 'DAYS':
-        return days(x, start, finish, resolution)
+    def get_intervals(self):
+        """Returns iterable containing data for building Scale or Grid objects"""
 
-    elif interval_type == 'WEEKS':
-        return weeks(x, start, finish, resolution, week_start)
+        # Returned iterable is a tuple of tuples.  Each tuple contains:
+        #  - x (pixels),
+        #  - width (pixels),
+        #  - ordinal date (00:00hrs of date),
+        #  - count (starting at 1),
+        #  - whole (boolean)
 
-    elif interval_type == 'MONTHS':
-        start_months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-        wholes = whole_starts(start, finish, start_months)
-        return gregorian_periods(x, start, finish, resolution, wholes)
+        if self.interval_type == 'DAYS':
+            return days(self.x, self.start, self.finish, self.resolution)
 
-    elif interval_type == 'QUARTERS':
-        start_months = [1, 4, 7, 10]
-        wholes = whole_starts(start, finish, start_months)
-        return gregorian_periods(x, start, finish, resolution, wholes)
+        elif self.interval_type == 'WEEKS':
+            return weeks(self.x, self.start, self.finish, self.resolution, self.week_start)
 
-    elif interval_type == 'HALVES':
-        start_months = [1, 7]
-        wholes = whole_starts(start, finish, start_months)
-        return gregorian_periods(x, start, finish, resolution, wholes)
+        elif self.interval_type == 'MONTHS':
+            start_months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+            wholes = whole_starts(self.start, self.finish, start_months)
+            return gregorian_periods(self.x, self.start, self.finish, self.resolution, wholes)
 
-    elif interval_type == 'YEARS':
-        start_months = [1]
-        wholes = whole_starts(start, finish, start_months)
-        return gregorian_periods(x, start, finish, resolution, wholes)
+        elif self.interval_type == 'QUARTERS':
+            start_months = [1, 4, 7, 10]
+            wholes = whole_starts(self.start, self.finish, start_months)
+            return gregorian_periods(self.x, self.start, self.finish, self.resolution, wholes)
 
-    else:
-        raise ValueError(interval_type)
+        elif self.interval_type == 'HALVES':
+            start_months = [1, 7]
+            wholes = whole_starts(self.start, self.finish, start_months)
+            return gregorian_periods(self.x, self.start, self.finish, self.resolution, wholes)
+
+        elif self.interval_type == 'YEARS':
+            start_months = [1]
+            wholes = whole_starts(self.start, self.finish, start_months)
+            return gregorian_periods(self.x, self.start, self.finish, self.resolution, wholes)
+
+        else:
+            raise ValueError(self.interval_type)
 
 
 def days(x, start, finish, resolution):
