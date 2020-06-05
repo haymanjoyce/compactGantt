@@ -2,12 +2,18 @@
 
 # todo refactor dates
 # todo refactor intervals
+
 # todo banners module
 # todo columns module
 # todo titles module
 # todo plot module
+
 # todo database module
 # todo add controls to gui module
+
+# todo textbox module
+# todo image module
+# todo table module
 
 # REQUIREMENTS
 # PySide2
