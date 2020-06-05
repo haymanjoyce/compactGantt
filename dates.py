@@ -1,8 +1,8 @@
 # todo ability to prefix date format (e.g. Week 2, Q2, Half 2) (replaces Q, H, and Y)
 # todo rewrite as a class
 # todo decorate date_label with cleaners
-# todo switch to attrs
 # todo ability to select default label based on interval being used
+# todo date object gets week start from interval object
 
 from datetime import date
 from cleaners import Separator, WeekStart

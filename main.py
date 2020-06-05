@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-# todo refactor scales module
-# todo use attribute.setter to update state
+# todo refactor dates
+# todo refactor intervals
 # todo banners module
 # todo columns module
 # todo titles module
@@ -25,11 +25,11 @@ import intervals
 
 # LAYOUT
 layout = Layout()
-layout.configure(plot_width=600)
+layout.configure(plot_width=1200)
 
 # TIME WINDOW
 today = date.toordinal(date.today())
-duration = 10
+duration = 21
 end = today + duration
 
 # PLOT
@@ -45,12 +45,10 @@ plot.calculate_resolution()
 
 # INTERVALS
 days = intervals.select_intervals(plot.x, today, end, 'DAYS', resolution=plot.resolution)
-weeks = intervals.select_intervals(plot.x, today, end, 'WEEKS', resolution=plot.resolution)
+weeks = intervals.select_intervals(plot.x, today, end, 'WEEKS', resolution=plot.resolution, week_start='Sun')
 
 # SCALES
-
 scale = Scale()
-
 scale.x = layout.scales_top.x
 scale.y = layout.scales_top.y
 scale.width = layout.scales_top.width
@@ -72,10 +70,15 @@ scale.text_x = 10
 scale.text_y = scale.height * 0.65
 
 # GRIDS
-
-grid = Grid(x=layout.plot.x, y=layout.plot.y,
-            width=layout.plot.width, height=layout.plot.height,
-            start=today, finish=end, interval_type='days')
+grid = Grid()
+grid.interval_data = weeks
+grid.x = layout.plot.x
+grid.y = layout.plot.y
+grid.height = plot.height
+grid.start = plot.start
+grid.finish = plot.finish
+grid.resolution = plot.resolution
+grid.line_width = 0.2
 
 # VIEWPORT
 viewport = ViewPort()

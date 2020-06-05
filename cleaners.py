@@ -1,3 +1,5 @@
+# todo fix week start; not being cleaned
+
 from abc import abstractmethod
 
 
@@ -43,6 +45,7 @@ class WeekStart(Base):
     def __call__(self, func):
         def new_func(*args, **kwargs):
             args = list(args)
+            # print(args)
             try:
                 argument = str(args[self.position]).lower()
                 if argument in ['6', '7', 'S', 'Sun', 'Sunday']:
@@ -52,6 +55,7 @@ class WeekStart(Base):
             except IndexError:
                 pass
             args = tuple(args)
+            # print(args)
             return func(*args, **kwargs)
         return new_func
 
