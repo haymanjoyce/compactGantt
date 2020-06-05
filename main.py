@@ -28,6 +28,7 @@ import browser
 import gui
 from layout import Layout
 import intervals
+from dates import Date
 
 # LAYOUT
 layout = Layout()
@@ -51,7 +52,7 @@ plot.calculate_resolution()
 
 # INTERVALS
 days = intervals.select_intervals(plot.x, today, end, 'DAYS', resolution=plot.resolution)
-weeks = intervals.select_intervals(plot.x, today, end, 'WEEKS', resolution=plot.resolution, week_start='Sun')
+weeks = intervals.select_intervals(plot.x, today, end, 'WEEKS', resolution=plot.resolution, week_start=6)
 
 # SCALES
 scale = Scale()
@@ -63,14 +64,14 @@ scale.start = plot.start
 scale.finish = plot.finish
 scale.resolution = plot.resolution
 scale.interval_type = 'days'
-scale.week_start = 'sun'
+scale.week_start = 6
 scale.interval_data = days
 scale.min_label_width = 20
 scale.box_fill = 'pink'
 scale.ends = 'yellow'
 scale.label_type = 'd'
-scale.date_format = 'a d mmm'
-scale.separator = '#'
+scale.date_format = 'a w'
+scale.separator = '-'
 scale.font_size = 10
 scale.text_x = 10
 scale.text_y = scale.height * 0.65
@@ -84,7 +85,7 @@ grid.height = plot.height
 grid.start = plot.start
 grid.finish = plot.finish
 grid.resolution = plot.resolution
-grid.line_width = 0.2
+grid.line_width = 0.5
 
 # VIEWPORT
 viewport = ViewPort()

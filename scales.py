@@ -1,8 +1,8 @@
-# todo date label to class object
+# todo refactor
 
 from attr import attrs, attrib
 from shapes import Rectangle, Text
-from dates import date_label
+from dates import Date
 
 
 @attrs
@@ -99,6 +99,11 @@ class Scale:
 
     def build_labels(self):
 
+        date = Date()
+        date.week_start = self.week_start
+        date.separator = self.separator
+        date.date_format = self.date_format
+
         label = Text()
         labels = str()
 
@@ -121,7 +126,8 @@ class Scale:
             elif self.label_type == 'count' and i[3] == 0:
                 label.text = str()  # you could set visibility to hidden but more verbose
             elif self.label_type == 'date':
-                label.text = date_label(i[2], self.date_format, self.week_start, self.separator)
+                date.ordinal_date = i[2]
+                label.text = date.custom_format()
             else:
                 label.text = i[3]  # references count in intervals entry
             labels += label.svg
