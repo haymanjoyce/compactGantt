@@ -1,7 +1,7 @@
 # todo add ability to prefix date format (e.g. Week 2, Q2, Half 2) (replaces Q, H, and Y)
 
-from datetime import date
 from attr import attrs, attrib
+from datetime import date
 
 
 @attrs

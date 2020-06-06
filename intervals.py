@@ -1,7 +1,7 @@
 # todo ability to create custom interval (e.g. 20 days representing 1 month)
 
-from datetime import date
 from attr import attrs, attrib
+from datetime import date
 
 
 @attrs

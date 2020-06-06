@@ -51,7 +51,7 @@ plot.clean_dates()
 plot.calculate_resolution()
 
 # INTERVALS
-days = Intervals(plot.x, today, end, interval_type='DAYS', resolution=plot.resolution, week_start=6).get_intervals()
+days = Intervals(plot.x, today, end, interval_type='DAYS', resolution=plot.resolution, week_start=0)
 weeks = Intervals(plot.x, today, end, interval_type='WEEKS', resolution=plot.resolution, week_start=6).get_intervals()
 
 # SCALES
@@ -65,7 +65,8 @@ scale.finish = plot.finish
 scale.resolution = plot.resolution
 scale.interval_type = 'days'
 scale.week_start = 6
-scale.interval_data = days
+scale.intervals = days
+# scale.interval_data = days
 scale.min_label_width = 20
 scale.box_fill = 'pink'
 scale.ends = 'yellow'

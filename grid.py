@@ -1,3 +1,5 @@
+# todo get grid to accept interval objects rather than interval data
+
 from attr import attrs, attrib
 from shapes import Line
 

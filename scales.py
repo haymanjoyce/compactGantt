@@ -1,8 +1,12 @@
-# todo make box, text, interval and date objects components
+# todo consider dumping ability to accept outside Interval object
+# todo select default date format based on interval type
+# todo select default week start based on interval data
+# todo cleaner for week_start and separator
 
 from attr import attrs, attrib
-from shapes import Rectangle, Text
 from dates import Date
+from intervals import Intervals
+from shapes import Rectangle, Text
 
 
 @attrs
@@ -20,7 +24,9 @@ class Scale:
 
     resolution = attrib(default=float())
 
-    interval_data = attrib(default=tuple())
+    _intervals = attrib(default=None)
+
+    # interval_data = attrib(default=tuple())
 
     min_label_width = attrib(default=50)
 
@@ -29,7 +35,9 @@ class Scale:
     _ends = attrib(default=str())
 
     date_format = attrib(default=str())  # y | yyyy | Y | m | mm | mmm | M | d | dd | a | aaa | A | n | nnn | w | q | h
+
     separator = attrib(default=" ")
+
     week_start = attrib(default=0)
 
     box_rounding = attrib(default=0)
@@ -45,6 +53,20 @@ class Scale:
 
     text_x = attrib(default=0)
     text_y = attrib(default=0)
+
+    @property
+    def intervals(self):
+        if self._intervals is None:
+            return Intervals(x=self.x, start=self.start, finish=self.finish, resolution=self.resolution, week_start=self.week_start)
+        else:
+            return self._intervals
+
+    @intervals.setter
+    def intervals(self, value):
+        if isinstance(value, Intervals):
+            self._intervals = value
+        else:
+            raise TypeError("Expecting custom type object")
 
     @property
     def label_type(self):
@@ -73,7 +95,7 @@ class Scale:
     def ends(self, color):
         self._ends = color
 
-    def build_boxes(self):
+    def build_boxes(self, interval_data):
 
         box = Rectangle()
         box.y = self.y
@@ -84,7 +106,7 @@ class Scale:
 
         boxes = str()
 
-        for i in self.interval_data:
+        for i in interval_data:
             box.x = i[0]
             box.width = i[1]
             if i[4] is False:
@@ -95,7 +117,7 @@ class Scale:
 
         return boxes
 
-    def build_labels(self):
+    def build_labels(self, interval_data):
 
         date = Date()
         date.week_start = self.week_start
@@ -117,7 +139,7 @@ class Scale:
         if self.label_type == 'hidden':
             label.text_visibility = 'hidden'
 
-        for i in self.interval_data:
+        for i in interval_data:
             label.text_x = i[0]
             if i[1] < self.min_label_width:
                 label.text = str()  # you could set visibility to hidden but more verbose
@@ -135,7 +157,7 @@ class Scale:
     @property
     def svg(self):
 
-        # update calculated fields here
+        interval_data = self.intervals.get_intervals()
 
-        return f'{self.build_boxes()} {self.build_labels()}'
+        return f'{self.build_boxes(interval_data)} {self.build_labels(interval_data)}'
 
