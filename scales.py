@@ -76,13 +76,13 @@ class Scale:
     def build_boxes(self):
 
         box = Rectangle()
-        boxes = str()
-
         box.y = self.y
         box.height = self.height
         box.border_rounding = self.box_rounding
         box.border_color = self.box_border_color
         box.border_width = self.box_border_width
+
+        boxes = str()
 
         for i in self.interval_data:
             box.x = i[0]
@@ -103,8 +103,6 @@ class Scale:
         date.date_format = self.date_format
 
         label = Text()
-        labels = str()
-
         label.text_y = self.y
         label.text_translate_y = self.text_y
         label.text_translate_x = self.text_x
@@ -113,6 +111,8 @@ class Scale:
         label.font_weight = self.font_weight
         label.font_family = self.font_family
         label.font_style = self.font_style
+
+        labels = str()
 
         if self.label_type == 'hidden':
             label.text_visibility = 'hidden'

@@ -25,15 +25,14 @@ class Grid:
 
     def build_grid(self):
 
-        lines = str()
         line = Line()
-
+        line.y = self.y
+        line.dy = self.y + self.height
         line.stroke_color = self.line_color
         line.stroke_width = self.line_width
         line.stroke_dasharray = self.line_dashing
 
-        line.y = self.y
-        line.dy = self.y + self.height
+        lines = str()
 
         for i in self.interval_data:
             line.x = i[0]

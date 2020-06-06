@@ -1,7 +1,4 @@
-# todo use setters to clean attributes (e.g. separator, week start)
-# todo ability to prefix date format (e.g. Week 2, Q2, Half 2) (replaces Q, H, and Y)
-# todo ability to select default label based on interval being used
-# todo date object gets week start from interval object
+# todo add ability to prefix date format (e.g. Week 2, Q2, Half 2) (replaces Q, H, and Y)
 
 from datetime import date
 from attr import attrs, attrib
@@ -9,12 +6,35 @@ from attr import attrs, attrib
 
 @attrs
 class Date:
-    """Represents a date"""
 
     ordinal_date = attrib(default=date.toordinal(date.today()))
     date_format = attrib(default='dd mmm yyyy')
-    week_start = attrib(default=0)
-    separator = attrib(default=' ')
+    _week_start = attrib(default=0)
+    _separator = attrib(default=' ')
+
+    @property
+    def separator(self):
+        return self._separator
+
+    @separator.setter
+    def separator(self, value):
+        value = str(value)
+        if len(value) > 1 or value in ['%', '#', '?', '*', '\"']:
+            self._separator = '-'
+        else:
+            self._separator = value
+
+    @property
+    def week_start(self):
+        return self._week_start
+
+    @week_start.setter
+    def week_start(self, value):
+        value = str(value)
+        if value in ['6', '7', 'S', 'Sun', 'Sunday']:
+            self._week_start = 6
+        else:
+            self._week_start = 0
 
     def custom_format(self):
         """Converts an ordinal date into a custom date format"""

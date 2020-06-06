@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+# todo use attr.Factory for mutable objects
 # todo refactor dates
 # todo refactor intervals
 
@@ -27,8 +28,7 @@ from viewport import ViewPort
 import browser
 import gui
 from layout import Layout
-from intervals import Intervals, select_intervals
-from dates import Date
+from intervals import Intervals
 
 # LAYOUT
 layout = Layout()
@@ -51,8 +51,8 @@ plot.clean_dates()
 plot.calculate_resolution()
 
 # INTERVALS
-days = Intervals(plot.x, today, end, 'DAYS', resolution=plot.resolution, week_start=6).get_intervals()
-weeks = Intervals(plot.x, today, end, 'WEEKS', resolution=plot.resolution, week_start=6).get_intervals()
+days = Intervals(plot.x, today, end, interval_type='DAYS', resolution=plot.resolution, week_start=6).get_intervals()
+weeks = Intervals(plot.x, today, end, interval_type='WEEKS', resolution=plot.resolution, week_start=6).get_intervals()
 
 # SCALES
 scale = Scale()
