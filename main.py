@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
+# todo database module
+# todo add controls to gui module
+
 # todo banners module
 # todo columns module
 # todo titles module
 # todo plot module
-
-# todo database module
-# todo add controls to gui module
 
 # todo textbox module
 # todo image module

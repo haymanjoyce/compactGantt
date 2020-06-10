@@ -1,4 +1,4 @@
-# todo clean data elsewhere
+# todo cleaning needs to be moved closer to user
 
 from attr import attrs, attrib
 from dates import Date
