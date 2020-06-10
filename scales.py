@@ -1,7 +1,4 @@
-# todo consider dumping ability to accept outside Interval object
-# todo select default date format based on interval type
-# todo select default week start based on interval data
-# todo cleaner for week_start and separator
+# todo clean data elsewhere
 
 from attr import attrs, attrib
 from dates import Date
@@ -24,21 +21,9 @@ class Scale:
 
     resolution = attrib(default=float())
 
-    _intervals = attrib(default=None)
-
-    # interval_data = attrib(default=tuple())
-
     min_label_width = attrib(default=50)
 
-    _label_type = attrib(default='date')  # count | hidden | date
-
-    _ends = attrib(default=str())
-
     date_format = attrib(default=str())  # y | yyyy | Y | m | mm | mmm | M | d | dd | a | aaa | A | n | nnn | w | q | h
-
-    separator = attrib(default=" ")
-
-    week_start = attrib(default=0)
 
     box_rounding = attrib(default=0)
     box_border_width = attrib(default=0.2)
@@ -54,19 +39,26 @@ class Scale:
     text_x = attrib(default=0)
     text_y = attrib(default=0)
 
-    @property
-    def intervals(self):
-        if self._intervals is None:
-            return Intervals(x=self.x, start=self.start, finish=self.finish, resolution=self.resolution, week_start=self.week_start)
-        else:
-            return self._intervals
+    _interval_type = attrib(default='DAYS')
 
-    @intervals.setter
-    def intervals(self, value):
-        if isinstance(value, Intervals):
-            self._intervals = value
+    _label_type = attrib(default='date')  # count | hidden | date
+
+    _ends = attrib(default=str())
+
+    _week_start = attrib(default=0)
+
+    _separator = attrib(default=" ")
+
+    @property
+    def ends(self):
+        if self._ends == str():
+            return self.box_fill
         else:
-            raise TypeError("Expecting custom type object")
+            return self._ends
+
+    @ends.setter
+    def ends(self, color):
+        self._ends = color
 
     @property
     def label_type(self):
@@ -85,17 +77,60 @@ class Scale:
             raise ValueError(value)
 
     @property
-    def ends(self):
-        if self._ends == str():
-            return self.box_fill
+    def interval_type(self):
+        return self._interval_type
+
+    @interval_type.setter
+    def interval_type(self, value):
+        value = str(value).lower()
+        if value in ['days', 'day', 'd', '']:
+            self._interval_type = 'DAYS'
+        elif value in ['weeks', 'week', 'wk', 'w']:
+            self._interval_type = 'WEEKS'
+        elif value in ['months', 'mon', 'month', 'm']:
+            self._interval_type = 'MONTHS'
+        elif value in ['quarters', 'quarts', 'qts', 'q']:
+            self._interval_type = 'QUARTERS'
+        elif value in ['halves', 'half', 'halfs', 'halve', 'h']:
+            self._interval_type = 'HALVES'
+        elif value in ['years', 'year', 'yrs', 'yr', 'y']:
+            self._interval_type = 'YEARS'
         else:
-            return self._ends
+            raise ValueError(value)
 
-    @ends.setter
-    def ends(self, color):
-        self._ends = color
+    @property
+    def week_start(self):
+        return self._week_start
 
-    def build_boxes(self, interval_data):
+    @week_start.setter
+    def week_start(self, value):
+        value = str(value)
+        if value in ['6', '7', 'S', 'Sun', 'Sunday']:
+            self._week_start = 6
+        else:
+            self._week_start = 0
+
+    @property
+    def separator(self):
+        return self._separator
+
+    @separator.setter
+    def separator(self, value):
+        value = str(value)
+        if len(value) > 1 or value in ['%', '#', '?', '*', '\"']:
+            self._separator = '-'
+        else:
+            self._separator = value
+
+    def build_boxes(self):
+
+        intervals = Intervals()
+        intervals.interval_type = self.interval_type
+        intervals.x = self.x
+        intervals.start = self.start
+        intervals.finish = self.finish
+        intervals.resolution = self.resolution
+        intervals.week_start = self.week_start
 
         box = Rectangle()
         box.y = self.y
@@ -106,7 +141,7 @@ class Scale:
 
         boxes = str()
 
-        for i in interval_data:
+        for i in intervals.get_intervals():
             box.x = i[0]
             box.width = i[1]
             if i[4] is False:
@@ -117,7 +152,15 @@ class Scale:
 
         return boxes
 
-    def build_labels(self, interval_data):
+    def build_labels(self):
+
+        intervals = Intervals()
+        intervals.interval_type = self.interval_type
+        intervals.x = self.x
+        intervals.start = self.start
+        intervals.finish = self.finish
+        intervals.resolution = self.resolution
+        intervals.week_start = self.week_start
 
         date = Date()
         date.week_start = self.week_start
@@ -139,7 +182,7 @@ class Scale:
         if self.label_type == 'hidden':
             label.text_visibility = 'hidden'
 
-        for i in interval_data:
+        for i in intervals.get_intervals():
             label.text_x = i[0]
             if i[1] < self.min_label_width:
                 label.text = str()  # you could set visibility to hidden but more verbose
@@ -147,7 +190,7 @@ class Scale:
                 label.text = str()  # you could set visibility to hidden but more verbose
             elif self.label_type == 'date':
                 date.ordinal_date = i[2]
-                label.text = date.custom_format()
+                label.text = date.get_date()
             else:
                 label.text = i[3]  # references count in intervals entry
             labels += label.svg
@@ -157,7 +200,5 @@ class Scale:
     @property
     def svg(self):
 
-        interval_data = self.intervals.get_intervals()
-
-        return f'{self.build_boxes(interval_data)} {self.build_labels(interval_data)}'
+        return f'{self.build_boxes()} {self.build_labels()}'
 

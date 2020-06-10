@@ -7,46 +7,12 @@ from datetime import date
 @attrs
 class Intervals:
 
-    x = attrib()
-    start = attrib()
-    finish = attrib()
+    x = attrib(default=0.0)
+    start = attrib(default=0)
+    finish = attrib(default=0)
     resolution = attrib(default=1.0)
-    _interval_type = attrib(default='DAYS')
-    _week_start = attrib(default=0)
-
-    @property
-    def interval_type(self):
-        return self._interval_type
-
-    @interval_type.setter
-    def interval_type(self, value):
-        value = str(value).lower()
-        if value in ['days', 'day', 'd', '']:
-            self._interval_type = 'DAYS'
-        elif value in ['weeks', 'week', 'wk', 'w']:
-            self._interval_type = 'WEEKS'
-        elif value in ['months', 'mon', 'month', 'm']:
-            self._interval_type = 'MONTHS'
-        elif value in ['quarters', 'quarts', 'qts', 'q']:
-            self._interval_type = 'QUARTERS'
-        elif value in ['halves', 'half', 'halfs', 'halve', 'h']:
-            self._interval_type = 'HALVES'
-        elif value in ['years', 'year', 'yrs', 'yr', 'y']:
-            self._interval_type = 'YEARS'
-        else:
-            raise ValueError(value)
-
-    @property
-    def week_start(self):
-        return self._week_start
-
-    @week_start.setter
-    def week_start(self, value):
-        value = str(value)
-        if value in ['6', '7', 'S', 'Sun', 'Sunday']:
-            self._week_start = 6
-        else:
-            self._week_start = 0
+    interval_type = attrib(default='DAYS')
+    week_start = attrib(default=0)
 
     def get_intervals(self):
         """Returns iterable containing data for building Scale or Grid objects"""

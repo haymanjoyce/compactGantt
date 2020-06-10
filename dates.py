@@ -7,36 +7,12 @@ from datetime import date
 @attrs
 class Date:
 
-    ordinal_date = attrib(default=date.toordinal(date.today()))
+    ordinal_date = attrib(default=0)
     date_format = attrib(default='dd mmm yyyy')
-    _week_start = attrib(default=0)
-    _separator = attrib(default=' ')
+    week_start = attrib(default=0)
+    separator = attrib(default=' ')
 
-    @property
-    def separator(self):
-        return self._separator
-
-    @separator.setter
-    def separator(self, value):
-        value = str(value)
-        if len(value) > 1 or value in ['%', '#', '?', '*', '\"']:
-            self._separator = '-'
-        else:
-            self._separator = value
-
-    @property
-    def week_start(self):
-        return self._week_start
-
-    @week_start.setter
-    def week_start(self, value):
-        value = str(value)
-        if value in ['6', '7', 'S', 'Sun', 'Sunday']:
-            self._week_start = 6
-        else:
-            self._week_start = 0
-
-    def custom_format(self):
+    def get_date(self):
         """Converts an ordinal date into a custom date format"""
 
         # y - 20

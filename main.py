@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
 
-# todo use attr.Factory for mutable objects
-# todo refactor dates
-# todo refactor intervals
-
 # todo banners module
 # todo columns module
 # todo titles module
@@ -50,10 +46,6 @@ plot.finish = end
 plot.clean_dates()
 plot.calculate_resolution()
 
-# INTERVALS
-days = Intervals(plot.x, today, end, interval_type='DAYS', resolution=plot.resolution, week_start=0)
-weeks = Intervals(plot.x, today, end, interval_type='WEEKS', resolution=plot.resolution, week_start=6).get_intervals()
-
 # SCALES
 scale = Scale()
 scale.x = layout.scales_top.x
@@ -64,9 +56,7 @@ scale.start = plot.start
 scale.finish = plot.finish
 scale.resolution = plot.resolution
 scale.interval_type = 'days'
-scale.week_start = 6
-scale.intervals = days
-# scale.interval_data = days
+scale.week_start = 0
 scale.min_label_width = 20
 scale.box_fill = 'pink'
 scale.ends = 'yellow'
@@ -77,9 +67,10 @@ scale.font_size = 10
 scale.text_x = 10
 scale.text_y = scale.height * 0.65
 
-# GRIDS
+# GRID
 grid = Grid()
-grid.interval_data = weeks
+grid.interval_type = 'WEEKS'
+grid.week_start = 0
 grid.x = layout.plot.x
 grid.y = layout.plot.y
 grid.height = plot.height

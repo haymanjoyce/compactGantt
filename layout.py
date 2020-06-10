@@ -1,5 +1,4 @@
 # todo this module may become redundant if dimensions set at feature level
-# todo improve attribute management
 
 from attr import attrs, attrib
 from shapes import Rectangle
