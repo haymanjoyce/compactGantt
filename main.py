@@ -22,7 +22,7 @@ from grid import Grid
 from plot import Plot
 from viewport import ViewPort
 import browser
-import gui
+from gui import run_application
 from layout import Layout
 from intervals import Intervals
 
@@ -87,6 +87,8 @@ viewport.child_elements = [layout, scale, grid]
 viewport.order_child_elements()
 viewport.render_child_elements()
 
-# DISPLAY
+# GUI
+run_application(viewport.svg)
+
+# BROWSER
 browser.display_chart(viewport.svg)
-gui.display(viewport.svg)
