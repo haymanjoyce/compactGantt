@@ -28,11 +28,18 @@ class Table(QTableWidget):
         self.show()
 
 
-application = QApplication(sys.argv)
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.table = Table(10, 10)
+        self.setCentralWidget(self.table)
+        self.show()
 
 
-def run_application(svg):
-    table = Table(2, 2)
-    chart = Chart(svg)
-    sys.exit(application.exec_())
+class Application(QApplication):
+    def __init__(self, svg):
+        super().__init__()
+        self.main_window = MainWindow()
+        self.chart = Chart(svg)
+        sys.exit(self.exec_())
 
