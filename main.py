@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-# todo database module
-# todo add controls to gui module
+# todo gui module
 
 # todo banners module
 # todo columns module
@@ -87,7 +86,9 @@ viewport.order_child_elements()
 viewport.render_child_elements()
 
 # GUI
-application = Application(viewport.svg)
+application = Application()
+application.build(viewport.svg)
 
 # BROWSER
 display_chart(viewport.svg)
+
