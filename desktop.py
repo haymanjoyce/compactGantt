@@ -3,21 +3,23 @@
 # todo add .csv export and import
 # todo try using QPaint
 # todo splitter
+# todo lamda
+# todo QAction.trigger
 
 import sys
 from PySide2.QtWidgets import QApplication, QTableWidget, QMainWindow, QTableWidgetItem, QAction, QHBoxLayout, QFrame, QSplitter, QVBoxLayout, QLabel, QWidget
 from PySide2.QtSvg import QSvgWidget
-from PySide2.QtCore import QByteArray, QRect
-from PySide2.QtGui import QColor
+from PySide2.QtCore import QByteArray, QRect, QObject
+from PySide2.QtGui import QColor, QIcon, QKeySequence
+from chart import build_chart
 
 
 class Application(QApplication):
     def __init__(self):
         super().__init__()
 
-    def build(self, svg):
+    def run(self):
         main_window = MainWindow()
-        # chart = SvgWidget(svg)
         sys.exit(self.exec_())
 
 
@@ -28,52 +30,57 @@ class MainWindow(QMainWindow):
 
     def build(self):
 
+        exit_action = QAction(QIcon(), 'Exit', self)
+        exit_action.triggered.connect(self.exit_application)
+
         menu_bar = self.menuBar()
+
         file_menu = menu_bar.addMenu('File')
-
-        exit_action = QAction('Exit', parent=self)
-        exit_action.setShortcut('Ctrl+E')
         file_menu.addAction(exit_action)
-        exit_action.triggered.connect(self.exit_trigger)
 
-        central_widget = QWidget()
+        central_widget = CentralWidget()
+
+        self.setCentralWidget(central_widget)
+        self.show()
+
+    @staticmethod
+    def exit_application():
+        Application.quit()
+
+
+class CentralWidget(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.build()
+
+    def build(self):
+
         h_box = QHBoxLayout()
 
-        table_1 = Table(2, 2)
+        table_widget = TableWidget(2, 2)
         column_headers = ['A', 'B', 'C']
-        table_1.setHorizontalHeaderLabels(column_headers)
+        table_widget.setHorizontalHeaderLabels(column_headers)
         number = QTableWidgetItem('10')
-        table_1.setCurrentCell(1, 1)
-        table_1.setItem(1, 1, number)
+        table_widget.setCurrentCell(1, 1)
+        table_widget.setItem(1, 1, number)
 
-        table_2 = Table(2, 2)
-        column_headers = ['x', 'y', 'z']
-        table_2.setHorizontalHeaderLabels(column_headers)
-
-        # frame = QFrame()
-        # frame.setFrameShape(QFrame.StyledPanel)
+        svg_widget = SvgWidget()
 
         # splitter = QSplitter()
         # splitter.addWidget(table)
         # splitter.addWidget(frame)
 
-        h_box.addWidget(table_1)
-        h_box.addWidget(table_2)
+        h_box.addWidget(table_widget)
+        h_box.addWidget(svg_widget)
 
-        central_widget.setLayout(h_box)
-
-        self.setCentralWidget(central_widget)
-        self.show()
-
-    def exit_trigger(self):
-        QApplication.quit()
+        self.setLayout(h_box)
 
 
-class Table(QTableWidget):
+class TableWidget(QTableWidget):
     def __init__(self, rows, columns):
         super().__init__(rows, columns)
         self.cellChanged.connect(self.change_current_cell)
-        self.show()
+        # self.show()
 
     def change_current_cell(self):
         row = self.currentRow()
@@ -83,8 +90,9 @@ class Table(QTableWidget):
 
 
 class SvgWidget(QSvgWidget):
-    def __init__(self, svg='No SVG passed.'):
+    def __init__(self):
         super().__init__()
+        svg = build_chart()
         contents = QByteArray(bytearray(svg, encoding='utf-8'))
         self.setPalette(QColor('#bbb'))
         self.renderer().load(contents)  # will also accept SVG file
@@ -93,5 +101,4 @@ class SvgWidget(QSvgWidget):
         # self.heightForWidth(True)  # does not make aspect ratio fixed
         self.setWindowTitle('compactGantt')
         # self.setWindowIcon()
-        self.show()
 
