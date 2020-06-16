@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
-# REQUIREMENTS
-# PySide2
-# attrs
-
 from desktop import Application
 
 desktop_application = Application().run()
 web_application = None
+
+# REQUIREMENTS
+# PySide2
+# attrs
 
 # todo gui module
 # todo banners module

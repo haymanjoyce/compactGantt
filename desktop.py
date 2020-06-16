@@ -5,12 +5,13 @@
 # todo splitter
 # todo lamda
 # todo QAction.trigger
+# todo paint onto QScene
 
 import sys
-from PySide2.QtWidgets import QApplication, QTableWidget, QMainWindow, QTableWidgetItem, QAction, QHBoxLayout, QFrame, QSplitter, QVBoxLayout, QLabel, QWidget
+from PySide2.QtWidgets import QApplication, QTableWidget, QMainWindow, QTableWidgetItem, QAction, QHBoxLayout, QFrame, QSplitter, QVBoxLayout, QLabel, QWidget, QTabWidget, QStyleFactory, QGraphicsView, QGraphicsScene, QGraphicsRectItem
 from PySide2.QtSvg import QSvgWidget
-from PySide2.QtCore import QByteArray, QRect, QObject
-from PySide2.QtGui import QColor, QIcon, QKeySequence
+from PySide2.QtCore import QByteArray, QRect, QObject, Qt, QRectF
+from PySide2.QtGui import QColor, QIcon, QKeySequence, QPainter, QFont, QPixmap, QBrush, QImage, QPaintEvent
 from chart import build_chart
 
 
@@ -19,6 +20,8 @@ class Application(QApplication):
         super().__init__()
 
     def run(self):
+        print(QStyleFactory.keys())
+        self.setStyle(QStyleFactory.create('windowsvista'))
         main_window = MainWindow()
         sys.exit(self.exec_())
 
@@ -26,9 +29,16 @@ class Application(QApplication):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.build()
+        self.build_window()
 
-    def build(self):
+    def build_window(self):
+
+        self.setGeometry(100, 100, 800, 600)
+        self.setWindowTitle('cG')
+        self.setWindowIcon(QIcon())
+
+        central_widget = CentralWidget()
+        self.setCentralWidget(central_widget)
 
         exit_action = QAction(QIcon(), 'Exit', self)
         exit_action.triggered.connect(self.exit_application)
@@ -38,9 +48,6 @@ class MainWindow(QMainWindow):
         file_menu = menu_bar.addMenu('File')
         file_menu.addAction(exit_action)
 
-        central_widget = CentralWidget()
-
-        self.setCentralWidget(central_widget)
         self.show()
 
     @staticmethod
@@ -55,25 +62,32 @@ class CentralWidget(QWidget):
 
     def build(self):
 
-        h_box = QHBoxLayout()
+        table_1 = TableWidget(2, 2)
+        table_1.setHorizontalHeaderLabels(['A', 'B', 'C'])
+        table_1.setCurrentCell(1, 1)
+        table_1.setItem(1, 1, QTableWidgetItem('10'))
 
-        table_widget = TableWidget(2, 2)
-        column_headers = ['A', 'B', 'C']
-        table_widget.setHorizontalHeaderLabels(column_headers)
-        number = QTableWidgetItem('10')
-        table_widget.setCurrentCell(1, 1)
-        table_widget.setItem(1, 1, number)
+        table_2 = TableWidget(3, 3)
 
-        svg_widget = SvgWidget()
+        chart_1 = SvgWidget()
 
-        # splitter = QSplitter()
-        # splitter.addWidget(table)
-        # splitter.addWidget(frame)
+        chart_2 = Painter()
 
-        h_box.addWidget(table_widget)
-        h_box.addWidget(svg_widget)
+        char_3 = View()
 
-        self.setLayout(h_box)
+        tabs = QTabWidget()
+        tabs.addTab(table_1, 'Table 1')
+        tabs.addTab(table_2, 'Table 2')
+
+        splitter = QSplitter()
+        splitter.addWidget(tabs)
+        splitter.addWidget(char_3)
+        splitter.setSizes([400, 400])
+
+        layout = QHBoxLayout()
+        layout.addWidget(splitter)
+
+        self.setLayout(layout)
 
 
 class TableWidget(QTableWidget):
@@ -92,13 +106,56 @@ class TableWidget(QTableWidget):
 class SvgWidget(QSvgWidget):
     def __init__(self):
         super().__init__()
+        self.build()
+
+    def build(self):
         svg = build_chart()
         contents = QByteArray(bytearray(svg, encoding='utf-8'))
         self.setPalette(QColor('#bbb'))
         self.renderer().load(contents)  # will also accept SVG file
-        self.setGeometry(0, 0, self.sizeHint().width(), self.sizeHint().height())  # sizeHint reads viewPort
+        # self.setGeometry(0, 0, self.sizeHint().width(), self.sizeHint().height())  # sizeHint reads viewPort
         self.renderer().setViewBox(QRect(-10, -10, self.sizeHint().width() + 20, self.sizeHint().height() + 20))
         # self.heightForWidth(True)  # does not make aspect ratio fixed
-        self.setWindowTitle('compactGantt')
+        # self.setWindowTitle('compactGantt')
         # self.setWindowIcon()
+
+
+class Painter(QWidget):
+    def __init__(self):
+        super().__init__()
+
+    def paintEvent(self, event: QPaintEvent):
+        qp = QPainter()
+        qp.begin(self)
+        qp.setPen(QColor(Qt.red))
+        qp.setFont(QFont('Arial', 20))
+
+        qp.drawText(10, 50, "hello Python")
+        qp.setPen(QColor(Qt.blue))
+        qp.drawLine(10, 100, 100, 100)
+        qp.drawRect(10, 150, 150, 100)
+
+        qp.setPen(QColor(Qt.yellow))
+        qp.drawEllipse(100, 50, 100, 50)
+        qp.drawPixmap(220, 10, QPixmap("python.jpg"))
+        qp.fillRect(200, 175, 150, 100, QBrush(Qt.SolidPattern))
+        qp.end()
+
+
+class View(QGraphicsView):
+    def __init__(self, parent=None):
+        super(View, self).__init__(parent)
+        scene = QGraphicsScene(self)
+        rect_a = QRectF(10, 10, 20, 20)
+        rect_b = QRect(10, 40, 20, 20)
+        rect_c = QRect(10, 70, 20, 20)
+        scene.addRect(rect_a)
+        scene.addRect(rect_b)
+        scene.addRect(rect_c)
+        svg_widget = SvgWidget()
+        scene.addWidget(svg_widget)
+        self.setScene(scene)
+        self.setSceneRect(0, 0, svg_widget.sizeHint().width(), svg_widget.sizeHint().height())
+        self.setFixedHeight(svg_widget.sizeHint().height())
+        # self.setFixedSize(500, 500)
 
