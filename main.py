@@ -9,7 +9,8 @@ web_application = None
 # PySide2
 # attrs
 
-# todo gui module
+# todo drop gui module
+# todo create API module
 # todo banners module
 # todo columns module
 # todo titles module
@@ -17,4 +18,3 @@ web_application = None
 # todo textbox module
 # todo image module
 # todo table module
-
