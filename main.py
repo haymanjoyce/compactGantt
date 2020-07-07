@@ -1,9 +1,16 @@
 #!/usr/bin/env python3
 
-from desktop import Application
+import wx
 
-desktop_application = Application().run()
-web_application = None
+# from desktop import Application
+# from tabs import App
+
+print(wx.version())
+
+# desktop_application = Application().run()
+
+# if __name__ == "__main__":
+#     app = App()
 
 # REQUIREMENTS
 # PySide2
