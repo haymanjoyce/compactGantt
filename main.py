@@ -1,23 +1,15 @@
 #!/usr/bin/env python3
 
-import wx
+from application import App
 
-# from desktop import Application
-# from tabs import App
-
-print(wx.version())
-
-# desktop_application = Application().run()
-
-# if __name__ == "__main__":
-#     app = App()
+if __name__ == "__main__":
+    app = App().run()
 
 # REQUIREMENTS
-# PySide2
 # attrs
+# wxPython
 
-# todo drop gui module
-# todo create API module
+# todo gui
 # todo banners module
 # todo columns module
 # todo titles module

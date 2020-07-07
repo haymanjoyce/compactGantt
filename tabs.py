@@ -1,4 +1,5 @@
-# todo how export data
+# todo create tabs for different features
+# todo ability to validate inputs and highlight if error
 
 import wx
 import wx.lib.mixins.listctrl as listmix
@@ -28,6 +29,8 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.TextEditMixi
         self.resize_columns()
         self.currentItem = 0
         self.export_data()
+        self.set_cell_data(0, 4, "5")
+        self.get_cell_data(0, 1)
 
     def insert_columns(self):
         self.InsertColumn(0, "Column 1")
@@ -63,69 +66,10 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.TextEditMixi
             data[row] = [self.GetItem(row, col).GetText() for col in range(cols)]
         return data
 
-    def SetStringItem(self, index, col, data):
-        if col in range(3):
-            wx.ListCtrl.SetItem(self, index, col, data)
-            wx.ListCtrl.SetItem(self, index, 3+col, str(len(data)))
-        else:
-            try:
-                datalen = int(data)
-            except:
-                return
+    def set_cell_data(self, row, col, data):
+        wx.ListCtrl.SetItem(self, row, col, data)
 
-            wx.ListCtrl.SetItem(self, index, col, data)
-
-            data = self.GetItem(index, col-3).GetText()
-            wx.ListCtrl.SetItem(self, index, col-3, data[0:datalen])
-
-
-class ListCtrlPanel(wx.Panel):
-    def __init__(self, parent, log=None):
-        wx.Panel.__init__(self, parent, -1, style=wx.WANTS_CHARS)
-
-        self.log = log
-        tID = wx.NewIdRef()
-
-        sizer = wx.BoxSizer(wx.VERTICAL)
-
-        if wx.Platform == "__WXMAC__" and \
-               hasattr(wx.GetApp().GetTopWindow(), "LoadDemo"):
-            self.useNative = wx.CheckBox(self, -1, "Use native listctrl")
-            self.useNative.SetValue(
-                not wx.SystemOptions.GetOptionInt("mac.listctrl.always_use_generic") )
-            self.Bind(wx.EVT_CHECKBOX, self.OnUseNative, self.useNative)
-            sizer.Add(self.useNative, 0, wx.ALL | wx.ALIGN_RIGHT, 4)
-
-        self.list = ListCtrl(self, tID,
-                             style=wx.LC_REPORT
-                                 | wx.BORDER_NONE
-                                 #| wx.LC_SORT_ASCENDING            # Content of list as instructions is
-                                 | wx.LC_HRULES | wx.LC_VRULES  # nonsense with auto-sort enabled
-                             )
-
-        sizer.Add(self.list, 1, wx.EXPAND)
-        self.SetSizer(sizer)
-        self.SetAutoLayout(True)
-
-    def OnUseNative(self, event):
-        wx.SystemOptions.SetOption("mac.listctrl.always_use_generic", not event.IsChecked())
-        wx.GetApp().GetTopWindow().LoadDemo("ListCtrl_edit")
-
-
-class Frame(wx.Frame):
-
-    def __init__(self):
-        wx.Frame.__init__(self, parent=None, title='cG')
-        panel = ListCtrlPanel(self)
-        self.Show()
-
-
-class App(wx.App):
-
-    def __init__(self):
-        super().__init__(redirect=False)
-
-    def run(self):
-        frame = Frame()
-        self.MainLoop()
+    def get_cell_data(self, row, col):
+        data = self.GetItem(row, col).GetText()
+        print(data)
 
