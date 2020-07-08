@@ -71,5 +71,5 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.TextEditMixi
 
     def get_cell_data(self, row, col):
         data = self.GetItem(row, col).GetText()
-        print(data)
+        return data
 

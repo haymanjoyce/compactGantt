@@ -9,6 +9,7 @@ if __name__ == "__main__":
 # attrs
 # wxPython
 
+# todo render svg using wx
 # todo gui
 # todo banners module
 # todo columns module
