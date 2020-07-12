@@ -85,20 +85,26 @@ class NoteBookPanel(wx.Panel):
         # self.SetAutoLayout(True)
 
 
-class Frame(wx.Frame):
+class ImageFrame(wx.Frame):
     def __init__(self):
         wx.Frame.__init__(self, parent=None, title='cG')
 
-        splitter = wx.SplitterWindow(self)
-        left = NoteBookPanel(splitter)
-        right = ImagePanel(splitter)
-        splitter.SplitVertically(left, right)
-        splitter.SetMinimumPaneSize(100)
-        splitter.SetSashPosition(200, redraw=True)
-
+        panel = ImagePanel(self)
         sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(splitter, wx.ID_ANY, wx.EXPAND)
+        sizer.Add(panel, wx.ID_ANY, wx.EXPAND)
         self.SetSizer(sizer)
+        self.SetAutoLayout(True)
+
+
+class NoteBookFrame(wx.Frame):
+    def __init__(self):
+        wx.Frame.__init__(self, parent=None, title='cG')
+
+        panel = ListCtrlPanel(self)
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(panel, wx.ID_ANY, wx.EXPAND)
+        self.SetSizer(sizer)
+        self.SetAutoLayout(True)
 
 
 class App(wx.App):
@@ -106,7 +112,9 @@ class App(wx.App):
         super().__init__(redirect=False)
 
     def run(self):
-        frame = Frame()
-        frame.Show()
+        frame_1 = NoteBookFrame()
+        frame_2 = ImageFrame()
+        frame_1.Show()
+        frame_2.Show()
         self.MainLoop()
 
