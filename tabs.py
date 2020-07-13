@@ -73,3 +73,38 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.TextEditMixi
         data = self.GetItem(row, col).GetText()
         return data
 
+
+class Tab(wx.Panel):
+    def __init__(self, parent):
+        wx.Panel.__init__(self, parent, -1, style=wx.WANTS_CHARS)
+        self.tab_1 = ListCtrl(self, wx.NewIdRef(),
+                              style=wx.LC_REPORT | wx.BORDER_NONE | wx.LC_SORT_ASCENDING | wx.LC_HRULES | wx.LC_VRULES)
+        self.tab_2 = ListCtrl(self, wx.NewIdRef(),
+                              style=wx.LC_REPORT | wx.BORDER_NONE | wx.LC_SORT_ASCENDING | wx.LC_HRULES | wx.LC_VRULES)
+        self.tab_3 = ListCtrl(self, wx.NewIdRef(),
+                              style=wx.LC_REPORT | wx.BORDER_NONE | wx.LC_SORT_ASCENDING | wx.LC_HRULES | wx.LC_VRULES)
+
+
+class Tabs(wx.Notebook):
+    def __init__(self, parent):
+        wx.Notebook.__init__(self, parent, -1)
+
+        tab_1 = Tab(self)
+        tab_2 = Tab(self)
+        tab_3 = Tab(self)
+        self.AddPage(tab_1, "Tab 1")
+        self.AddPage(tab_2, "Tab 2")
+        self.AddPage(tab_3, "Tab 3")
+
+
+class TabsFrame(wx.Frame):
+    def __init__(self):
+        wx.Frame.__init__(self, parent=None, title='cG')
+
+        panel = Tabs(self)
+
+        # sizer = wx.BoxSizer(wx.VERTICAL)
+        # sizer.Add(panel, wx.ID_ANY, wx.EXPAND)
+        # self.SetSizer(sizer)
+        # self.SetAutoLayout(True)
+

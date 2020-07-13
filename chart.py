@@ -4,8 +4,10 @@ from datetime import date
 from scales import Scale
 from grid import Grid
 from plot import Plot
-from viewport import ViewPort
 from layout import Layout
+from attr import attrs, attrib
+import wx
+from wx import svg
 
 
 def build_chart():
@@ -72,4 +74,71 @@ def build_chart():
     viewport.render_child_elements()
 
     return viewport.svg
+
+
+@attrs
+class ViewPort:
+    """Objects represent the viewport, which is the SVG root element"""
+
+    width = 800
+    height = 600
+    child_elements = attrib(default=list())
+    svg_string = attrib(default=str())
+
+    def order_child_elements(self):
+        """Orders objects by their layer property"""
+        pass
+
+    def render_child_elements(self):
+        """Builds SVG string; assumes all objects have an .svg property"""
+        for child_element in self.child_elements:
+            self.svg_string += child_element.svg
+
+    def wrap_svg_string(self):
+        """Wraps the SVG elements in the root SVG element"""
+        return f'<svg width="{self.width}" height="{self.height}" ' \
+               f'id="chart" overflow="auto">' \
+               f'{self.svg_string}' \
+               f'</svg>'
+
+    @property
+    def svg(self):
+        """Returns SVG image which can be used by browser, GUI, and other clients"""
+        return self.wrap_svg_string()
+
+
+class ChartPanel(wx.Panel):
+    def __init__(self, parent):
+        wx.Panel.__init__(self, parent)
+
+        chart_svg = build_chart()
+        chart_bytes = chart_svg.encode(encoding='utf-8')
+
+        self.img = wx.svg.SVGimage.CreateFromBytes(chart_bytes)  # cannot resolve PyCharm complaint
+        self.Bind(wx.EVT_PAINT, self.on_paint)
+
+    def on_paint(self, event):
+        dc = wx.PaintDC(self)
+        dc.SetBackground(wx.Brush('white'))
+        dc.Clear()
+
+        # dcdim = min(self.Size.width, self.Size.height)
+        # imgdim = min(self.img.width, self.img.height)
+        # scale = dcdim / imgdim
+        # width = int(self.img.width * scale)
+        # height = int(self.img.height * scale)
+
+        ctx = wx.GraphicsContext.Create(dc)
+        self.img.RenderToGC(ctx, scale=1)
+
+
+class ChartFrame(wx.Frame):
+    def __init__(self):
+        wx.Frame.__init__(self, parent=None, title='cG')
+
+        panel = ChartPanel(self)
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(panel, wx.ID_ANY, wx.EXPAND)
+        self.SetSizer(sizer)
+        self.SetAutoLayout(True)
 
