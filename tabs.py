@@ -15,13 +15,15 @@ listctrldata = {
     }
 
 
-class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.TextEditMixin):
+class Table(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.TextEditMixin):
 
-    def __init__(self, parent, ID, pos=wx.DefaultPosition, size=wx.DefaultSize, style=0):
+    def __init__(self, parent, ID=wx.NewIdRef(), pos=wx.DefaultPosition, size=wx.DefaultSize, style=wx.LC_REPORT):
         wx.ListCtrl.__init__(self, parent, ID, pos, size, style)
 
         listmix.ListCtrlAutoWidthMixin.__init__(self)
         listmix.TextEditMixin.__init__(self)
+
+        self.SetWindowStyle(wx.LC_REPORT | wx.LC_HRULES | wx.LC_VRULES | wx.LC_SORT_ASCENDING | wx.BORDER_NONE)
 
         self.insert_columns()
         self.insert_rows(len(listctrldata))
@@ -77,12 +79,6 @@ class ListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin, listmix.TextEditMixi
 class Tab(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent, -1, style=wx.WANTS_CHARS)
-        self.tab_1 = ListCtrl(self, wx.NewIdRef(),
-                              style=wx.LC_REPORT | wx.BORDER_NONE | wx.LC_SORT_ASCENDING | wx.LC_HRULES | wx.LC_VRULES)
-        self.tab_2 = ListCtrl(self, wx.NewIdRef(),
-                              style=wx.LC_REPORT | wx.BORDER_NONE | wx.LC_SORT_ASCENDING | wx.LC_HRULES | wx.LC_VRULES)
-        self.tab_3 = ListCtrl(self, wx.NewIdRef(),
-                              style=wx.LC_REPORT | wx.BORDER_NONE | wx.LC_SORT_ASCENDING | wx.LC_HRULES | wx.LC_VRULES)
 
 
 class Tabs(wx.Notebook):
@@ -91,17 +87,18 @@ class Tabs(wx.Notebook):
 
         tab_1 = Tab(self)
         tab_2 = Tab(self)
-        tab_3 = Tab(self)
+
+        table_1 = Table(tab_1)
+        table_2 = Table(tab_2)
+
         self.AddPage(tab_1, "Tab 1")
         self.AddPage(tab_2, "Tab 2")
-        self.AddPage(tab_3, "Tab 3")
 
 
-class TabsFrame(wx.Frame):
+class Window(wx.Frame):
     def __init__(self):
         wx.Frame.__init__(self, parent=None, title='cG')
-
-        panel = Tabs(self)
+        self.tabs = Tabs(self)
 
         # sizer = wx.BoxSizer(wx.VERTICAL)
         # sizer.Add(panel, wx.ID_ANY, wx.EXPAND)

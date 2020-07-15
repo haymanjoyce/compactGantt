@@ -10,7 +10,7 @@ class App(wx.App):
         super().__init__(redirect=False)
 
     def run(self):
-        frame_1 = tabs.TabsFrame()
+        frame_1 = tabs.Window()
         frame_2 = chart.ChartFrame()
         frame_1.Show()
         frame_2.Show()
