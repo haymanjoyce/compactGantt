@@ -11,9 +11,9 @@ class App(wx.App):
 
     def run(self):
         frame_1 = tabs.Window()
-        frame_2 = chart.ChartFrame()
+        # frame_2 = chart.ChartFrame()
         frame_1.Show()
-        frame_2.Show()
+        # frame_2.Show()
         self.MainLoop()
 
 
