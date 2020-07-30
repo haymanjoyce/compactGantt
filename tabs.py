@@ -1,4 +1,6 @@
-# todo decide how you're going to store data (CSV or XML)
+# todo review data structure and location
+# todo enter data into table as parameter
+# todo decide how you're going to store and import/export data (CSV, XML, file, db)
 # todo ability to validate inputs and highlight if error or run health check
 # todo ability to export data
 # todo menu
@@ -6,6 +8,7 @@
 import wx
 import wx.grid as grid
 import wx.lib.gridmovers as gridmovers
+from pprint import pprint as pp
 
 scale_fields = ('Start', 'Finish', 'Date Format')
 
@@ -59,11 +62,11 @@ data = [{'id': 1010,
 
 
 class Table(grid.GridTableBase):
+    """Holds the data.  Usually wx.grid.GridStringTable is used but gridmovers requires customisation of base class."""
     def __init__(self):
         grid.GridTableBase.__init__(self)
 
-    # required methods for the wxPyGridTableBase interface
-    # must use wx format in order to override
+    # our custom class must override these methods (i.e. the base class interface)
 
     def GetNumberRows(self):
         return len(data)
@@ -83,123 +86,115 @@ class Table(grid.GridTableBase):
         key = identifiers[col]
         data[row][key] = value
 
-    # some optional methods
-    # must use wx format in order to override
+    # we want custom column and row labels and so we override these methods
 
-    # called when the grid needs to display column labels
     def GetColLabelValue(self, col):
-        key = identifiers[col]
-        return col_labels[key]
+        identifier = identifiers[col]
+        return col_labels[identifier]
 
-    # called when the grid needs to display row labels
     def GetRowLabelValue(self, row):
         return row_labels[row]
 
-    # the physical moving of the cols and rows is left to the implementer
+    # event handler changes the table (i.e. data) and then the grid
 
-    def move_column(self, frm, to):
-        tab = self.GetView()
+    def move_column(self, mover_col, index_col):
 
-        if tab:
-            # move the identifiers
-            old = identifiers[frm]
-            del identifiers[frm]
-
-            if to > frm:
-                identifiers.insert(to - 1, old)
+        def change_table():
+            old = identifiers[mover_col]
+            del identifiers[mover_col]
+            if index_col > mover_col:
+                identifiers.insert(index_col - 1, old)
             else:
-                identifiers.insert(to, old)
+                identifiers.insert(index_col, old)
 
-            # Notify the grid
-            tab.BeginBatch()
-            msg = grid.GridTableMessage(
-                self, grid.GRIDTABLE_NOTIFY_COLS_DELETED, frm, 1
-            )
+        def change_grid():
+            view.BeginBatch()
+            msg = grid.GridTableMessage(self, grid.GRIDTABLE_NOTIFY_COLS_DELETED, mover_col, 1)
+            view.ProcessTableMessage(msg)
+            msg = grid.GridTableMessage(self, grid.GRIDTABLE_NOTIFY_COLS_INSERTED, index_col, 1)
+            view.ProcessTableMessage(msg)
+            view.EndBatch()
 
-            tab.ProcessTableMessage(msg)
+        view = self.GetView()
 
-            msg = grid.GridTableMessage(
-                self, grid.GRIDTABLE_NOTIFY_COLS_INSERTED, to, 1
-            )
+        if view:
+            change_table()
+            change_grid()
 
-            tab.ProcessTableMessage(msg)
-            tab.EndBatch()
+    def move_row(self, mover_row, index_row):
 
-    def move_row(self, frm, to):
-        tab = self.GetView()
-        print(type(tab))
-
-        if tab:
-            # move the rowLabels and data rows
-            old_label = row_labels[frm]
-            old_data = data[frm]
-            del row_labels[frm]
-            del data[frm]
-
-            if to > frm:
-                row_labels.insert(to - 1, old_label)
-                data.insert(to - 1, old_data)
+        def change_table():
+            old_label = row_labels[mover_row]
+            old_data = data[mover_row]
+            del row_labels[mover_row]
+            del data[mover_row]
+            if index_row > mover_row:
+                row_labels.insert(index_row - 1, old_label)
+                data.insert(index_row - 1, old_data)
             else:
-                row_labels.insert(to, old_label)
-                data.insert(to, old_data)
+                row_labels.insert(index_row, old_label)
+                data.insert(index_row, old_data)
 
-            # notify the grid
-            tab.BeginBatch()
+        def change_grid():
+            view.BeginBatch()
+            msg = grid.GridTableMessage(self, grid.GRIDTABLE_NOTIFY_ROWS_DELETED, mover_row, 1)
+            view.ProcessTableMessage(msg)
+            msg = grid.GridTableMessage(self, grid.GRIDTABLE_NOTIFY_ROWS_INSERTED, index_row, 1)
+            view.ProcessTableMessage(msg)
+            view.EndBatch()
 
-            msg = grid.GridTableMessage(
-                self, grid.GRIDTABLE_NOTIFY_ROWS_DELETED, frm, 1
-            )
+        view = self.GetView()
 
-            tab.ProcessTableMessage(msg)
-
-            msg = grid.GridTableMessage(
-                self, grid.GRIDTABLE_NOTIFY_ROWS_INSERTED, to, 1
-            )
-
-            tab.ProcessTableMessage(msg)
-            tab.EndBatch()
+        if view:
+            change_table()
+            change_grid()
 
 
-class Tab(grid.Grid):
-    def __init__(self, parent, log=None):
+class Grid(grid.Grid):
+    """Grids are for viewing the data held by GridTableBase.  One dataset to many views."""
+    def __init__(self, parent, table):
         grid.Grid.__init__(self, parent, -1)
 
-        table = Table()
-        self.SetTable(table, takeOwnership=True)  # not clear why do not make table into an attribute
+        # we set grid to own and, therefore, control table
+        # SetTable assigns table to pre-defined attribute "Table", I suspect
+        # self.table also works but creates new attribute "table"
+        # interestingly, self.table, with ownership set to False, works
+        self.SetTable(table, takeOwnership=True)
 
-        # Enable Column moving
         gridmovers.GridColMover(self)
-        self.Bind(gridmovers.EVT_GRID_COL_MOVE, self.OnColMove, self)
+        self.Bind(event=gridmovers.EVT_GRID_COL_MOVE, handler=self.on_col_move, source=self)
 
-        # Enable Row moving
         gridmovers.GridRowMover(self)
-        self.Bind(gridmovers.EVT_GRID_ROW_MOVE, self.OnRowMove, self)
+        self.Bind(event=gridmovers.EVT_GRID_ROW_MOVE, handler=self.on_row_move, source=self)
 
-    # Event method called when a column move needs to take place
-    def OnColMove(self, evt):
-        frm = evt.GetMoveColumn()  # Column being moved
-        to = evt.GetBeforeColumn()  # Before which column to insert
-        self.GetTable().move_column(frm, to)
+    def on_col_move(self, event):
+        mover_col = event.GetMoveColumn()  # column being moved
+        index_col = event.GetBeforeColumn()  # before which column to insert
+        self.GetTable().move_column(mover_col, index_col)  # Grid asks Table to do some work
 
-    # Event method called when a row move needs to take place
-    def OnRowMove(self, evt):
-        frm = evt.GetMoveRow()  # Row being moved
-        to = evt.GetBeforeRow()  # Before which row to insert
-        self.GetTable().move_row(frm, to)
+    def on_row_move(self, event):
+        mover_row = event.GetMoveRow()  # row being moved
+        index_row = event.GetBeforeRow()  # before which row to insert
+        self.GetTable().move_row(mover_row, index_row)  # Grid asks Table to do some work
 
 
 class Tabs(wx.Notebook):
+    """We need tabs to display all the different tables.  (I've renamed the class.)"""
     def __init__(self, parent):
         wx.Notebook.__init__(self, parent, -1)
 
-        tab_1 = Tab(self)
-        tab_2 = Tab(self)
+        table_a = Table()
+        table_b = Table()
+
+        tab_1 = Grid(parent=self, table=table_a)
+        tab_2 = Grid(parent=self, table=table_b)
 
         self.AddPage(tab_1, "Tab 1")
         self.AddPage(tab_2, "Tab 2")
 
 
 class Window(wx.Frame):
+    """The main window.  wx.Window is used for something else so they called it wx.Frame."""
     def __init__(self):
         wx.Frame.__init__(self, parent=None, title='cG')
         self.tabs = Tabs(self)

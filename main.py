@@ -8,17 +8,18 @@ import chart
 class App(wx.App):
     def __init__(self):
         super().__init__(redirect=False)
+        self.frame_1 = tabs.Window()
+        # self. frame_2 = chart.ChartFrame()
 
     def run(self):
-        frame_1 = tabs.Window()
-        # frame_2 = chart.ChartFrame()
-        frame_1.Show()
-        # frame_2.Show()
+        self.frame_1.Show()
+        # self.frame_2.Show()
         self.MainLoop()
 
 
 if __name__ == "__main__":
-    app = App().run()
+    app = App()
+    app.run()
 
 
 # REQUIREMENTS
