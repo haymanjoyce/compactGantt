@@ -25,6 +25,7 @@ if __name__ == "__main__":
 # REQUIREMENTS
 # attrs
 # wxPython
+# pandas
 
 # todo ability to save and load files
 # todo ability to import and export as spreadsheet

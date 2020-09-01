@@ -196,5 +196,17 @@ class Window(wx.Frame):
     """The main window.  wx.Window is used for something else so they called it wx.Frame."""
     def __init__(self):
         wx.Frame.__init__(self, parent=None, title='cG')
-        self.tabs = Tabs(self)
 
+        menubar = wx.MenuBar()
+
+        file = wx.Menu()
+
+        open_file = wx.MenuItem(file, wx.ID_NEW, text="Open", kind=wx.ITEM_NORMAL)
+
+        file.Append(open_file)
+
+        menubar.Append(file, "File")
+
+        self.SetMenuBar(menubar)
+
+        self.tabs = Tabs(self)
