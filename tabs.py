@@ -2,7 +2,6 @@
 # todo enter data into table as parameter
 # todo decide how you're going to store and import/export data (CSV, XML, file, db)
 # todo ability to validate inputs and highlight if error or run health check
-# todo ability to export data
 # todo menu
 
 import wx
