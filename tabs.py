@@ -192,21 +192,39 @@ class Tabs(wx.Notebook):
         self.AddPage(tab_2, "Tab 2")
 
 
+class MenuBar(wx.MenuBar):
+    """This is the menu bar.  It's a child of Frame."""
+    def __init__(self):
+        wx.MenuBar.__init__(self)
+
+        # Create menus
+        menu_100 = wx.Menu()
+
+        # Create (you can create separately) and append menu items
+        menu_100.Append(101, "Open")
+        menu_100.Append(102, "Close")
+        menu_100.AppendSeparator()
+        menu_100.Append(103, "Exit")
+
+        # Append menus to menu bar
+        self.Append(menu_100, "File")
+
+        # Bind menu items to handlers
+        self.Bind(wx.EVT_MENU, self.do_101, id=101)
+
+    def do_101(self, event):
+        print("ok")
+        print(event.GetId())
+
+
 class Window(wx.Frame):
     """The main window.  wx.Window is used for something else so they called it wx.Frame."""
     def __init__(self):
         wx.Frame.__init__(self, parent=None, title='cG')
 
-        menubar = wx.MenuBar()
-
-        file = wx.Menu()
-
-        open_file = wx.MenuItem(file, wx.ID_NEW, text="Open", kind=wx.ITEM_NORMAL)
-
-        file.Append(open_file)
-
-        menubar.Append(file, "File")
-
-        self.SetMenuBar(menubar)
-
-        self.tabs = Tabs(self)
+        # self.CenterOnScreen()
+        self.CreateStatusBar()
+        self.SetStatusText(text="")
+        # self.CreateToolBar()
+        self.SetMenuBar(MenuBar())
+        self.tabs = Tabs(parent=self)
