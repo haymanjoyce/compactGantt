@@ -9,11 +9,11 @@ class App(wx.App):
     def __init__(self):
         super().__init__(redirect=False)
         self.frame_1 = tabs.Window()
-        # self. frame_2 = chart.ChartFrame()
+        self. frame_2 = chart.ChartFrame()
 
     def run(self):
         self.frame_1.Show()
-        # self.frame_2.Show()
+        self.frame_2.Show()
         self.MainLoop()
 
 
